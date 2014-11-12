@@ -547,6 +547,9 @@ aside a.button {
 aside a.button.examples {
   background-image: url(../images/examples-button.png);
 }
+aside a.button.apidoc {
+  background-image: url(../images/apidoc-button.png);
+}
 
 code, pre {
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
