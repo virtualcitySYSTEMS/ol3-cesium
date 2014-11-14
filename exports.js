@@ -164,6 +164,11 @@ goog.exportProperty(
     'setScene',
     olcs.DragBox.prototype.setScene);
 
+goog.exportProperty(
+    olcs.DragBox.prototype,
+    'listen',
+    olcs.DragBox.prototype.listen);
+
 goog.exportSymbol(
     'olcs.OLCesium',
     olcs.OLCesium);
