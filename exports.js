@@ -92,6 +92,34 @@ goog.exportProperty(
     olcs.Camera.prototype.updateView);
 
 goog.exportSymbol(
+    'olcs.core.applyHeightOffsetToGeometry',
+    olcs.core.applyHeightOffsetToGeometry);
+
+goog.exportSymbol(
+    'olcs.core.rotateAroundAxis',
+    olcs.core.rotateAroundAxis);
+
+goog.exportSymbol(
+    'olcs.core.setHeadingUsingBottomCenter',
+    olcs.core.setHeadingUsingBottomCenter);
+
+goog.exportSymbol(
+    'olcs.core.pickBottomPoint',
+    olcs.core.pickBottomPoint);
+
+goog.exportSymbol(
+    'olcs.core.pickCenterPoint',
+    olcs.core.pickCenterPoint);
+
+goog.exportSymbol(
+    'olcs.core.computeSignedTiltAngleOnGlobe',
+    olcs.core.computeSignedTiltAngleOnGlobe);
+
+goog.exportSymbol(
+    'olcs.core.computeAngleToZenith',
+    olcs.core.computeAngleToZenith);
+
+goog.exportSymbol(
     'olcs.core.lookAt',
     olcs.core.lookAt);
 
@@ -180,6 +208,11 @@ goog.exportProperty(
 
 goog.exportProperty(
     olcs.OLCesium.prototype,
+    'getOlMap',
+    olcs.OLCesium.prototype.getOlMap);
+
+goog.exportProperty(
+    olcs.OLCesium.prototype,
     'getCesiumScene',
     olcs.OLCesium.prototype.getCesiumScene);
 
@@ -192,6 +225,11 @@ goog.exportProperty(
     olcs.OLCesium.prototype,
     'setEnabled',
     olcs.OLCesium.prototype.setEnabled);
+
+goog.exportProperty(
+    olcs.OLCesium.prototype,
+    'warmUp',
+    olcs.OLCesium.prototype.warmUp);
 
 goog.exportSymbol(
     'olcs.VectorSynchronizer',
