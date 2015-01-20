@@ -68,7 +68,7 @@ var map = new ol.Map({
   })
 });
 
-var ol3d = new olcs.OLCesium(map);
+var ol3d = new olcs.OLCesium({map: map});
 var scene = ol3d.getCesiumScene();
 var terrainProvider = new Cesium.CesiumTerrainProvider({
   url: '//cesiumjs.org/stk-terrain/tilesets/world/tiles'
@@ -85,10 +85,10 @@ handler.setInputAction(function(movement) {
    if (Cesium.defined(pickedObjects)) {
     for (i = 0; i < pickedObjects.length; ++i) {
       var picked = pickedObjects[i].primitive;
-      if (picked.olFeatureId == lastPicked) continue;
+      if (picked.olFeature == lastPicked) continue;
       var carto = Cesium.Ellipsoid.WGS84.cartesianToCartographic(picked.position);
-      console.log('Picked feature', picked.olFeatureId, ' is at ', carto);
-      lastPicked = picked.olFeatureId;
+      console.log('Picked feature', picked.olFeature, ' is at ', carto);
+      lastPicked = picked.olFeature;
     }
   } else {
     lastPicked = undefined;
