@@ -69,7 +69,7 @@
 
 <p>An OpenLayers map can be switched to a 3d globe view by running the code below after the map has been created:</p>
 
-<div class="highlight highlight-js"><pre><span class="pl-s">var</span> ol3d <span class="pl-ko">=</span> <span class="pl-ko">new</span> <span class="pl-enti">olcs.OLCesium</span>(map); <span class="pl-c"><span class="pl-pdc">//</span> map is the ol.Map instance</span>
+<div class="highlight highlight-js"><pre><span class="pl-s">var</span> ol3d <span class="pl-ko">=</span> <span class="pl-ko">new</span> <span class="pl-enti">olcs.OLCesium</span>({map: map}); <span class="pl-c"><span class="pl-pdc">//</span> map is the ol.Map instance</span>
 ol3d.setEnabled(<span class="pl-c1">true</span>);</pre></div>
 
 <p>The above will use the WGS84 ellipsoid all around the globe. To use terrain, simply add a <a href="http://cesiumjs.org/Cesium/Build/Documentation/TerrainProvider.html">terrain provider</a> using the Cesium API (can be your own, but in the snippet below it's one that ships with Cesium):</p>
