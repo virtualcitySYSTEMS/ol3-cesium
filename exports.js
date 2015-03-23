@@ -92,6 +92,10 @@ goog.exportProperty(
     olcs.Camera.prototype.updateView);
 
 goog.exportSymbol(
+    'olcs.core.computePixelSizeAtCoordinate',
+    olcs.core.computePixelSizeAtCoordinate);
+
+goog.exportSymbol(
     'olcs.core.applyHeightOffsetToGeometry',
     olcs.core.applyHeightOffsetToGeometry);
 
@@ -102,6 +106,10 @@ goog.exportSymbol(
 goog.exportSymbol(
     'olcs.core.setHeadingUsingBottomCenter',
     olcs.core.setHeadingUsingBottomCenter);
+
+goog.exportSymbol(
+    'olcs.core.pickOnTerrainOrEllipsoid',
+    olcs.core.pickOnTerrainOrEllipsoid);
 
 goog.exportSymbol(
     'olcs.core.pickBottomPoint',
