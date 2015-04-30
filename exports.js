@@ -3,6 +3,7 @@ goog.require('olcs.Camera');
 goog.require('olcs.DragBox');
 goog.require('olcs.DragBoxEventType');
 goog.require('olcs.OLCesium');
+goog.require('olcs.RasterSynchronizer');
 goog.require('olcs.VectorSynchronizer');
 goog.require('olcs.core');
 goog.require('olcs.core.OlLayerPrimitive');
@@ -238,6 +239,10 @@ goog.exportProperty(
     olcs.OLCesium.prototype,
     'warmUp',
     olcs.OLCesium.prototype.warmUp);
+
+goog.exportSymbol(
+    'olcs.RasterSynchronizer',
+    olcs.RasterSynchronizer);
 
 goog.exportSymbol(
     'olcs.VectorSynchronizer',
