@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>OL3-Cesium API Documentation - Namespace: core</title>
+    <title>OL3-Cesium API Documentation - Class: FeatureConverter</title>
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
     <script src="scripts/jquery.min.js"> </script>
@@ -403,7 +403,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="olcs.core.html">Namespace: core</h1>
+        <h1 class="page-title" data-filename="olcs.FeatureConverter.html">Class: FeatureConverter</h1>
         
 
 
@@ -411,7 +411,7 @@
 <section>
     
 <header>
-    <h2>core
+    <h2>FeatureConverter
     </h2>
     
 </header>  
@@ -422,8 +422,93 @@
     
     
         
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="FeatureConverter">
+            new olcs.FeatureConverter<span class="signature">(scene)</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line27">line 27</a>
+        </div>
         
         
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Concrete base class for converting from OpenLayers3 vectors to Cesium
+primitives.
+Extending this class is possible provided that the extending class and
+the library are compiled together by the closure compiler.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>scene</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Cesium.Scene</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Cesium scene.</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
 <dl class="details">
     
         
@@ -448,8 +533,20 @@
     
 </dl>
 
-        
-        
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
     
     </div>
     
@@ -477,8 +574,8 @@
 <dt class="unstable">
     <div class="nameContainer">
         
-        <h4 class="name" id=".applyHeightOffsetToGeometry">
-            olcs.core.applyHeightOffsetToGeometry<span class="signature">(geometry, height)</span>
+        <h4 class="name" id="computePlainStyle">
+            computePlainStyle<span class="signature">(layer, feature, fallbackStyle, resolution)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{ol.style.Style}</span>
             
             
 <span class="stability experimental">experimental</span>
@@ -487,152 +584,7 @@
         </h4>
         
         <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line71">line 71</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>geometry</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">ol.geom.Geometry</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>height</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".computeAngleToZenith">
-            olcs.core.computeAngleToZenith<span class="signature">(scene, pivot)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{number}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line287">line 287</a>
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line718">line 718</a>
         </div>
         
         
@@ -643,12 +595,8 @@
     
     
     <div class="description">
-        <p>Compute the rotation angle around a given point, needed to reach the
-zenith position.
-At a zenith position, the camera direction is going througth the earth
-center and the frustrum bottom ray is going through the chosen pivot
-point.
-The bottom-center of the screen is a good candidate for the pivot point.</p>
+        <p>Compute OpenLayers plain style.
+Evaluates style function, blend arrays, get default style.</p>
     </div>
     
 
@@ -680,14 +628,14 @@ The bottom-center of the screen is a good candidate for the pivot point.</p>
 	
         <tr class="">
             
-                <td class="name"><code>scene</code></td>
+                <td class="name"><code>layer</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">Cesium.Scene</span>
+<span class="param-type">ol.layer.Vector</span>
 
 
             
@@ -705,144 +653,14 @@ The bottom-center of the screen is a good candidate for the pivot point.</p>
 	
         <tr class="">
             
-                <td class="name"><code>pivot</code></td>
+                <td class="name"><code>feature</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">Cesium.Cartesian3</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                <p>Point around which the camera rotates.</p></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".computePixelSizeAtCoordinate">
-            olcs.core.computePixelSizeAtCoordinate<span class="signature">(scene, target)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Cartesian2}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line26">line 26</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Compute the pixel width and height of a point in meters using the
-camera frustum.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>scene</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Scene</span>
+<span class="param-type">ol.Feature</span>
 
 
             
@@ -860,569 +678,17 @@ camera frustum.</p>
 	
         <tr class="">
             
-                <td class="name"><code>target</code></td>
+                <td class="name"><code>fallbackStyle</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">Cesium.Cartesian3</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-the pixel size
-<br />
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".computeSignedTiltAngleOnGlobe">
-            olcs.core.computeSignedTiltAngleOnGlobe<span class="signature">(scene)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{number|undefined}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line204">line 204</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Compute the signed tilt angle on globe, between the opposite of the
-camera direction and the target normal. Return undefined if there is no
-intersection of the camera direction with the globe.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>scene</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Scene</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".convertColorToCesium">
-            olcs.core.convertColorToCesium<span class="signature">(olColor)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Color}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line518">line 518</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Convert an OpenLayers color to Cesium.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>olColor</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">ol.Color</span>
+<span class="param-type">ol.style.StyleFunction</span>
 |
 
-<span class="param-type">string</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".extentToRectangle">
-            olcs.core.extentToRectangle<span class="signature">(extent, projection)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Rectangle}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line344">line 344</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Convert an OpenLayers extent to a Cesium rectangle.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>extent</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">ol.Extent</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                <p>Extent.</p></td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>projection</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">ol.proj.ProjectionLike</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                <p>Extent projection.</p></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-The corresponding Cesium rectangle.
-<br />
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".lookAt">
-            olcs.core.lookAt<span class="signature">(camera, target, <span class="optional">opt_globe</span>)</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line320">line 320</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Rotate the camera so that its direction goes through the target point.
-If a globe is given, the target height is first interpolated from terrain.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>camera</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Camera</span>
+<span class="param-type">undefined</span>
 
 
             
@@ -1440,1011 +706,7 @@ If a globe is given, the target height is first interpolated from terrain.</p>
 	
         <tr class="">
             
-                <td class="name"><code>target</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Cartographic</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>globe</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Globe</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".ol4326CoordinateArrayToCsCartesians">
-            olcs.core.ol4326CoordinateArrayToCsCartesians<span class="signature">(coordinates)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;Cesium.Cartesian3>}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line476">line 476</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Convert an array of 2D or 3D OpenLayers coordinates to Cesium.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>coordinates</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;!ol.Coordinate></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                <p>Ol3 coordinates.</p></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-Cesium cartesian coordinates
-<br />
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".ol4326CoordinateToCesiumCartesian">
-            olcs.core.ol4326CoordinateToCesiumCartesian<span class="signature">(coordinate)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Cartesian3}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line461">line 461</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Convert a 2D or 3D OpenLayers coordinate to Cesium.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>coordinate</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">ol.Coordinate</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                <p>Ol3 coordinate.</p></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-Cesium cartesian coordinate
-<br />
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".olGeometryCloneTo4326">
-            olcs.core.olGeometryCloneTo4326<span class="signature">(geometry, projection)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{T}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line497">line 497</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Reproject an OpenLayers geometry to EPSG:4326 if needed.
-The geometry will be cloned only when original projection is not EPSG:4326
-and the properties will be shallow copied.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>geometry</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">T</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>projection</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">ol.proj.ProjectionLike</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".pickBottomPoint">
-            olcs.core.pickBottomPoint<span class="signature">(scene)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Cartesian3|undefined}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line176">line 176</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Get the 3D position of the point at the bottom-center of the screen.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>scene</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Scene</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".pickCenterPoint">
-            olcs.core.pickCenterPoint<span class="signature">(scene)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Cartesian3|undefined}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line189">line 189</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Get the 3D position of the point at the center of the screen.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>scene</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Scene</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".pickOnTerrainOrEllipsoid">
-            olcs.core.pickOnTerrainOrEllipsoid<span class="signature">(scene, pixel)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Cartesian3|undefined}</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line163">line 163</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-    <div class="description">
-        <p>Get the 3D position of the given pixel of the canvas.</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>scene</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Scene</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>pixel</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Cartesian2</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".rotateAroundAxis">
-            olcs.core.rotateAroundAxis<span class="signature">(camera, angle, axis, transform, <span class="optional">opt_options</span>)</span>
-            
-            
-<span class="stability experimental">experimental</span>
-
-
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line92">line 92</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>camera</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Camera</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>angle</code></td>
+                <td class="name"><code>resolution</code></td>
             
             
             
@@ -2466,17 +728,125 @@ and the properties will be shallow copied.</p>
         </tr>
 	
 	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+null if no style is available
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="convert">
+            convert<span class="signature">(layer, view, feature, context)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Primitive}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line878">line 878</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers feature to Cesium primitive collection.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
 	
         <tr class="">
             
-                <td class="name"><code>axis</code></td>
+                <td class="name"><code>layer</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">Cesium.Cartesian3</span>
+<span class="param-type">ol.layer.Vector</span>
 
 
             
@@ -2494,14 +864,14 @@ and the properties will be shallow copied.</p>
 	
         <tr class="">
             
-                <td class="name"><code>transform</code></td>
+                <td class="name"><code>view</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">Cesium.Matrix4</span>
+<span class="param-type">ol.View</span>
 
 
             
@@ -2519,7 +889,32 @@ and the properties will be shallow copied.</p>
 	
         <tr class="">
             
-                <td class="name"><code>options</code></td>
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>context</code></td>
             
             
             
@@ -2592,173 +987,8 @@ and the properties will be shallow copied.</p>
     
     
     
-</dd>
-
-        
-            
-<dt class="unstable">
-    <div class="nameContainer">
-        
-        <h4 class="name" id=".setHeadingUsingBottomCenter">
-            olcs.core.setHeadingUsingBottomCenter<span class="signature">(scene, heading, bottomCenter)</span>
-            
-            
-<span class="stability experimental">experimental</span>
 
 
-        </h4>
-        
-        <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line133">line 133</a>
-        </div>
-        
-        
-    </div>
-    
-</dt>
-<dd class="unstable">
-    
-    
-
-    
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>scene</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Scene</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>heading</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	
-        <tr class="">
-            
-                <td class="name"><code>bottomCenter</code></td>
-            
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Cesium.Cartesian3</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            <td  class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
     
     
     
@@ -2769,8 +999,8 @@ and the properties will be shallow copied.</p>
 <dt class="unstable">
     <div class="nameContainer">
         
-        <h4 class="name" id=".tileLayerToImageryLayer">
-            olcs.core.tileLayerToImageryLayer<span class="signature">(olLayer, viewProj)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.ImageryLayer}</span>
+        <h4 class="name" id="csAddBillboard">
+            csAddBillboard<span class="signature">(billboards, bbOptions, layer, feature, geometry, style)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Billboard}</span>
             
             
 <span class="stability experimental">experimental</span>
@@ -2779,7 +1009,7 @@ and the properties will be shallow copied.</p>
         </h4>
         
         <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line362">line 362</a>
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line222">line 222</a>
         </div>
         
         
@@ -2790,8 +1020,8 @@ and the properties will be shallow copied.</p>
     
     
     <div class="description">
-        <p>Creates Cesium.ImageryLayer best corresponding to the given ol.layer.Layer.
-Only supports raster layers</p>
+        <p>Add a billboard to a Cesium.BillboardCollection.
+Overriding this wrapper allows manipulating the billboard options.</p>
     </div>
     
 
@@ -2823,14 +1053,14 @@ Only supports raster layers</p>
 	
         <tr class="">
             
-                <td class="name"><code>olLayer</code></td>
+                <td class="name"><code>billboards</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">ol.layer.Layer</span>
+<span class="param-type">Cesium.BillboardCollection</span>
 
 
             
@@ -2848,14 +1078,14 @@ Only supports raster layers</p>
 	
         <tr class="">
             
-                <td class="name"><code>viewProj</code></td>
+                <td class="name"><code>bbOptions</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">ol.proj.Projection</span>
+<span class="param-type">Cesium.optionsBillboardCollectionAdd</span>
 
 
             
@@ -2866,7 +1096,107 @@ Only supports raster layers</p>
             
             <td  class="description last">
                 
-                <p>Projection of the view.</p></td>
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature.</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>geometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Point</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>style</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
         </tr>
 	
 	
@@ -2915,7 +1245,7 @@ Only supports raster layers</p>
 
 
 <h5>Returns:</h5>
-null if not possible (or supported)
+newly created billboard
 <br />
 
     
@@ -2928,8 +1258,8 @@ null if not possible (or supported)
 <dt class="unstable">
     <div class="nameContainer">
         
-        <h4 class="name" id=".updateCesiumLayerProperties">
-            olcs.core.updateCesiumLayerProperties<span class="signature">(olLayer, csLayer)</span>
+        <h4 class="name" id="getHeightReference">
+            getHeightReference<span class="signature">(layer, feature, geometry)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.HeightReference}</span>
             
             
 <span class="stability experimental">experimental</span>
@@ -2938,7 +1268,7 @@ null if not possible (or supported)
         </h4>
         
         <div class="tag-source">
-            <a href="src_core.js.html">src/core.js</a>, <a href="src_core.js.html#line418">line 418</a>
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line390">line 390</a>
         </div>
         
         
@@ -2947,11 +1277,6 @@ null if not possible (or supported)
 </dt>
 <dd class="unstable">
     
-    
-    <div class="description">
-        <p>Synchronizes the layer rendering properties (brightness, contrast, hue,
-opacity, saturation, visible) to the given Cesium ImageryLayer.</p>
-    </div>
     
 
     
@@ -2982,14 +1307,14 @@ opacity, saturation, visible) to the given Cesium ImageryLayer.</p>
 	
         <tr class="">
             
-                <td class="name"><code>olLayer</code></td>
+                <td class="name"><code>layer</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">ol.layer.Layer</span>
+<span class="param-type">ol.layer.Vector</span>
 
 
             
@@ -3007,14 +1332,39 @@ opacity, saturation, visible) to the given Cesium ImageryLayer.</p>
 	
         <tr class="">
             
-                <td class="name"><code>csLayer</code></td>
+                <td class="name"><code>feature</code></td>
             
             
             
             <td class="type">
             
                 
-<span class="param-type">Cesium.ImageryLayer</span>
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>geometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Geometry</span>
 
 
             
@@ -3068,6 +1418,2088 @@ opacity, saturation, visible) to the given Cesium ImageryLayer.</p>
     
     
     
+    
+    
+    
+
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olCircleGeometryToCesium">
+            olCircleGeometryToCesium<span class="signature">(layer, feature, olGeometry, projection, olStyle)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.PrimitiveCollection}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line240">line 240</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers circle geometry to Cesium.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olGeometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Circle</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 circle geometry.</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>projection</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.proj.ProjectionLike</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olStyle</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+primitives
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olFeatureToCesium">
+            olFeatureToCesium<span class="signature">(layer, feature, style, context, <span class="optional">opt_geom</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Primitive}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line753">line 753</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert one OpenLayers feature up to a collection of Cesium primitives.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature.</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>style</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>context</code></td>
+            
+            
+            
+            
+            <td colspan=2 class="description last">
+                
+                
+                
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	</tbody>
+</table>
+            </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>geom</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Geometry</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Geometry to be converted.</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+primitives
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olGeometry4326TextPartToCesium">
+            olGeometry4326TextPartToCesium<span class="signature">(layer, feature, geometry, style)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.LabelCollection}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line573">line 573</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers text style to Cesium.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>geometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Geometry</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>style</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Text</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+Cesium primitive
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olLineStringGeometryToCesium">
+            olLineStringGeometryToCesium<span class="signature">(layer, feature, olGeometry, projection, olStyle)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.PrimitiveCollection}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line291">line 291</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers line string geometry to Cesium.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olGeometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.LineString</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 line string geometry.</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>projection</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.proj.ProjectionLike</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olStyle</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+primitives
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olMultiGeometryToCesium">
+            olMultiGeometryToCesium<span class="signature">(layer, feature, geometry, projection, olStyle, billboards, <span class="optional">opt_newBillboardCallback</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Primitive}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line511">line 511</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers multi-something geometry to Cesium.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>geometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Geometry</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 geometry.</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>projection</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.proj.ProjectionLike</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olStyle</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>billboards</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Cesium.BillboardCollection</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>newBillboardCallback</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Called when
+the new billboard is added.</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+primitives
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olPointGeometryToCesium">
+            olPointGeometryToCesium<span class="signature">(layer, feature, geometry, projection, style, billboards, <span class="optional">opt_newBillboardCallback</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Primitive}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line430">line 430</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert a point geometry to a Cesium BillboardCollection.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>geometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Point</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>projection</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.proj.ProjectionLike</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>style</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>billboards</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Cesium.BillboardCollection</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>newBillboardCallback</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Called when
+the new billboard is added.</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+primitives
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olPolygonGeometryToCesium">
+            olPolygonGeometryToCesium<span class="signature">(layer, feature, olGeometry, projection, olStyle)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.PrimitiveCollection}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line337">line 337</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers polygon geometry to Cesium.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>layer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olGeometry</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.geom.Polygon</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 polygon geometry.</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>projection</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.proj.ProjectionLike</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olStyle</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+primitives
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olStyleToCesium">
+            olStyleToCesium<span class="signature">(feature, style, outline)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Cesium.Material}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line679">line 679</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers style to a Cesium Material.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>feature</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.Feature</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                <p>Ol3 feature..</p></td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>style</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.style.Style</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>outline</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt class="unstable">
+    <div class="nameContainer">
+        
+        <h4 class="name" id="olVectorLayerToCesium">
+            olVectorLayerToCesium<span class="signature">(olLayer, olView, featurePrimitiveMap)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{olcs.core.OlLayerPrimitive}</span>
+            
+            
+<span class="stability experimental">experimental</span>
+
+
+        </h4>
+        
+        <div class="tag-source">
+            <a href="src_featureconverter.js.html">src/featureconverter.js</a>, <a href="src_featureconverter.js.html#line833">line 833</a>
+        </div>
+        
+        
+    </div>
+    
+</dt>
+<dd class="unstable">
+    
+    
+    <div class="description">
+        <p>Convert an OpenLayers vector layer to Cesium primitive collection.
+For each feature, the associated primitive will be stored in
+<code>featurePrimitiveMap</code>.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olLayer</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.layer.Vector</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>olView</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">ol.View</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr class="">
+            
+                <td class="name"><code>featurePrimitiveMap</code></td>
+            
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;number, !Cesium.Primitive></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            <td  class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
     
     
     
