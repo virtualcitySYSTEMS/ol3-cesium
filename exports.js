@@ -89,6 +89,11 @@ goog.exportProperty(
 
 goog.exportProperty(
     olcs.Camera.prototype,
+    'readFromView',
+    olcs.Camera.prototype.readFromView);
+
+goog.exportProperty(
+    olcs.Camera.prototype,
     'updateView',
     olcs.Camera.prototype.updateView);
 
