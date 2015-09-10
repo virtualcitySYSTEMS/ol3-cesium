@@ -262,6 +262,10 @@
                     <a href="olcs.OLCesium.html#getOlMap">getOlMap</a>
                 </li>
             
+                <li data-name="olcs.OLCesium#setBlockCesiumRendering" class="unstable">
+                    <a href="olcs.OLCesium.html#setBlockCesiumRendering">setBlockCesiumRendering</a>
+                </li>
+            
                 <li data-name="olcs.OLCesium#setEnabled" class="unstable">
                     <a href="olcs.OLCesium.html#setEnabled">setEnabled</a>
                 </li>
@@ -420,7 +424,7 @@ goog.require('ol.layer.Vector');
 goog.require('olcs.AbstractSynchronizer');
 goog.require('olcs.FeatureConverter');
 goog.require('olcs.core');
-goog.require('olcs.core.OlLayerPrimitive');
+goog.require('olcs.core.VectorLayerCounterpart');
 
 
 
@@ -430,7 +434,7 @@ goog.require('olcs.core.OlLayerPrimitive');
  * @param {!Cesium.Scene} scene
  * @param {olcs.FeatureConverter=} opt_converter
  * @constructor
- * @extends {olcs.AbstractSynchronizer.&lt;olcs.core.OlLayerPrimitive>}
+ * @extends {olcs.AbstractSynchronizer.&lt;olcs.core.VectorLayerCounterpart>}
  * @api
  */
 olcs.VectorSynchronizer = function(map, scene, opt_converter) {
@@ -455,9 +459,10 @@ goog.inherits(olcs.VectorSynchronizer, olcs.AbstractSynchronizer);
 /**
  * @inheritDoc
  */
-olcs.VectorSynchronizer.prototype.addCesiumObject = function(object) {
-  goog.asserts.assert(!goog.isNull(object));
-  this.csAllPrimitives_.add(object);
+olcs.VectorSynchronizer.prototype.addCesiumObject = function(counterpart) {
+  goog.asserts.assert(!goog.isNull(counterpart));
+  counterpart.getRootPrimitive()['counterpart'] = counterpart;
+  this.csAllPrimitives_.add(counterpart.getRootPrimitive());
 };
 
 
@@ -465,7 +470,19 @@ olcs.VectorSynchronizer.prototype.addCesiumObject = function(object) {
  * @inheritDoc
  */
 olcs.VectorSynchronizer.prototype.destroyCesiumObject = function(object) {
+  object.getRootPrimitive().destroy();
+};
+
+
+/**
+ * @inheritDoc
+ */
+olcs.VectorSynchronizer.prototype.removeSingleCesiumObject =
+    function(object, destroy) {
   object.destroy();
+  this.csAllPrimitives_.destroyPrimitives = destroy;
+  this.csAllPrimitives_.remove(object.getRootPrimitive());
+  this.csAllPrimitives_.destroyPrimitives = false;
 };
 
 
@@ -474,6 +491,11 @@ olcs.VectorSynchronizer.prototype.destroyCesiumObject = function(object) {
  */
 olcs.VectorSynchronizer.prototype.removeAllCesiumObjects = function(destroy) {
   this.csAllPrimitives_.destroyPrimitives = destroy;
+  if (destroy) {
+    for (var i = 0; i &lt; this.csAllPrimitives_.length; ++i) {
+      this.csAllPrimitives_.get(i)['counterpart'].destroy();
+    }
+  }
   this.csAllPrimitives_.removeAll();
   this.csAllPrimitives_.destroyPrimitives = false;
 };
@@ -492,16 +514,18 @@ olcs.VectorSynchronizer.prototype.createSingleCounterpart = function(olLayer) {
   var view = this.view;
   var source = olLayer.getSource();
   var featurePrimitiveMap = {};
-  var csPrimitives = this.converter.olVectorLayerToCesium(olLayer, view,
+  var counterpart = this.converter.olVectorLayerToCesium(olLayer, view,
       featurePrimitiveMap);
+  var csPrimitives = counterpart.getRootPrimitive();
+  var olListenKeys = counterpart.olListenKeys;
 
-  olLayer.on('change:visible', function(e) {
+  olListenKeys.push(olLayer.on('change:visible', function(e) {
     csPrimitives.show = olLayer.getVisible();
-  });
+  }));
 
   var onAddFeature = goog.bind(function(feature) {
     goog.asserts.assertInstanceof(olLayer, ol.layer.Vector);
-    var context = csPrimitives.context;
+    var context = counterpart.context;
     var prim = this.converter.convert(olLayer, view, feature, context);
     if (prim) {
       featurePrimitiveMap[goog.getUid(feature)] = prim;
@@ -513,7 +537,7 @@ olcs.VectorSynchronizer.prototype.createSingleCounterpart = function(olLayer) {
     var geometry = feature.getGeometry();
     var id = goog.getUid(feature);
     if (!geometry || geometry.getType() == 'Point') {
-      var context = csPrimitives.context;
+      var context = counterpart.context;
       var bb = context.featureToCesiumMap[id];
       delete context.featureToCesiumMap[id];
       if (bb instanceof Cesium.Billboard) {
@@ -527,24 +551,24 @@ olcs.VectorSynchronizer.prototype.createSingleCounterpart = function(olLayer) {
     }
   }, this);
 
-  source.on('addfeature', function(e) {
+  olListenKeys.push(source.on('addfeature', function(e) {
     goog.asserts.assert(goog.isDefAndNotNull(e.feature));
     onAddFeature(e.feature);
-  }, this);
+  }, this));
 
-  source.on('removefeature', function(e) {
+  olListenKeys.push(source.on('removefeature', function(e) {
     goog.asserts.assert(goog.isDefAndNotNull(e.feature));
     onRemoveFeature(e.feature);
-  }, this);
+  }, this));
 
-  source.on('changefeature', function(e) {
+  olListenKeys.push(source.on('changefeature', function(e) {
     var feature = e.feature;
     goog.asserts.assert(goog.isDefAndNotNull(feature));
     onRemoveFeature(feature);
     onAddFeature(feature);
-  }, this);
+  }, this));
 
-  return csPrimitives;
+  return counterpart;
 };
 </code></pre>
         </article>
@@ -555,7 +579,7 @@ olcs.VectorSynchronizer.prototype.createSingleCounterpart = function(olLayer) {
 
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Aug 07 2015 18:00:43 GMT+0200 (CEST)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Sep 10 2015 12:36:08 GMT+0200 (CEST)
         </footer>
     </div>
 </div>

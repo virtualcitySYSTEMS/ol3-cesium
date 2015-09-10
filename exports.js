@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Custom exports file.
+ * @suppress {checkVars, extraRequire}
+ */
+
 goog.require('olcs.AbstractSynchronizer');
 goog.require('olcs.Camera');
 goog.require('olcs.DragBox');
@@ -281,6 +286,11 @@ goog.exportProperty(
     olcs.OLCesium.prototype,
     'warmUp',
     olcs.OLCesium.prototype.warmUp);
+
+goog.exportProperty(
+    olcs.OLCesium.prototype,
+    'setBlockCesiumRendering',
+    olcs.OLCesium.prototype.setBlockCesiumRendering);
 
 goog.exportSymbol(
     'olcs.RasterSynchronizer',
