@@ -2,10 +2,6 @@ goog.provide('olcs.core');
 
 goog.require('goog.asserts');
 goog.require('goog.async.AnimationDelay');
-goog.require('ol.layer.Tile');
-goog.require('ol.proj');
-goog.require('ol.source.TileImage');
-goog.require('ol.source.WMTS');
 goog.require('olcs.core.OLImageryProvider');
 
 
@@ -420,30 +416,6 @@ olcs.core.updateCesiumLayerProperties = function(olLayer, csLayer) {
     csLayer.show = visible;
   }
 
-  // saturation and contrast are working ok
-  var saturation = olLayer.getSaturation();
-  if (goog.isDef(saturation)) {
-    csLayer.saturation = saturation;
-  }
-  var contrast = olLayer.getContrast();
-  if (goog.isDef(contrast)) {
-    csLayer.contrast = contrast;
-  }
-
-  // Cesium actually operates in YIQ space -> hard to emulate
-  // The following values are only a rough approximations:
-
-  // The hue in Cesium has different meaning than the OL equivalent.
-  // var hue = olLayer.getHue();
-  // if (goog.isDef(hue)) {
-  //   csLayer.hue = hue;
-  // }
-
-  var brightness = olLayer.getBrightness();
-  if (goog.isDef(brightness)) {
-    // rough estimation
-    csLayer.brightness = Math.pow(1 + parseFloat(brightness), 2);
-  }
 };
 
 

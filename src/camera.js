@@ -1,8 +1,6 @@
 goog.provide('olcs.Camera');
 
 goog.require('goog.events');
-goog.require('ol.Observable');
-goog.require('ol.proj');
 goog.require('olcs.core');
 
 

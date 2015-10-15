@@ -1,6 +1,5 @@
 goog.provide('olcs.core.VectorLayerCounterpart');
 
-goog.require('ol.Observable');
 
 
 
