@@ -7,7 +7,12 @@ var Cesium = {};
 
 Cesium.Viewer = function() {};
 
-Cesium.EllipsoidTerrainProvider = function(){};
+/**
+ * @constructor
+ *
+ * @param {Object} options
+ */
+Cesium.EllipsoidTerrainProvider = function(options){};
 
 /**
  * Prevent using a removed API.
