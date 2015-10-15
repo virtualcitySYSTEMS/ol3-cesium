@@ -1236,8 +1236,12 @@ Cesium.CircleOutlineGeometry = function(opt_opts) {};
 
 /**
  * @constructor
+ * @param {number} [red=1.0] The red component.
+ * @param {number} [green=1.0] The green component.
+ * @param {number} [blue=1.0] The blue component.
+ * @param {number} [alpha=1.0] The alpha component.
  */
-Cesium.ColorGeometryInstanceAttribute = function() {};
+Cesium.ColorGeometryInstanceAttribute = function(red,green,blue,alpha) {};
 
 
 /**
