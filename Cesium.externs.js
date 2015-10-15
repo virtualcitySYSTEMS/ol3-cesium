@@ -4,6 +4,11 @@
  */
 var Cesium = {};
 
+
+Cesium.Viewer = function() {};
+
+Cesium.EllipsoidTerrainProvider = function(){};
+
 /**
  * Prevent using a removed API.
  * @constructor
@@ -25,6 +30,7 @@ Cesium.Color = function(opt_r, opt_g, opt_b, opt_a) {};
  * @return {!Cesium.Color}
  */
 Cesium.Color.fromCssColorString = function(name) {};
+Cesium.Color.RED = function() {};
 
 /**
  * @param {!Array.<number>} color
@@ -380,6 +386,10 @@ Cesium.Camera.prototype.setTransform = function(transform) {};
  */
 Cesium.Camera.prototype.viewMatrix;
 
+Cesium.Camera.DEFAULT_VIEW_FACTOR;
+
+Cesium.Camera.DEFAULT_VIEW_RECTANGLE;
+
 
 /**
  * @typedef {Object}
@@ -537,6 +547,10 @@ Cesium.optionsCameraSetView;
  */
 Cesium.Camera.prototype.setView = function(options) {};
 
+/**
+ * @param {Object} options
+ */
+Cesium.Camera.prototype.flyTo = function(options) {};
 
 /**
  * @param {Cesium.Cartesian3} eye .
@@ -862,13 +876,14 @@ Cesium.Cartographic.prototype.height;
  */
 Cesium.Cartographic.prototype.clone = function(opt_result) {};
 
-
 /**
- * @param {number} lat .
- * @param {number} lng .
+ * @param {!number} lat .
+ * @param {!number} lng .
+ * @param {?number} The height, in meters, above the ellipsoid.
+ * @param {?Cesium.Cartographic} The object onto which to store the result
  * @return {!Cesium.Cartographic}
  */
-Cesium.Cartographic.fromDegrees = function(lat, lng) {};
+Cesium.Cartographic.fromDegrees = function(lat, lng, height,result) {};
 
 
 /**
