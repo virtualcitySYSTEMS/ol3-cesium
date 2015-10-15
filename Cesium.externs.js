@@ -879,8 +879,8 @@ Cesium.Cartographic.prototype.clone = function(opt_result) {};
 /**
  * @param {!number} lat .
  * @param {!number} lng .
- * @param {?number} The height, in meters, above the ellipsoid.
- * @param {?Cesium.Cartographic} The object onto which to store the result
+ * @param {?number} height The height, in meters, above the ellipsoid.
+ * @param {?Cesium.Cartographic} result The object onto which to store the result
  * @return {!Cesium.Cartographic}
  */
 Cesium.Cartographic.fromDegrees = function(lat, lng, height,result) {};
