@@ -3,9 +3,29 @@
  * @see http://cesium.agi.com/
  */
 var Cesium = {};
+/**
+ * @constructor
+ *
+ * @param {Element|string} container The DOM element or ID that will contain the widget.
+ * @param {Object} options
+ */
+Cesium.Viewer = function(container, options) {};
 
+/** 
+ * @type {Cesium.Scene}
+ */
+Cesium.Viewer.prototype.scene;
 
-Cesium.Viewer = function() {};
+/** 
+ * @return {Cesium.ImageryLayerCollection}
+ */
+Cesium.Viewer.prototype.imageryLayers = function(){};
+
+/** 
+ * @return {Cesium.TerrainProvider}
+ */
+Cesium.Viewer.prototype.terrainProvider = function(){};
+
 
 /**
  * @constructor
