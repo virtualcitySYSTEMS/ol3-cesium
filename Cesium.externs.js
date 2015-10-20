@@ -11,20 +11,49 @@ var Cesium = {};
  */
 Cesium.Viewer = function(container, options) {};
 
-/** 
+/**
  * @type {Cesium.Scene}
  */
 Cesium.Viewer.prototype.scene;
 
-/** 
+/**
+ * @type {Element}
+ */
+Cesium.Viewer.prototype.container ;
+
+/**
+ * @type {boolean}
+ */
+Cesium.Viewer.prototype.useDefaultRenderLoop ;
+
+
+/**
  * @return {Cesium.ImageryLayerCollection}
  */
 Cesium.Viewer.prototype.imageryLayers = function(){};
 
-/** 
+/**
  * @return {Cesium.TerrainProvider}
  */
 Cesium.Viewer.prototype.terrainProvider = function(){};
+
+/**
+ * @param {Object} mixin
+ * @param {Object=} options
+ */
+Cesium.Viewer.prototype.extend = function(mixin, options){};
+
+/**
+ */
+Cesium.Viewer.prototype.resize = function(){};
+
+
+/**
+ * @param {Cesium.Viewer} viewer
+ */
+Cesium.viewerCesiumInspectorMixin = function(viewer){};
+
+
 
 
 /**
@@ -374,6 +403,12 @@ Cesium.Camera.prototype.tilt;
  * @const
  */
 Cesium.Camera.prototype.pitch;
+
+/**
+ * @type {number}
+ * @const
+ */
+Cesium.Camera.prototype.roll;
 
 
 /**
@@ -941,6 +976,10 @@ Cesium.Globe.prototype.ellipsoid;
  */
 Cesium.Globe.prototype.depthTestAgainstTerrain;
 
+/**
+ * @type {number}
+ */
+Cesium.Globe.prototype.maximumScreenSpaceError;
 
 /**
  * @param {!Cesium.Cartographic} cartographic
@@ -2448,6 +2487,12 @@ Cesium.Scene.prototype.skyAtmosphere;
  * @type {number}
  */
 Cesium.Scene.prototype.maximumAliasedLineWidth;
+
+/**
+ * @type {boolean}
+ */
+Cesium.Scene.prototype.fxaa;
+
 
 /**
  * @typedef {{
