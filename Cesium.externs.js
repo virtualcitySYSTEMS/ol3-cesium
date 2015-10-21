@@ -323,8 +323,9 @@ Cesium.BoundingRectangle.prototype.height;
 
 /**
  * @constructor
+ * @param {Cesium.Scene} scene
  */
-Cesium.Camera = function() {};
+Cesium.Camera = function(scene) {};
 
 
 /**
