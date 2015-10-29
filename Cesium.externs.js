@@ -1858,6 +1858,11 @@ Cesium.ImageryLayerCollection.prototype.raiseToTop = function(layer) {};
  */
 Cesium.ImageryLayerCollection.prototype.removeAll = function(opt_destroy) {};
 
+/**
+ * @param {Cesium.ImageryLayer} layer
+ * @return {boolean}
+ */
+Cesium.ImageryLayerCollection.prototype.contains = function(layer) {};
 
 
 /**
@@ -2905,7 +2910,8 @@ Cesium.Ray.getPoint = function(ray, distance) {};
 /**
  * @typedef {{
  *   url: (!string|undefined),
- *   credit: (!string|undefined)
+ *   credit: (!string|undefined),
+ *   requestVertexNormals: (!boolean|undefined)
  *   }}
  */
 Cesium.CesiumTerrainProviderOptions;
