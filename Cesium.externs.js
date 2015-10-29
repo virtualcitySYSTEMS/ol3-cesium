@@ -13,6 +13,12 @@ Cesium.Entity = function() {};
 /**
  * @constructor
  *
+ */
+Cesium.JulianDate = function() {};
+
+/**
+ * @constructor
+ *
  * @param {Element|string} container The DOM element or ID that will contain the widget.
  * @param {Object} options
  */
