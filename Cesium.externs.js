@@ -26,6 +26,11 @@ Cesium.Viewer.prototype.container ;
  */
 Cesium.Viewer.prototype.useDefaultRenderLoop ;
 
+/**
+ * @type {number}
+ */
+Cesium.Viewer.prototype.resolutionScale ;
+
 
 /**
  * @return {Cesium.ImageryLayerCollection}
