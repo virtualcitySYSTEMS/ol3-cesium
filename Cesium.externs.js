@@ -3,6 +3,19 @@
  * @see http://cesium.agi.com/
  */
 var Cesium = {};
+
+/**
+ * @constructor
+ *
+ */
+Cesium.Entity = function() {};
+
+/**
+ * @constructor
+ *
+ */
+Cesium.JulianDate = function() {};
+
 /**
  * @constructor
  *
