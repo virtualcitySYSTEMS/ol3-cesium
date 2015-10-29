@@ -996,6 +996,11 @@ Cesium.Globe.prototype.ellipsoid;
 Cesium.Globe.prototype.depthTestAgainstTerrain;
 
 /**
+ * @type {boolean}
+ */
+Cesium.Globe.prototype.enableLighting;
+
+/**
  * @type {number}
  */
 Cesium.Globe.prototype.maximumScreenSpaceError;
