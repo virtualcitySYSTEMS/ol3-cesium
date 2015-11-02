@@ -14,6 +14,12 @@ Cesium.Entity = function() {};
  * @constructor
  *
  */
+Cesium.BatchedModel = function() {}
+
+/**
+ * @constructor
+ *
+ */
 Cesium.JulianDate = function() {};
 
 /**
