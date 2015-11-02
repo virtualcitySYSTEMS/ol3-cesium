@@ -477,7 +477,8 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         color: color,
         heightReference: heightReference,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        position: position
+        position: position,
+        id : feature.getId()
       });
       var bb = this.csAddBillboard(billboards, bbOptions, layer, feature,
           olGeometry, style);
