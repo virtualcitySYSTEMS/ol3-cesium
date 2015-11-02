@@ -156,17 +156,18 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries =
         olStyle) {
   var fillColor = this.extractColorFromOlStyle(olStyle, false);
   var outlineColor = this.extractColorFromOlStyle(olStyle, true);
+  var p = null;
 
   var primitives = new Cesium.PrimitiveCollection();
   if (olStyle.getFill()) {
-    var p = this.createColoredPrimitive(layer, feature, olGeometry,
+    p = this.createColoredPrimitive(layer, feature, olGeometry,
         fillGeometry, fillColor);
     primitives.add(p);
   }
 
   if (olStyle.getStroke()) {
     var width = this.extractLineWidthFromOlStyle(olStyle);
-    var p = this.createColoredPrimitive(layer, feature, olGeometry,
+    p = this.createColoredPrimitive(layer, feature, olGeometry,
         outlineGeometry, outlineColor, width);
     primitives.add(p);
   }
@@ -354,7 +355,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium =
     var olPos = rings[i].getCoordinates();
     var positions = olcs.core.ol4326CoordinateArrayToCsCartesians(olPos);
     goog.asserts.assert(positions && positions.length > 0);
-    if (i == 0) {
+    if (i === 0) {
       hierarchy.positions = positions;
     } else {
       hierarchy.holes = {
@@ -446,9 +447,9 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
 
     var image = imageStyle.getImage(1); // get normal density
     var isImageLoaded = function(image) {
-      return image.src != '' &&
-          image.naturalHeight != 0 &&
-          image.naturalWidth != 0 &&
+      return image.src !== '' &&
+          image.naturalHeight !== 0 &&
+          image.naturalWidth !== 0 &&
           image.complete;
     };
     var reallyCreateBillboard = (function() {
@@ -560,6 +561,7 @@ olcs.FeatureConverter.prototype.olMultiGeometryToCesium =
         });
         return null;
       }
+      break;
     case 'MultiLineString':
       geometry = /** @type {!ol.geom.MultiLineString} */ (geometry);
       subgeos = geometry.getLineStrings();
@@ -607,7 +609,7 @@ olcs.FeatureConverter.prototype.olGeometry4326TextPartToCesium =
 
   var offsetX = style.getOffsetX();
   var offsetY = style.getOffsetY();
-  if (offsetX != 0 && offsetY != 0) {
+  if (offsetX !== 0 && offsetY !== 0) {
     var offset = new Cesium.Cartesian2(offsetX, offsetY);
     options.pixelOffset = offset;
   }
@@ -617,7 +619,7 @@ olcs.FeatureConverter.prototype.olGeometry4326TextPartToCesium =
     options.font = font;
   }
 
-  var labelStyle = undefined;
+  var labelStyle = null;
   if (style.getFill()) {
     options.fillColor = this.extractColorFromOlStyle(style, false);
     labelStyle = Cesium.LabelStyle.FILL;
@@ -803,6 +805,7 @@ olcs.FeatureConverter.prototype.olFeatureToCesium =
       } else {
         return result;
       }
+      break;
     case 'Circle':
       geom = /** @type {!ol.geom.Circle} */ (geom);
       return this.olCircleGeometryToCesium(layer, feature, geom, proj,
@@ -818,14 +821,15 @@ olcs.FeatureConverter.prototype.olFeatureToCesium =
     case 'MultiPoint':
     case 'MultiLineString':
     case 'MultiPolygon':
-      var result = this.olMultiGeometryToCesium(layer, feature, geom, proj,
+      var resultgeom = this.olMultiGeometryToCesium(layer, feature, geom, proj,
           style, context.billboards, newBillboardAddedCallback);
-      if (!result) {
+      if (!resultgeom) {
         // no wrapping primitive
         return null;
       } else {
-        return result;
+        return resultgeom;
       }
+      break;
     case 'LinearRing':
       throw new Error('LinearRing should only be part of polygon.');
     default:
