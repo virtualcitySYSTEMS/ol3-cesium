@@ -561,7 +561,6 @@ olcs.FeatureConverter.prototype.olMultiGeometryToCesium =
         });
         return null;
       }
-      break;
     case 'MultiLineString':
       geometry = /** @type {!ol.geom.MultiLineString} */ (geometry);
       subgeos = geometry.getLineStrings();
@@ -619,7 +618,7 @@ olcs.FeatureConverter.prototype.olGeometry4326TextPartToCesium =
     options.font = font;
   }
 
-  var labelStyle = null;
+  var labelStyle;
   if (style.getFill()) {
     options.fillColor = this.extractColorFromOlStyle(style, false);
     labelStyle = Cesium.LabelStyle.FILL;
