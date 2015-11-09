@@ -3047,3 +3047,9 @@ Cesium.WebMapTileServiceImageryProviderOptions.prototype.layer;
  * @type {string}
  */
 Cesium.WebMapTileServiceImageryProviderOptions.prototype.url;
+
+/**
+ * @param {!Object} options
+ * @constructor
+ */
+Cesium.Cesium3DTileset = function(options){};
