@@ -16,6 +16,7 @@ Cesium.Entity = function() {};
  */
 Cesium.BatchedModel = function() {}
 
+Cesium.BatchedModel.prototype.getProperty;
 /**
  * @constructor
  *
