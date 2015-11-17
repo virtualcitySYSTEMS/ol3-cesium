@@ -1646,6 +1646,16 @@ Cesium.DefaultProxy = function(proxy) {};
 Cesium.Event = function() {};
 
 
+/**
+ * @param {Function} listener
+ * @param {Object} scope
+ */
+Cesium.Event.prototype.addEventListener = function(listener, scope){};
+/**
+ * @param {Function} listener
+ * @param {Object} scope
+ */
+Cesium.Event.prototype.removeEventListener = function(listener, scope){};
 
 /**
  * @constructor
@@ -2529,6 +2539,11 @@ Cesium.Scene.prototype.maximumAliasedLineWidth;
  */
 Cesium.Scene.prototype.fxaa;
 
+
+/**
+ * @type {Cesium.Event}
+ */
+Cesium.Scene.prototype.postRender;
 
 /**
  * @typedef {{
