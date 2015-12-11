@@ -9,6 +9,10 @@ var Cesium = {};
  *
  */
 Cesium.Entity = function() {};
+/**
+* @param {string} toAppend
+*/
+Cesium.appendForwardSlash = function(toAppend) {};
 
 /**
  * @constructor
