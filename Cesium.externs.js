@@ -14,6 +14,15 @@ Cesium.Entity = function() {};
 */
 Cesium.appendForwardSlash = function(toAppend) {};
 
+
+/**
+ * @constructor
+ *
+ */
+Cesium.Model = function() {}
+
+Cesium.Model.fromGltf = function(){};
+
 /**
  * @constructor
  *
