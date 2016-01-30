@@ -23,6 +23,8 @@ Cesium.Model = function() {}
 
 Cesium.Model.fromGltf = function(){};
 
+/* @constructor */
+Cesium.Cesium3DTileFeature = function(){};
 /**
  * @constructor
  *
