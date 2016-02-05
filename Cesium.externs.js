@@ -23,7 +23,9 @@ Cesium.Model = function() {}
 
 Cesium.Model.fromGltf = function(){};
 
-/* @constructor */
+/**
+ * @constructor
+ */
 Cesium.Cesium3DTileFeature = function(){};
 /**
  * @constructor
@@ -242,6 +244,7 @@ Cesium.BillboardCollection = function(opt_options) {};
  *   pixelOffsetScaleByDistance : (Cesium.NearFarScalar|undefined),
  *   scaleByDistance: (Cesium.NearFarScalar|undefined),
  *   position: !Cesium.Cartesian3
+ *   scale : (number|undefined)
  * }}
  */
 Cesium.optionsBillboardCollectionAdd;

@@ -478,7 +478,8 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         heightReference: heightReference,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
         position: position,
-        id : feature.getId()
+        id : feature.getId(),
+        scale : imageStyle.getScale() ? imageStyle.getScale() : 1.0
       });
       var bb = this.csAddBillboard(billboards, bbOptions, layer, feature,
           olGeometry, style);
