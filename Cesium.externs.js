@@ -21,7 +21,10 @@ Cesium.appendForwardSlash = function(toAppend) {};
  */
 Cesium.Model = function() {}
 
-Cesium.Model.fromGltf = function(){};
+/**
+ * @param {Object=} options
+ */
+Cesium.Model.fromGltf = function(options){};
 
 /**
  * @constructor
@@ -243,7 +246,7 @@ Cesium.BillboardCollection = function(opt_options) {};
  *   horizontalOrigin: (Cesium.HorizontalOrigin|undefined),
  *   pixelOffsetScaleByDistance : (Cesium.NearFarScalar|undefined),
  *   scaleByDistance: (Cesium.NearFarScalar|undefined),
- *   position: !Cesium.Cartesian3
+ *   position: !Cesium.Cartesian3,
  *   scale : (number|undefined)
  * }}
  */
@@ -973,6 +976,13 @@ Cesium.Cartographic.prototype.latitude;
  */
 Cesium.Cartographic.prototype.height;
 
+/**
+ * @param {!Cesium.Cartesian3} cartesian .
+ * @param {?Cesium.Ellipsoid=} ellipsoid .
+ * @param {?Cesium.Cartographic=} result The object onto which to store the result
+ * @return {!Cesium.Cartographic}
+ */
+Cesium.Cartographic.fromCartesian = function(cartesian, ellipsoid, result) {};
 
 /**
  * @param {Cesium.Cartographic=} opt_result
@@ -983,8 +993,8 @@ Cesium.Cartographic.prototype.clone = function(opt_result) {};
 /**
  * @param {!number} lat .
  * @param {!number} lng .
- * @param {?number} height The height, in meters, above the ellipsoid.
- * @param {?Cesium.Cartographic} result The object onto which to store the result
+ * @param {number=} height The height, in meters, above the ellipsoid.
+ * @param {Cesium.Cartographic=} result The object onto which to store the result
  * @return {!Cesium.Cartographic}
  */
 Cesium.Cartographic.fromDegrees = function(lat, lng, height,result) {};
@@ -2785,13 +2795,22 @@ Cesium.ScreenSpaceEventType.LEFT_UP;
 Cesium.ScreenSpaceEventType.RIGHT_DOWN;
 
 /** @type {Cesium.ScreenSpaceEventType} */
+Cesium.ScreenSpaceEventType.RIGHT_UP;
+
+/** @type {Cesium.ScreenSpaceEventType} */
 Cesium.ScreenSpaceEventType.MIDDLE_DOWN;
+
+/** @type {Cesium.ScreenSpaceEventType} */
+Cesium.ScreenSpaceEventType.MIDDLE_UP;
 
 /** @type {Cesium.ScreenSpaceEventType} */
 Cesium.ScreenSpaceEventType.WHEEL;
 
 /** @type {Cesium.ScreenSpaceEventType} */
 Cesium.ScreenSpaceEventType.PINCH_START;
+
+/** @type {Cesium.ScreenSpaceEventType} */
+Cesium.ScreenSpaceEventType.PINCH_END;
 
 /** @type {Cesium.ScreenSpaceEventType} */
 Cesium.ScreenSpaceEventType.MOUSE_MOVE;
@@ -2827,6 +2846,20 @@ Cesium.SingleTileImageryProviderOptions;
  * @extends {Cesium.ImageryProvider}
  */
 Cesium.TileMapServiceImageryProvider = function(options) {};
+
+/**
+ * @param {{url: (string|undefined),
+ *          fileExtension: (string|undefined),
+ *          proxy: (Object|undefined),
+ *          credit: (Cesium.Credit|string|undefined),
+ *          minimumLevel: (number|undefined),
+ *          maximumLevel: (number|undefined),
+ *          rectangle: (Cesium.Rectangle|undefined),
+ *          tilingScheme: (Cesium.TilingScheme|undefined),
+ *          tileWidth: (number|undefined),
+ *          tileHeight: (number|undefined)}} options
+ */
+Cesium.createTileMapServiceImageryProvider = function(options) {};
 
 
 
