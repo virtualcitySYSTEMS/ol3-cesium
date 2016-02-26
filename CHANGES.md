@@ -1,8 +1,32 @@
 # Changelog
 
-## v1.9
+## v1.12 - 2016-01-30
 
 * Breaking changes
+  * Remove dragbox functionality due to the removal of the Cesium.RectanglePrimitive
+    by upstream. See the commit message for hints about how to reimplement it.
+  * Remove Cesium.RectanglePrimitive, Cesium.PerspectiveFrustrum.getPixelSize,
+    Cesium.OpenStreetMapImageryProvider from Cesium externs.
+* Changes
+  * Port to OL 3.13.0.
+  * Port to Cesium 1.17.
+
+## v1.11 - 2015-12-23
+
+* Changes
+  * Port to Cesium 1.16.
+  * Port to OL 3.12.1
+
+## v1.10 - 2015-11-30
+
+* Breaking changes
+  * OL3-Cesium is now compiled together with OL3. A custom closure compiler
+    build is no more required.
+
+## v1.9 - 2015-10-22
+
+* Breaking changes
+  * Port to OL 3.10.1, remove saturation, gamma and hue functions.
   * Change `olcs.AbstractSynchronizer.prototype.createSingleCounterpart` to
     return an array of counterparts instead of a unique object. This allows
     one OL3 layer to be transformed in several Cesium layers.
@@ -12,6 +36,12 @@
     `olcs.RasterSynchronizer.prototype.convertLayerToCesiumImageries`.
 
 * Changes
+  * Add `olcs.OLCesium.setResolutionScale` to allow improving performance at
+    the cost of quality.
+  * Automatically use device pixel ratio to configure the Webgl 3D globe.
+  * Add the experimental method `olcs.OLCesium.enableAutoRenderLoop` to stop
+    rendering the globe when idle. This is based on work from Kevin Ring.
+  * Port to Cesium 1.14.
   * The `olcs.AbstractSynchronizer` now tries to synchronize the layer groups.
     Only if null is returned will it synchronize each of its children. This
     allows more synchronization strategies in user applications.

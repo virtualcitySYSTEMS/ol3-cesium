@@ -13,6 +13,7 @@ goog.require('olcs.core');
  * @constructor
  * @extends {olcs.AbstractSynchronizer.<Cesium.ImageryLayer>}
  * @api
+ * @struct
  */
 olcs.RasterSynchronizer = function(map, scene) {
   /**
@@ -96,9 +97,7 @@ olcs.RasterSynchronizer.prototype.createSingleLayerCounterparts =
   var viewProj = this.view.getProjection();
   var cesiumObjects = this.convertLayerToCesiumImageries(olLayer, viewProj);
   if (!goog.isNull(cesiumObjects)) {
-    olLayer.on(
-        ['change:brightness', 'change:contrast', 'change:hue',
-         'change:opacity', 'change:saturation', 'change:visible'],
+    olLayer.on(['change:opacity', 'change:visible'],
         function(e) {
           // the compiler does not seem to be able to infer this
           goog.asserts.assert(!goog.isNull(cesiumObjects));
@@ -145,10 +144,23 @@ olcs.RasterSynchronizer.prototype.createSingleLayerCounterparts =
  */
 olcs.RasterSynchronizer.prototype.orderLayers = function() {
   var layers = [];
-  var groups = [];
   var zIndices = {};
-  olcs.AbstractSynchronizer.flattenLayers(this.mapLayerGroup, layers, groups,
-      zIndices);
+  var fifo = [this.mapLayerGroup];
+
+  while (fifo.length > 0) {
+    var olLayer = fifo.splice(0, 1)[0];
+    layers.push(olLayer);
+    zIndices[goog.getUid(olLayer)] = olLayer.getZIndex();
+
+    if (olLayer instanceof ol.layer.Group) {
+      var sublayers = olLayer.getLayers();
+      if (goog.isDef(sublayers)) {
+        sublayers.forEach(function(el) {
+          fifo.push(el);
+        });
+      }
+    }
+  }
 
   goog.array.stableSort(layers, function(layer1, layer2) {
     return zIndices[goog.getUid(layer1)] - zIndices[goog.getUid(layer2)];

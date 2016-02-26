@@ -1,8 +1,14 @@
 goog.provide('olcs.core');
 
+goog.require('goog.Promise');
 goog.require('goog.asserts');
 goog.require('goog.async.AnimationDelay');
 goog.require('olcs.core.OLImageryProvider');
+
+
+// Initialize rejection handler.
+// Do nothing on rejected promise, like with standard Promises.
+goog.Promise.setUnhandledRejectionHandler(function() {});
 
 
 /**
@@ -17,11 +23,11 @@ olcs.core.computePixelSizeAtCoordinate = function(scene, target) {
   var camera = scene.camera;
   var canvas = scene.canvas;
   var frustum = camera.frustum;
-  var canvasDimensions = new Cesium.Cartesian2(canvas.width, canvas.height);
   var distance = Cesium.Cartesian3.magnitude(Cesium.Cartesian3.subtract(
       camera.position, target, new Cesium.Cartesian3()));
-  var pixelSize = frustum.getPixelSize(canvasDimensions, distance);
-  return pixelSize;
+  var pixelSize = new Cesium.Cartesian2();
+  return frustum.getPixelDimensions(canvas.clientWidth, canvas.clientHeight,
+      distance, pixelSize);
 };
 
 
@@ -77,6 +83,7 @@ olcs.core.applyHeightOffsetToGeometry = function(geometry, height) {
  * @param {!Cesium.Cartesian3} axis
  * @param {!Cesium.Matrix4} transform
  * @param {olcsx.core.RotateAroundAxisOption=} opt_options
+ * @return {goog.Promise}
  * @api
  */
 olcs.core.rotateAroundAxis = function(camera, angle, axis, transform,
@@ -93,24 +100,29 @@ olcs.core.rotateAroundAxis = function(camera, angle, axis, transform,
   var lastProgress = 0;
   var oldTransform = new Cesium.Matrix4();
 
-  var animation = new goog.async.AnimationDelay(function(millis) {
-    var progress = easing(clamp((millis - start) / duration, 0, 1));
-    goog.asserts.assert(progress > lastProgress);
+  return new goog.Promise(function(resolve, reject) {
+    var animation = new goog.async.AnimationDelay(function(millis) {
+      var progress = easing(clamp((millis - start) / duration, 0, 1));
+      goog.asserts.assert(progress > lastProgress);
 
-    camera.transform.clone(oldTransform);
-    var stepAngle = (progress - lastProgress) * angle;
-    lastProgress = progress;
-    camera.lookAtTransform(transform);
-    camera.rotate(axis, stepAngle);
-    camera.lookAtTransform(oldTransform);
+      camera.transform.clone(oldTransform);
+      var stepAngle = (progress - lastProgress) * angle;
+      lastProgress = progress;
+      camera.lookAtTransform(transform);
+      camera.rotate(axis, stepAngle);
+      camera.lookAtTransform(oldTransform);
 
-    if (progress < 1) {
-      animation.start();
-    } else if (callback) {
-      callback();
-    }
+      if (progress < 1) {
+        animation.start();
+      } else {
+        if (callback) {
+          callback();
+        }
+        resolve();
+      }
+    });
+    animation.start();
   });
-  animation.start();
 };
 
 
@@ -166,7 +178,8 @@ olcs.core.pickOnTerrainOrEllipsoid = function(scene, pixel) {
  */
 olcs.core.pickBottomPoint = function(scene) {
   var canvas = scene.canvas;
-  var bottom = new Cesium.Cartesian2(canvas.width / 2, canvas.height);
+  var bottom = new Cesium.Cartesian2(
+      canvas.clientWidth / 2, canvas.clientHeight);
   return olcs.core.pickOnTerrainOrEllipsoid(scene, bottom);
 };
 
@@ -179,7 +192,9 @@ olcs.core.pickBottomPoint = function(scene) {
  */
 olcs.core.pickCenterPoint = function(scene) {
   var canvas = scene.canvas;
-  var center = new Cesium.Cartesian2(canvas.width / 2, canvas.height / 2);
+  var center = new Cesium.Cartesian2(
+      canvas.clientWidth / 2,
+      canvas.clientHeight / 2);
   return olcs.core.pickOnTerrainOrEllipsoid(scene, center);
 };
 
@@ -400,8 +415,8 @@ olcs.core.tileLayerToImageryLayer = function(olLayer, viewProj) {
 
 
 /**
- * Synchronizes the layer rendering properties (brightness, contrast, hue,
- * opacity, saturation, visible) to the given Cesium ImageryLayer.
+ * Synchronizes the layer rendering properties (opacity, visible)
+ * to the given Cesium ImageryLayer.
  * @param {!ol.layer.Base} olLayer
  * @param {!Cesium.ImageryLayer} csLayer
  * @api
@@ -415,7 +430,6 @@ olcs.core.updateCesiumLayerProperties = function(olLayer, csLayer) {
   if (goog.isDef(visible)) {
     csLayer.show = visible;
   }
-
 };
 
 

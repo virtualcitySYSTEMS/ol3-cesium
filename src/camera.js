@@ -12,6 +12,7 @@ goog.require('olcs.core');
  * @param {!ol.Map} map
  * @constructor
  * @api
+ * @struct
  */
 olcs.Camera = function(scene, map) {
   /**
@@ -345,10 +346,17 @@ olcs.Camera.prototype.updateCamera_ = function() {
     carto.height = goog.isDef(height) ? height : 0;
   }
 
-  this.cam_.setView({
-    positionCartographic: carto,
+  var destination = Cesium.Ellipsoid.WGS84.cartographicToCartesian(carto);
+
+  /** @type {Cesium.optionsOrientation} */
+  var orientation = {
     pitch: this.tilt_ - Cesium.Math.PI_OVER_TWO,
-    heading: -this.view_.getRotation()
+    heading: -this.view_.getRotation(),
+    roll: undefined
+  };
+  this.cam_.setView({
+    destination: destination,
+    orientation: orientation
   });
 
   this.cam_.moveBackward(this.distance_);
@@ -463,10 +471,11 @@ olcs.Camera.prototype.updateView = function() {
  * @param {boolean=} opt_dontSync Do not synchronize the view.
  */
 olcs.Camera.prototype.checkCameraChange = function(opt_dontSync) {
-  var viewMatrix = this.cam_.viewMatrix;
-  if (!this.lastCameraViewMatrix_ ||
-      !this.lastCameraViewMatrix_.equals(viewMatrix)) {
-    this.lastCameraViewMatrix_ = viewMatrix.clone();
+  var old = this.lastCameraViewMatrix_;
+  var current = this.cam_.viewMatrix;
+
+  if (!old || !Cesium.Matrix4.equalsEpsilon(old, current, 1e-5)) {
+    this.lastCameraViewMatrix_ = current.clone();
     if (opt_dontSync !== true) {
       this.updateView();
     }
@@ -487,7 +496,7 @@ olcs.Camera.prototype.calcDistanceForResolution_ = function(resolution,
   var metersPerUnit = this.view_.getProjection().getMetersPerUnit();
 
   // number of "map units" visible in 2D (vertically)
-  var visibleMapUnits = resolution * canvas.height;
+  var visibleMapUnits = resolution * canvas.clientHeight;
 
   // The metersPerUnit does not take latitude into account, but it should
   // be lower with increasing latitude -- we have to compensate.
@@ -530,7 +539,7 @@ olcs.Camera.prototype.calcResolutionForDistance_ = function(distance,
   var visibleMeters = 2 * distance * Math.tan(fovy / 2);
   var relativeCircumference = Math.cos(Math.abs(latitude));
   var visibleMapUnits = visibleMeters / metersPerUnit / relativeCircumference;
-  var resolution = visibleMapUnits / canvas.height;
+  var resolution = visibleMapUnits / canvas.clientHeight;
 
   return resolution;
 };

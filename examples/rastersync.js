@@ -14,7 +14,7 @@ var layer1 = new ol.layer.Tile({
 });
 
 var tileJsonSource = new ol.source.TileJSON({
-  url: 'http://api.tiles.mapbox.com/v3/mapbox.world-borders-light.jsonp',
+  url: 'http://api.tiles.mapbox.com/v3/mapbox.world-borders-light.json',
   crossOrigin: 'anonymous'
 });
 
@@ -37,15 +37,6 @@ var terrainProvider = new Cesium.CesiumTerrainProvider({
 scene.terrainProvider = terrainProvider;
 
 ol3d.setEnabled(true);
-
-var addBingMaps = function() {
-  ol2d.addLayer(new ol.layer.Tile({
-    source: new ol.source.BingMaps({
-      key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3',
-      imagerySet: 'Aerial'
-    })
-  }));
-};
 
 var addOSM = function() {
   ol2d.addLayer(new ol.layer.Tile({

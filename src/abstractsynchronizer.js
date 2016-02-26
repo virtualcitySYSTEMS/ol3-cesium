@@ -9,6 +9,7 @@ goog.require('goog.object');
  * @param {!Cesium.Scene} scene
  * @constructor
  * @template T
+ * @struct
  * @api
  */
 olcs.AbstractSynchronizer = function(map, scene) {
@@ -76,35 +77,6 @@ olcs.AbstractSynchronizer.prototype.synchronize = function() {
 
 
 /**
- * Populate the foundLayers and foundGroups using a breadth-first algorithm.
- * A map of layer uid to z-index is also populated.
- * @param {ol.layer.Base} layer
- * @param {Array.<ol.layer.Layer>} foundLayers Found leaves.
- * @param {Array.<ol.layer.Group>} foundGroups Found nodes.
- * @param {Object.<number, number>=} opt_zIndices Map of layer uid to z-index.
- * @protected
- */
-olcs.AbstractSynchronizer.flattenLayers =
-    function(layer, foundLayers, foundGroups, opt_zIndices) {
-  if (layer instanceof ol.layer.Group) {
-    foundGroups.push(layer);
-    var sublayers = layer.getLayers();
-    if (goog.isDef(sublayers)) {
-      sublayers.forEach(function(el) {
-        olcs.AbstractSynchronizer.flattenLayers(el, foundLayers, foundGroups,
-            opt_zIndices);
-      });
-    }
-  } else {
-    foundLayers.push(layer);
-    if (opt_zIndices) {
-      opt_zIndices[goog.getUid(layer)] = layer.getZIndex();
-    }
-  }
-};
-
-
-/**
  * Order counterparts using the same algorithm as the Openlayers renderer:
  * z-index then original sequence order.
  * @protected
@@ -158,6 +130,7 @@ olcs.AbstractSynchronizer.prototype.addLayers_ = function(root) {
 /**
  * Remove and destroy a single layer.
  * @param {ol.layer.Layer} layer
+ * @return {boolean} counterpart destroyed
  * @private
  */
 olcs.AbstractSynchronizer.prototype.removeAndDestroySingleLayer_ =
@@ -173,6 +146,7 @@ olcs.AbstractSynchronizer.prototype.removeAndDestroySingleLayer_ =
     delete this.olLayerListenKeys_[uid];
   }
   delete this.layerMap[uid];
+  return !!counterparts;
 };
 
 
@@ -192,6 +166,7 @@ olcs.AbstractSynchronizer.prototype.unlistenSingleGroup_ =
     ol.Observable.unByKey(key);
   });
   delete this.olGroupListenKeys_[uid];
+  delete this.layerMap[uid];
 };
 
 
@@ -201,20 +176,23 @@ olcs.AbstractSynchronizer.prototype.unlistenSingleGroup_ =
  * @private
  */
 olcs.AbstractSynchronizer.prototype.removeLayer_ = function(root) {
-  if (!root) {
-    return;
+  if (!!root) {
+    var fifo = [root];
+    while (fifo.length > 0) {
+      var olLayer = fifo.splice(0, 1)[0];
+      var done = this.removeAndDestroySingleLayer_(olLayer);
+      if (olLayer instanceof ol.layer.Group) {
+        this.unlistenSingleGroup_(olLayer);
+        if (!done) {
+          // No counterpart for the group itself so removing
+          // each of the child layers.
+          olLayer.getLayers().forEach(function(l) {
+            fifo.push(l);
+          });
+        }
+      }
+    }
   }
-  var layers = [];
-  var groups = [];
-  olcs.AbstractSynchronizer.flattenLayers(root, layers, groups);
-
-  layers.forEach(function(el) {
-    this.removeAndDestroySingleLayer_(el);
-  }, this);
-
-  groups.forEach(function(el) {
-    this.unlistenSingleGroup_(el);
-  }, this);
 };
 
 
@@ -269,12 +247,12 @@ olcs.AbstractSynchronizer.prototype.listenForGroupChanges_ = function(group) {
  */
 olcs.AbstractSynchronizer.prototype.destroyAll = function() {
   this.removeAllCesiumObjects(true); // destroy
-  goog.object.forEach(this.olGroupListenKeys, function(keys) {
+  goog.object.forEach(this.olGroupListenKeys_, function(keys) {
     keys.forEach(ol.Observable.unByKey);
   });
-  goog.object.forEach(this.olLayerListenKeys, ol.Observable.unByKey);
-  this.olGroupListenKeys = {};
-  this.olLayerListenKeys = {};
+  goog.object.forEach(this.olLayerListenKeys_, ol.Observable.unByKey);
+  this.olGroupListenKeys_ = {};
+  this.olLayerListenKeys_ = {};
   this.layerMap = {};
 };
 
