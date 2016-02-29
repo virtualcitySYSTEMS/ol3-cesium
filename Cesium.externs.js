@@ -37,11 +37,7 @@ Cesium.Cesium3DTileFeature = function(){};
 Cesium.BatchedModel = function() {}
 
 Cesium.BatchedModel.prototype.getProperty;
-/**
- * @constructor
- *
- */
-Cesium.JulianDate = function() {};
+
 
 /**
  * @constructor
@@ -252,8 +248,7 @@ Cesium.BillboardCollection = function(opt_options) {};
  *   pixelOffsetScaleByDistance : (Cesium.NearFarScalar|undefined),
  *   scale: (number|undefined),
  *   scaleByDistance: (Cesium.NearFarScalar|undefined),
- *   position: !Cesium.Cartesian3,
- *   scale : (number|undefined)
+ *   position: !Cesium.Cartesian3
  * }}
  */
 Cesium.optionsBillboardCollectionAdd;
@@ -680,11 +675,6 @@ Cesium.optionsCameraSetView;
  * @param {Cesium.optionsCameraSetView} options
  */
 Cesium.Camera.prototype.setView = function(options) {};
-
-/**
- * @param {Object} options
- */
-Cesium.Camera.prototype.flyTo = function(options) {};
 
 /**
  * @param {Cesium.Cartesian3} eye .
@@ -1758,15 +1748,10 @@ Cesium.Event = function() {};
 Cesium.Event.prototype.addEventListener = function(listener, opt_scope) {};
 
 /**
- * @param {Function} listener
- * @param {Object} scope
+ * @param {function(...)} listener
+ * @param {Object=} opt_scope
  */
-Cesium.Event.prototype.addEventListener = function(listener, scope){};
-/**
- * @param {Function} listener
- * @param {Object} scope
- */
-Cesium.Event.prototype.removeEventListener = function(listener, scope){};
+Cesium.Event.prototype.removeEventListener = function(listener, opt_scope){};
 
 /**
  * @constructor
