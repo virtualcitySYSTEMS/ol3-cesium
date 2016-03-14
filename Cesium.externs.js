@@ -68,6 +68,9 @@ Cesium.Viewer.prototype.useDefaultRenderLoop ;
 Cesium.Viewer.prototype.resolutionScale ;
 
 
+/** @type {ScreenSpaceEventHandler} */
+Cesium.Viewer.prototype.screenSpaceEventHandler;
+
 /**
  * @return {Cesium.ImageryLayerCollection}
  */
@@ -2956,6 +2959,9 @@ Cesium.ScreenSpaceEventHandler.prototype.setInputAction = function(callback, typ
 
 /** @constructor */
 Cesium.ScreenSpaceEventType = function() {};
+
+/** @type {Cesium.ScreenSpaceEventType} */
+Cesium.ScreenSpaceEventType.LEFT_CLICK;
 
 /** @type {Cesium.ScreenSpaceEventType} */
 Cesium.ScreenSpaceEventType.LEFT_DOWN;
