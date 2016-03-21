@@ -68,7 +68,7 @@ Cesium.Viewer.prototype.useDefaultRenderLoop ;
 Cesium.Viewer.prototype.resolutionScale ;
 
 
-/** @type {ScreenSpaceEventHandler} */
+/** @type {Cesium.ScreenSpaceEventHandler} */
 Cesium.Viewer.prototype.screenSpaceEventHandler;
 
 /**
