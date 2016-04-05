@@ -251,7 +251,8 @@ Cesium.BillboardCollection = function(opt_options) {};
  *   pixelOffsetScaleByDistance : (Cesium.NearFarScalar|undefined),
  *   scale: (number|undefined),
  *   scaleByDistance: (Cesium.NearFarScalar|undefined),
- *   position: !Cesium.Cartesian3
+ *   position: !Cesium.Cartesian3,
+ *   eyeOffset : Cesium.Cartesian3
  * }}
  */
 Cesium.optionsBillboardCollectionAdd;

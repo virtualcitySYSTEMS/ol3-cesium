@@ -504,6 +504,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         return;
       }
       var center = olGeometry.getCoordinates();
+      center[2] = layer.get("heightAboveGround");
       var position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
       var color;
       var opacity = imageStyle.getOpacity();
@@ -517,12 +518,12 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         // always update Cesium externs before adding a property
         image: image,
         color: color,
-        scale: imageStyle.getScale(),
         heightReference: heightReference,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
         position: position,
         id : feature.getId(),
-        scale : imageStyle.getScale() ? imageStyle.getScale() : 1.0
+        scale : imageStyle.getScale() ? imageStyle.getScale() : 1.0,
+        eyeOffset : new Cesium.Cartesian3(0,0, layer.get("zCoordinateEyeOffset"))
       });
       var bb = this.csAddBillboard(billboards, bbOptions, layer, feature,
           olGeometry, style);
