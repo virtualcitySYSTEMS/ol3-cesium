@@ -504,12 +504,26 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         return;
       }
       var center = olGeometry.getCoordinates();
-      center[2] = layer.get("heightAboveGround");
+
+      // google closure compiler warning fix
+      var heightAboveGround = layer.get("heightAboveGround");
+      if (!goog.isNumber(heightAboveGround)){
+        /** number */
+        heightAboveGround = 0;
+      }
+      center[2] = heightAboveGround;
+
       var position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
       var color;
       var opacity = imageStyle.getOpacity();
       if (goog.isDef(opacity)) {
         color = new Cesium.Color(1.0, 1.0, 1.0, opacity);
+      }
+
+      var zCoordinateEyeOffset = layer.get("zCoordinateEyeOffset");
+      if (!goog.isNumber(zCoordinateEyeOffset)){
+        /** number */
+        zCoordinateEyeOffset = 0;
       }
 
       var heightReference = this.getHeightReference(layer, feature, olGeometry);
@@ -523,8 +537,14 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         position: position,
         id : feature.getId(),
         scale : imageStyle.getScale() ? imageStyle.getScale() : 1.0,
-        eyeOffset : new Cesium.Cartesian3(0,0, layer.get("zCoordinateEyeOffset"))
+        eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
       });
+
+      if (layer.get("scaleByDistance") && goog.isArray(layer.get("scaleByDistance")) ){
+        var array = layer.get("scaleByDistance");
+        bbOptions.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
+      }
+
       var bb = this.csAddBillboard(billboards, bbOptions, layer, feature,
           olGeometry, style);
       if (opt_newBillboardCallback) {
