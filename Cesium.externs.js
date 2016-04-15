@@ -1112,11 +1112,15 @@ Cesium.Globe.prototype.enableLighting;
 Cesium.Globe.prototype.maximumScreenSpaceError;
 
 /**
+ * @type {Cesium.Event}
+ */
+Cesium.Globe.prototype.tileLoadProgressEvent;
+
+/**
  * @param {!Cesium.Cartographic} cartographic
  * @return {number|undefined}
  */
 Cesium.Globe.prototype.getHeight = function(cartographic) {};
-
 
 /**
  * @param {!Cesium.Ray} ray
