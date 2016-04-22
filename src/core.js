@@ -5,7 +5,6 @@ goog.require('goog.asserts');
 goog.require('goog.async.AnimationDelay');
 goog.require('olcs.core.OLImageryProvider');
 
-
 // Initialize rejection handler.
 // Do nothing on rejected promise, like with standard Promises.
 goog.Promise.setUnhandledRejectionHandler(function() {});
@@ -96,7 +95,7 @@ olcs.core.rotateAroundAxis = function(camera, angle, axis, transform,
   var easing = defaultValue(options.easing, ol.easing.linear);
   var callback = options.callback;
 
-  var start = goog.now();
+  var start = Date.now();
   var lastProgress = 0;
   var oldTransform = new Cesium.Matrix4();
 
@@ -492,7 +491,7 @@ olcs.core.olGeometryCloneTo4326 = function(geometry, projection) {
 
 /**
  * Convert an OpenLayers color to Cesium.
- * @param {ol.Color|string} olColor
+ * @param {ol.Color|CanvasGradient|CanvasPattern|string} olColor
  * @return {!Cesium.Color}
  * @api
  */

@@ -1,5 +1,27 @@
 # Changelog
 
+## v 1.15
+
+* Changes
+  * Use fast pixelated canvas scaling on supported browsers. See
+    PR 3288 / commit 322df7b in Cesium. On unsupported browsers, render at
+    full resolution (slow).
+  * Port to OL 3.15.1.
+  * Port to Cesium 1.20.
+
+## v 1.14 - 2016-03-31
+
+* Changes
+  * Accept a mode=dev parameter in examples to ease debugging.
+  * Port to OL 3.14.2.
+  * Port to Cesium 1.19.
+
+## v 1.13 - 2016-02-29
+
+* Changes
+  * Port to Cesium 1.18.
+  * Port to OL 3.14.0.
+
 ## v1.12 - 2016-01-30
 
 * Breaking changes

@@ -59,17 +59,21 @@ olcs.OLCesium = function(options) {
    * @type {!Element}
    * @private
    */
-  this.container_ = goog.dom.createDom(goog.dom.TagName.DIV,
-      {style: fillArea + 'visibility:hidden;'});
+  this.container_ = document.createElement('DIV');
+  var containerAttribute = document.createAttribute('style');
+  containerAttribute.value = fillArea + 'visibility:hidden;';
+  this.container_.setAttributeNode(containerAttribute);
 
-  var targetElement = goog.dom.getElement(options.target || null);
+  var targetElement = options.target || null;
   if (targetElement) {
-    goog.dom.appendChild(targetElement, this.container_);
+    if (typeof targetElement === 'string') {
+      targetElement = document.getElementById(targetElement);
+    }
+    targetElement.appendChild(this.container_);
   } else {
-    var vp = this.map_.getViewport();
-    var oc = goog.dom.getElementByClass('ol-overlaycontainer', vp);
-    if (oc) {
-      goog.dom.insertSiblingBefore(this.container_, oc);
+    var oc = this.map_.getViewport().querySelector('.ol-overlaycontainer');
+    if (oc && oc.parentNode) {
+      oc.parentNode.insertBefore(this.container_, oc);
     }
   }
 
@@ -84,12 +88,21 @@ olcs.OLCesium = function(options) {
    * @type {!HTMLCanvasElement}
    * @private
    */
-  this.canvas_ = /** @type {!HTMLCanvasElement} */
-      (goog.dom.createDom(goog.dom.TagName.CANVAS, {style: fillArea}));
+  this.canvas_ = /** @type {!HTMLCanvasElement} */ (
+      document.createElement('CANVAS'));
+  var canvasAttribute = document.createAttribute('style');
+  canvasAttribute.value = fillArea;
+  this.canvas_.setAttributeNode(canvasAttribute);
+
+  if (olcs.supportsImageRenderingPixelated()) {
+    // non standard CSS4
+    this.canvas_.style['imageRendering'] = olcs.imageRenderingValue();
+  }
+
   this.canvas_.oncontextmenu = function() { return false; };
   this.canvas_.onselectstart = function() { return false; };
 
-  goog.dom.appendChild(this.container_, this.canvas_);
+  this.container_.appendChild(this.canvas_);
 
   /**
    * @type {boolean}
@@ -109,14 +122,16 @@ olcs.OLCesium = function(options) {
    */
   this.hiddenRootGroup_ = null;
 
+  var sceneOptions = options.sceneOptions !== undefined ? options.sceneOptions :
+      /** @type {Cesium.SceneOptions} */ ({});
+  sceneOptions.canvas = this.canvas_;
+  sceneOptions.scene3DOnly = true;
+
   /**
    * @type {!Cesium.Scene}
    * @private
    */
-  this.scene_ = new Cesium.Scene({
-    canvas: this.canvas_,
-    scene3DOnly: true
-  });
+  this.scene_ = new Cesium.Scene(sceneOptions);
 
   var sscc = this.scene_.screenSpaceCameraController;
   sscc.inertiaSpin = 0;
@@ -206,20 +221,28 @@ olcs.OLCesium.prototype.handleResize_ = function() {
   var width = this.canvas_.clientWidth;
   var height = this.canvas_.clientHeight;
 
+  if (width === 0 | height === 0) {
+    // The canvas DOM element is not ready yet.
+    return;
+  }
+
   if (width === this.canvasClientWidth_ &&
       height === this.canvasClientHeight_ &&
       !this.resolutionScaleChanged_) {
     return;
   }
 
-  var zoomFactor = (window.devicePixelRatio || 1.0) * this.resolutionScale_;
+  var resolutionScale = this.resolutionScale_;
+  if (!olcs.supportsImageRenderingPixelated()) {
+    resolutionScale *= window.devicePixelRatio || 1.0;
+  }
   this.resolutionScaleChanged_ = false;
 
   this.canvasClientWidth_ = width;
   this.canvasClientHeight_ = height;
 
-  width *= zoomFactor;
-  height *= zoomFactor;
+  width *= resolutionScale;
+  height *= resolutionScale;
 
   this.canvas_.width = width;
   this.canvas_.height = height;
@@ -288,7 +311,7 @@ olcs.OLCesium.prototype.getEnabled = function() {
  * @api
  */
 olcs.OLCesium.prototype.setEnabled = function(enable) {
-  if (this.enabled_ == enable) {
+  if (this.enabled_ === enable) {
     return;
   }
   this.enabled_ = enable;
@@ -297,6 +320,7 @@ olcs.OLCesium.prototype.setEnabled = function(enable) {
   // so we can't remove it from DOM or even make display:none;
   this.container_.style.visibility = this.enabled_ ? 'visible' : 'hidden';
   if (this.enabled_) {
+    this.throwOnUnitializedMap_();
     if (this.isOverMap_) {
       var interactions = this.map_.getInteractions();
       interactions.forEach(function(el, i, arr) {
@@ -343,6 +367,7 @@ olcs.OLCesium.prototype.warmUp = function(height, timeout) {
     // already enabled
     return;
   }
+  this.throwOnUnitializedMap_();
   this.camera_.readFromView();
   var ellipsoid = this.globe_.ellipsoid;
   var csCamera = this.scene_.camera;
@@ -416,5 +441,20 @@ olcs.OLCesium.prototype.setResolutionScale = function(value) {
     if (this.autoRenderLoop_) {
       this.autoRenderLoop_.restartRenderLoop();
     }
+  }
+};
+
+
+/**
+ * Check if OL3 map is not properly initialized.
+ * @private
+ */
+olcs.OLCesium.prototype.throwOnUnitializedMap_ = function() {
+  var map = this.map_;
+  var view = map.getView();
+  var center = view.getCenter();
+  if (!view.isDef() || isNaN(center[0]) || isNaN(center[1])) {
+    throw new Error('The OL3 map is not properly initialized: ' +
+        center + ' / ' + view.getResolution());
   }
 };

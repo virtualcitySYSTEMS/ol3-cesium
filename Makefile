@@ -85,16 +85,17 @@ cleanall: clean
 	.build/python-venv/bin/gjslint --jslint_error=all --strict --custom_jsdoc_tags=api $?
 	touch $@
 
-.build/dist-examples.timestamp: cesium/Build/Cesium/Cesium.js dist/ol3cesium.js $(EXAMPLES_JS_FILES) $(EXAMPLES_HTML_FILES)
+.build/dist-examples.timestamp: cesium/Build/Cesium/Cesium.js cesium/Build/CesiumUnminified/Cesium.js dist/ol3cesium.js $(EXAMPLES_JS_FILES) $(EXAMPLES_HTML_FILES)
 	node build/parse-examples.js
 	mkdir -p $(dir $@)
 	cp -R cesium/Build/Cesium dist/
+	cp -R cesium/Build/CesiumUnminified dist/
 	cp -R examples dist/
 	cp ol3/css/ol.css dist/
-	for f in dist/examples/*.html; do $(SEDI) 'sY/@loaderY../ol3cesium.jsY' $$f; done
-	for f in dist/examples/*.html; do $(SEDI) 'sY../cesium/Build/Y../Y' $$f; done
+	$(SEDI) 'sYDIST = falseYDIST = trueY' dist/examples/inject_ol3_cesium.js
+	$(SEDI) 'sY@loaderYol3cesium.jsY' dist/examples/inject_ol3_cesium.js
+	$(SEDI) 'sY../cesium/Build/Y../Y' dist/examples/inject_ol3_cesium.js
 	for f in dist/examples/*.html; do $(SEDI) 'sY../ol3/css/ol.cssY../ol.cssY' $$f; done
-	for f in dist/examples/*.js; do $(SEDI) 'sY../cesium/Build/Y../Y' $$f; done
 	touch $@
 
 .build/python-venv:
@@ -137,4 +138,14 @@ cesium/Build/Cesium/Cesium.js: cesium/CHANGES.md cesium/node_modules/.bin/gulp
 else
 cesium/Build/Cesium/Cesium.js:
 	mkdir -p cesium/Build/Cesium/
+endif
+
+# Only generated when cesium/Build/CesiumUnminified/Cesium.js does not exist
+# or CHANGES.md changed
+ifndef NO_CESIUM
+cesium/Build/CesiumUnminified/Cesium.js: cesium/CHANGES.md cesium/node_modules/.bin/gulp
+	(cd cesium && node_modules/.bin/gulp combine)
+else
+cesium/Build/CesiumUnminified/Cesium.js:
+	mkdir -p cesium/Build/CesiumUnminified/
 endif

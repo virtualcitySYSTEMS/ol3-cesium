@@ -52,14 +52,14 @@ olcs.AbstractSynchronizer = function(map, scene) {
 
   /**
    * Map of listen keys for ol3 layer layers ids (from goog.getUid).
-   * @type {!Object.<number, goog.events.Key>}
+   * @type {!Object.<number, ol.events.Key>}
    * @private
    */
   this.olLayerListenKeys_ = {};
 
   /**
    * Map of listen keys for ol3 layer groups ids (from goog.getUid).
-   * @type {!Object.<number, !Array.<goog.events.Key>>}
+   * @type {!Object.<number, !Array.<ol.events.Key>>}
    * @private
    */
   this.olGroupListenKeys_ = {};
@@ -105,7 +105,9 @@ olcs.AbstractSynchronizer.prototype.addLayers_ = function(root) {
       cesiumObjects = this.createSingleLayerCounterparts(olLayer);
       if (!cesiumObjects) {
         olLayer.getLayers().forEach(function(l) {
-          fifo.push(l);
+          if (l) {
+            fifo.push(l);
+          }
         });
       }
     } else {
@@ -115,8 +117,8 @@ olcs.AbstractSynchronizer.prototype.addLayers_ = function(root) {
     // add Cesium layers
     if (!goog.isNull(cesiumObjects)) {
       this.layerMap[olLayerId] = cesiumObjects;
-      this.olLayerListenKeys_[olLayerId] = olLayer.on('change:zIndex',
-          this.orderLayers, this);
+      this.olLayerListenKeys_[olLayerId] = ol.events.listen(olLayer,
+          'change:zIndex', this.orderLayers, this);
       cesiumObjects.forEach(function(cesiumObject) {
         this.addCesiumObject(cesiumObject);
       }, this);

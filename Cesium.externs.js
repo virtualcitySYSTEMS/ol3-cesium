@@ -1273,7 +1273,7 @@ Cesium.Primitive.prototype.olLayer;
 
 /**
  * @typedef {{
- *   geometryInstance: !Cesium.GeometryInstance
+ *   geometryInstances: (!Array.<Cesium.GeometryInstance>|Cesium.GeometryInstance)
  * }}
  */
 Cesium.optionsGroundPrimitive;
@@ -2524,14 +2524,22 @@ Cesium.Fog.prototype.density;
  */
 Cesium.Fog.prototype.screenSpaceErrorFactor;
 
+/**
+ * @typedef {{
+ *   canvas: (!HTMLCanvasElement),
+ *   contextOptions: (!Object|undefined),
+ *   creditContainer: (!Element|undefined),
+ *   mapProjection: (!Object|undefined),
+ *   orderIndependentTranslucency: (!boolean|undefined),
+ *   scene3DOnly: (!boolean|undefined),
+ *   terrainExaggeration: (!number|undefined)
+ *   }}
+ */
+Cesium.SceneOptions;
 
 /**
  * @constructor
- * @param {{canvas: HTMLCanvasElement,
-            contextOptions: (Object|undefined),
-            creditContainer: (Element|undefined),
-            mapProjection: (Object|undefined),
-            scene3DOnly: (boolean|undefined)}} opt_opts
+ * @param {!Cesium.SceneOptions} opt_opts
  */
 Cesium.Scene = function(opt_opts) {};
 
@@ -2559,6 +2567,10 @@ Cesium.Scene.prototype.context;
  */
 Cesium.Scene.prototype.fog;
 
+/**
+ * @type {!number}
+ */
+Cesium.Scene.prototype.terrainExaggeration;
 
 /**
  */
@@ -3015,20 +3027,9 @@ Cesium.SingleTileImageryProviderOptions;
 
 
 /**
- * @constructor
- * @param {{url: (string|undefined),
- *          fileExtension: (string|undefined),
- *          proxy: (Object|undefined),
- *          credit: (Cesium.Credit|string|undefined),
- *          minimumLevel: (number|undefined),
- *          maximumLevel: (number|undefined),
- *          rectangle: (Cesium.Rectangle|undefined),
- *          tilingScheme: (Cesium.TilingScheme|undefined),
- *          tileWidth: (number|undefined),
- *          tileHeight: (number|undefined)}} options
- * @extends {Cesium.ImageryProvider}
+ * @type {Cesium.RemovedAPI}
  */
-Cesium.TileMapServiceImageryProvider = function(options) {};
+Cesium.TileMapServiceImageryProvider;
 
 /**
  * @param {{url: (string|undefined),

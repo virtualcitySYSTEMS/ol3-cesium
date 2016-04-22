@@ -10,6 +10,7 @@
       "externs/olcsx.js",
       "ol3/externs/oli.js",
       "ol3/externs/olx.js",
+      "ol3/externs/cartodb.js",
       "ol3/externs/proj4js.js",
       "ol3/externs/tilejson.js",
       "ol3/externs/topojson.js",
@@ -31,7 +32,8 @@
     "jscomp_off": [
       "useOfGoogBase",
       "unnecessaryCasts",
-      "lintChecks"
+      "lintChecks",
+      "analyzerChecks"
     ],
     "extra_annotation_name": [
       "api", "observable"

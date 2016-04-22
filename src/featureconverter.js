@@ -87,7 +87,7 @@ olcs.FeatureConverter.prototype.setReferenceForPicking =
  * @param {!Cesium.Geometry} geometry
  * @param {!Cesium.Color} color
  * @param {number=} opt_lineWidth
- * @return {!Cesium.Primitive}
+ * @return {Cesium.Primitive}
  * @protected
  */
 olcs.FeatureConverter.prototype.createColoredPrimitive =
@@ -126,9 +126,13 @@ olcs.FeatureConverter.prototype.createColoredPrimitive =
   var primitive;
 
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
+    var ctor = instances.geometry.constructor;
+    if (ctor && !ctor['createShadowVolume']) {
+      return null;
+    }
     primitive = new Cesium.GroundPrimitive({
       // always update Cesium externs before adding a property
-      geometryInstance: instances
+      geometryInstances: instances
     });
   } else {
     var appearance = new Cesium.PerInstanceColorAppearance(options);
@@ -204,6 +208,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries =
   if (olStyle.getFill()) {
     p = this.createColoredPrimitive(layer, feature, olGeometry,
         fillGeometry, fillColor);
+    goog.asserts.assert(!!p);
     primitives.add(p);
   }
 
@@ -211,7 +216,11 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries =
     var width = this.extractLineWidthFromOlStyle(olStyle);
     p = this.createColoredPrimitive(layer, feature, olGeometry,
         outlineGeometry, outlineColor, width);
-    primitives.add(p);
+    if (p) {
+      // Some outline geometries are not supported by Cesium in clamp to ground
+      // mode. These primitives are skipped.
+      primitives.add(p);
+    }
   }
 
   return primitives;
@@ -569,8 +578,13 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         cancellers = olcs.obj(source)['olcs_cancellers'] = {};
       }
 
-      goog.asserts.assert(!cancellers[goog.getUid(feature)]);
-      cancellers[goog.getUid(feature)] = canceller;
+      var fuid = goog.getUid(feature);
+      if (cancellers[fuid]) {
+        // When the feature change quickly, a canceller may still be present so
+        // we cancel it here to prevent creation of a billboard.
+        cancellers[fuid]();
+      }
+      cancellers[fuid] = canceller;
 
       var listener = function() {
         if (!billboards.isDestroyed() && !cancelled) {
@@ -579,7 +593,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium =
         }
       };
 
-      goog.events.listenOnce(image, 'load', listener);
+      ol.events.listenOnce(image, 'load', listener);
     } else {
       reallyCreateBillboard();
     }
@@ -839,7 +853,7 @@ olcs.FeatureConverter.prototype.computePlainStyle =
   // then this function must return a custom material
   // More simply, could blend the colors like described in
   // http://en.wikipedia.org/wiki/Alpha_compositing
-  return Array.isArray(style) ? style[0] : style;
+  return goog.isArray(style) ? style[0] : style;
 };
 
 
