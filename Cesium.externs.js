@@ -472,6 +472,17 @@ Cesium.Camera.prototype.moveStart;
  */
 Cesium.Camera.prototype.moveEnd;
 
+/**
+ * @type {Cesium.Cartesian3}
+ */
+Cesium.Camera.prototype.directionWC;
+
+/**
+ * @type {Cesium.Cartesian3}
+ */
+Cesium.Camera.prototype.upWC;
+
+
 
 /**
  * @param {!Cesium.Cartesian2} windowPosition
@@ -2467,6 +2478,13 @@ Cesium.PerspectiveFrustrum.prototype.near;
  */
 Cesium.PerspectiveFrustrum.prototype.projectionMatrix;
 
+/**
+ * @param {Cesium.Cartesian3} position .
+ * @param {Cesium.Cartesian3} direction .
+ * @param {Cesium.Cartesian3} up .
+ * @return {Cesium.CullingVolume} .
+ */
+Cesium.PerspectiveFrustrum.prototype.computeCullingVolume = function(position, direction, up){};
 
 /**
  * @param {!number} drawingBufferWidth
@@ -3357,3 +3375,27 @@ Cesium.WebMapTileServiceImageryProviderOptions.prototype.url;
 Cesium.Cesium3DTileset = function(options){};
 
 Cesium.TaskProcessor.prototype.isDestroyed = function() {};
+
+/**
+ * @param {Array.<Cesium.Cartesian4>} planes
+ * @constructor
+ */
+Cesium.CullingVolume = function(planes){};
+
+/**
+ * @param {Object} boundingVolume
+ */
+Cesium.CullingVolume.prototype.computeVisibility = function(boundingVolume){};
+
+Cesium.Intersect = {};
+
+Cesium.Intersect.INSIDE;
+Cesium.Intersect.OUTSIDE;
+Cesium.Intersect.INTERSECTING;
+
+/**
+ * @param {Cesium.Cartesian3=} center
+ * @param {number=} radius
+ * @constructor
+ */
+Cesium.BoundingSphere = function(center, radius){};
