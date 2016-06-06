@@ -3399,3 +3399,12 @@ Cesium.Intersect.INTERSECTING;
  * @constructor
  */
 Cesium.BoundingSphere = function(center, radius){};
+
+Cesium.knockout = {};
+
+Cesium.knockout.applyBindings = function(param){};
+
+Cesium.knockout.observable = function(param){};
+
+Cesium.knockout.computed = function(param, context){};
+
