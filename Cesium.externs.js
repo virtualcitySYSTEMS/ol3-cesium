@@ -3402,9 +3402,20 @@ Cesium.BoundingSphere = function(center, radius){};
 
 Cesium.knockout = {};
 
-Cesium.knockout.applyBindings = function(param){};
+Cesium.knockout.applyBindings = function(viewmodel, opt_element){};
 
 Cesium.knockout.observable = function(param){};
 
 Cesium.knockout.computed = function(param, context){};
 
+Cesium.knockout.bindingHandlers = {};
+
+Cesium.knockout.utils = {};
+
+Cesium.knockout.utils.registerEventHandler = function(a,b,c){};
+
+Cesium.knockout.utils.unwrapObservable = function(a){};
+
+Cesium.knockout.utils.domNodeDisposal = {};
+
+Cesium.knockout.utils.domNodeDisposal.addDisposeCallback = function(a,b){};
