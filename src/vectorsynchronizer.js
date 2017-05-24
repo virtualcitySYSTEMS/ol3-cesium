@@ -42,6 +42,7 @@ ol.inherits(olcs.VectorSynchronizer, olcs.AbstractSynchronizer);
 
 /**
  * @inheritDoc
+ * @api
  */
 olcs.VectorSynchronizer.prototype.addCesiumObject = function(counterpart) {
   goog.asserts.assert(counterpart);
@@ -86,6 +87,7 @@ olcs.VectorSynchronizer.prototype.removeAllCesiumObjects = function(destroy) {
 
 /**
  * @inheritDoc
+ * @api
  */
 olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLayer) {
   if (!(olLayer instanceof ol.layer.Vector) &&

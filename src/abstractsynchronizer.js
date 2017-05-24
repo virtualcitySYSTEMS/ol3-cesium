@@ -272,7 +272,7 @@ olcs.AbstractSynchronizer.prototype.destroyAll = function() {
  * Adds a single Cesium object to the collection.
  * @param {!T} object
  * @abstract
- * @protected
+ * @api
  */
 olcs.AbstractSynchronizer.prototype.addCesiumObject = function(object) {};
 
@@ -280,7 +280,7 @@ olcs.AbstractSynchronizer.prototype.addCesiumObject = function(object) {};
 /**
  * @param {!T} object
  * @abstract
- * @protected
+ * @api
  */
 olcs.AbstractSynchronizer.prototype.destroyCesiumObject = function(object) {};
 
@@ -308,6 +308,6 @@ olcs.AbstractSynchronizer.prototype.removeAllCesiumObjects = function(destroy) {
  * @param {!ol.layer.Base} olLayer
  * @return {?Array.<T>}
  * @abstract
- * @protected
+ * @api
  */
 olcs.AbstractSynchronizer.prototype.createSingleLayerCounterparts = function(olLayer) {};
