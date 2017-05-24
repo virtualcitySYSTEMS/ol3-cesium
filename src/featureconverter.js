@@ -4,6 +4,9 @@ goog.require('goog.asserts');
 goog.require('ol');
 goog.require('ol.events');
 goog.require('ol.extent');
+goog.require('ol.source.Vector');
+goog.require('ol.source.ImageVector');
+
 goog.require('ol.geom.SimpleGeometry');
 goog.require('olcs.core');
 goog.require('olcs.core.VectorLayerCounterpart');

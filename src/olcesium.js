@@ -2,6 +2,7 @@ goog.provide('olcs.OLCesium');
 
 goog.require('goog.asserts');
 goog.require('ol.proj');
+goog.require('ol.geom.Point');
 
 goog.require('olcs.util');
 goog.require('olcs.core');

@@ -3,7 +3,11 @@ goog.provide('olcs.VectorSynchronizer');
 goog.require('goog.asserts');
 goog.require('ol');
 goog.require('ol.events');
+
 goog.require('ol.layer.Vector');
+goog.require('ol.layer.Image');
+goog.require('ol.source.ImageVector');
+
 goog.require('olcs.AbstractSynchronizer');
 goog.require('olcs.FeatureConverter');
 goog.require('olcs.core');
