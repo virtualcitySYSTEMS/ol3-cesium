@@ -2562,7 +2562,6 @@ Cesium.Scene.prototype.skyAtmosphere;
  */
 Cesium.Scene.prototype.maximumAliasedLineWidth;
 
-
 /**
  * @typedef {{
  *   context: Cesium.Context,
@@ -3406,3 +3405,14 @@ Cesium.EntityView.prototype.update = function(currentTime, bs) {};
  * @constructor
  */
 Cesium.CallbackProperty = function(cb, constant) {};
+
+/**
+ * @enum {number}
+ */
+Cesium.ShadowMode = {
+  DISABLED: 0,
+  ENABLED: 1,
+  CAST_ONLY: 2,
+  RECEIVE_ONLY: 3,
+  NUMBER_OF_SHADOW_MODES: 4
+};
