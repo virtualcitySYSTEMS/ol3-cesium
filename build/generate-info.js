@@ -6,9 +6,13 @@ var async = require('async');
 var fse = require('fs-extra');
 var walk = require('walk').walk;
 
-var sourceDirOL = path.join(__dirname, '..', 'ol', 'src');
+var sourceDirOL = path.join(__dirname , '..', '..', 'ol3', 'src');
 var sourceDirSelf = path.join(__dirname, '..', 'src');
 var sourceDirs = [sourceDirOL, sourceDirSelf];
+var externsPaths = [
+  path.join(sourceDirOL, '..', 'externs', 'olx.js'),
+  path.join(sourceDirOL, '..', 'externs',  'geojson.js')
+];
 var infoPath = path.join(__dirname, '..', '.build', 'info.json');
 var jsdoc = path.join(__dirname, '..', 'node_modules', '.bin', 'jsdoc');
 var jsdocConfig = path.join(__dirname, 'jsdoc', 'info', 'conf.json');
@@ -43,7 +47,7 @@ function getInfoTime(callback) {
  */
 function getNewer(date, callback) {
   var newer = false;
-  var paths = [];
+  var paths = [].concat(externsPaths);
 
   var tasks = sourceDirs.map(function(sourceDir) {
     return function(callback) {
