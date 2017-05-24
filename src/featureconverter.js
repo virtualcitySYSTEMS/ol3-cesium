@@ -118,6 +118,15 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     }
   };
 
+  const extrudedOptions = color["alpha"] === 1 ? {
+    "translucent" : false,
+    closed: true
+  } : {
+    "translucent" : true,
+    closed : true,
+    "faceForward" : true
+  };
+
   if (opt_lineWidth !== undefined) {
     if (!options.renderState) {
       options.renderState = {};
@@ -131,7 +140,9 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
 
   let primitive;
 
-  if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
+  const featureIsExtruded = feature.get("extrudedHeight") ? true : false;
+
+  if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND && !featureIsExtruded) {
     const ctor = instances.geometry.constructor;
     if (ctor && !ctor['createShadowVolume']) {
       return null;
@@ -141,11 +152,12 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       geometryInstances: instances
     });
   } else {
-    const appearance = new Cesium.PerInstanceColorAppearance(options);
+    const appearance = new Cesium.PerInstanceColorAppearance(feature.get("extrudedHeight") ? extrudedOptions : options);
     primitive = new Cesium.Primitive({
       // always update Cesium externs before adding a property
       geometryInstances: instances,
-      appearance
+      appearance: appearance,
+      shadows : Cesium.ShadowMode.ENABLED
     });
   }
 
@@ -461,16 +473,29 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
       }
     }
 
+    let extrudedHeight = feature.get("extrudedHeight");
+    if (feature.get("extrudedHeight") && feature.get("geometryWGS84")){
+      const coordsArray = feature.get("geometryWGS84").getCoordinates()[0];
+      let highestHeight = coordsArray[0][2];
+      coordsArray.forEach(function(coord){
+        if (highestHeight < coord[2]){
+          highestHeight = coord[2]
+        }
+      });
+      extrudedHeight += highestHeight;
+    }
     fillGeometry = new Cesium.PolygonGeometry({
       // always update Cesium externs before adding a property
       polygonHierarchy,
-      perPositionHeight: true
+      perPositionHeight: feature.get("extrudedHeight") ? false : true,
+      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+      extrudedHeight: extrudedHeight
     });
 
     outlineGeometry = new Cesium.PolygonOutlineGeometry({
       // always update Cesium externs before adding a property
       polygonHierarchy: hierarchy,
-      perPositionHeight: true
+      perPositionHeight: feature.get("extrudedHeight") ? false : true
     });
   }
 
@@ -556,11 +581,26 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
         return;
       }
       const center = olGeometry.getCoordinates();
+
+      // google closure compiler warning fix
+      const heightAboveGround = feature.get("heightAboveGround");
+      if (typeof heightAboveGround == 'number') {
+        /** number */
+        center[2] = heightAboveGround;
+      }
+
       const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
       let color;
       const opacity = imageStyle.getOpacity();
       if (opacity !== undefined) {
         color = new Cesium.Color(1.0, 1.0, 1.0, opacity);
+      }
+
+      let zCoordinateEyeOffset = feature.get("zCoordinateEyeOffset");
+
+      if (typeof zCoordinateEyeOffset != 'number') {
+        /** number */
+        zCoordinateEyeOffset = 0;
       }
 
       const heightReference = this.getHeightReference(layer, feature, olGeometry);
@@ -572,8 +612,16 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
         scale: imageStyle.getScale(),
         heightReference,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        position
+        position,
+        id : feature.getId(),
+        eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
       });
+
+      if (feature.get("scaleByDistance") && Array.isArray(feature.get("scaleByDistance") && feature.get("scaleByDistance").length === 4 )) {
+        const array = feature.get("scaleByDistance");
+        bbOptions.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
+      }
+
       const bb = this.csAddBillboard(billboards, bbOptions, layer, feature,
           olGeometry, style);
       if (opt_newBillboardCallback) {
