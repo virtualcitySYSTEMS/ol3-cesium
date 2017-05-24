@@ -91,7 +91,14 @@ function spawnJSDoc(paths, callback) {
   var output = '';
   var errors = '';
   var cwd = path.join(__dirname, '..');
-  var child = spawn(jsdoc, ['-c', jsdocConfig].concat(paths), {cwd: cwd});
+  var jsdocConfigFile = JSON.parse(fs.readFileSync(jsdocConfig, 'utf8'));
+  jsdocConfigFile.source.include = paths;
+  var jsdocConfigTempFile = path.join(__dirname, '..', '.build', 'jsdocConfig.json');
+
+  fs.writeFileSync(jsdocConfigTempFile , JSON.stringify(jsdocConfigFile));
+
+  // use .cmd for windows....
+  var child = spawn(jsdoc + '.cmd', ['-c', jsdocConfigTempFile ], {cwd: cwd});
 
   child.stdout.on('data', function(data) {
     output += String(data);
