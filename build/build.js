@@ -168,7 +168,11 @@ function build(config, paths, callback) {
     concatenate(paths, callback);
   } else {
     log.info('ol-cesium', 'Compiling ' + paths.length + ' sources');
-    paths = paths.concat('ol/src/ol/typedefs.js');
+    if(!config.typedefs) {
+      paths = paths.concat('ol/src/ol/typedefs.js');
+    }else {
+      paths = paths.concat(config.typedefs);
+    }
     options.compile.js = paths.concat(options.compile.js || []);
     closure.compile(options, callback);
   }
