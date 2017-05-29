@@ -12,6 +12,9 @@
     },
     "plugins": [
         "build/jsdoc/info/api-plugin",
-        "build/jsdoc/info/define-plugin"
+        "build/jsdoc/info/define-plugin",
+        "build/jsdoc/info/virtual-plugin",
+        "build/jsdoc/info/events",
+        "build/jsdoc/info/typedefs"
     ]
 }

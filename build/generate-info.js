@@ -11,7 +11,11 @@ var sourceDirSelf = path.join(__dirname, '..', 'src');
 var sourceDirs = [sourceDirOL, sourceDirSelf];
 var externsPaths = [
   path.join(sourceDirOL, '..', 'externs', 'olx.js'),
-  path.join(sourceDirOL, '..', 'externs',  'geojson.js')
+  path.join(sourceDirOL, '..', 'externs',  'geojson.js'),
+  path.join(sourceDirOL, '..', 'externs',  'esrijson.js'),
+  path.join(sourceDirOL, '..', 'externs',  'tilejson.js'),
+  path.join(sourceDirOL, '..', 'externs',  'proj4js.js'),
+  path.join(__dirname, '..', 'externs',  'olcsx.js')
 ];
 var infoPath = path.join(__dirname, '..', '.build', 'info.json');
 var jsdoc = path.join(__dirname, '..', 'node_modules', '.bin', 'jsdoc');
