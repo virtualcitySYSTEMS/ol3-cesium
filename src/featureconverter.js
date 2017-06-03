@@ -131,7 +131,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     if (!options.renderState) {
       options.renderState = {};
     }
-    options.renderState.lineWidth = opt_lineWidth;
+    options.renderState.lineWidth = 1;
   }
 
   const instances = createInstance(geometry, color);
