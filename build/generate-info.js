@@ -106,7 +106,10 @@ function spawnJSDoc(paths, callback) {
   fs.writeFileSync(jsdocConfigTempFile , JSON.stringify(jsdocConfigFile));
 
   // use .cmd for windows....
-  var child = spawn(jsdoc + '.cmd', ['-c', jsdocConfigTempFile ], {cwd: cwd});
+  if (process.platform.indexOf('win') === 0) {
+    jsdoc += '.cmd';
+  };
+  var child = spawn(jsdoc, ['-c', jsdocConfigTempFile ], {cwd: cwd});
 
   child.stdout.on('data', function(data) {
     output += String(data);
