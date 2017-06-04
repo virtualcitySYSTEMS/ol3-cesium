@@ -103,7 +103,7 @@ function spawnJSDoc(paths, callback) {
   jsdocConfigFile.source.include = paths;
   var jsdocConfigTempFile = path.join(__dirname, '..', '.build', 'jsdocConfig.json');
 
-  fs.writeFileSync(jsdocConfigTempFile , JSON.stringify(jsdocConfigFile));
+  fse.outputFileSync(jsdocConfigTempFile , JSON.stringify(jsdocConfigFile));
 
   // use .cmd for windows....
   if (process.platform.indexOf('win') === 0) {

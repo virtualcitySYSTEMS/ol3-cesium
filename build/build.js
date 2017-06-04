@@ -82,7 +82,7 @@ function readConfig(configPath, callback) {
 function writeExports(exports, callback) {
   var exportsPath = path.join(__dirname, '..', 'dist', 'exports.js');
   log.verbose('build', 'Writing exports: to ' + path);
-  fs.writeFile(exportsPath, exports, function(err) {
+  fs.outputFile(exportsPath, exports, function(err) {
     if (err) {
       callback(err);
     } else {
