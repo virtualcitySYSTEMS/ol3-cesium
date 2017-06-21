@@ -1084,7 +1084,8 @@ Cesium.Appearance = function() {};
 /**
  * @typedef {{
  *   geometryInstances: !Cesium.GeometryInstance,
- *   appearance: !Cesium.Appearance
+ *   appearance: !Cesium.Appearance,
+ *   shadows: (Cesium.ShadowMode | undefined)
  * }}
  */
 Cesium.optionsPrimitive;
