@@ -197,7 +197,7 @@ olcs.FeatureConverter.prototype.extractColorFromOlStyle = function(style, outlin
 olcs.FeatureConverter.prototype.extractLineWidthFromOlStyle = function(style) {
   // Handling of line width WebGL limitations is handled by Cesium.
   const width = style.getStroke() ? style.getStroke().getWidth() : undefined;
-  return width !== undefined ? width : 1;
+  return width !== undefined ? width : 0;
 };
 
 
