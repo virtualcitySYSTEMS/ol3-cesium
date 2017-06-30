@@ -474,15 +474,9 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     }
 
     let extrudedHeight = feature.get("extrudedHeight");
-    if (feature.get("extrudedHeight") && feature.get("geometryWGS84")){
-      const coordsArray = feature.get("geometryWGS84").getCoordinates()[0];
-      let highestHeight = coordsArray[0][2];
-      coordsArray.forEach(function(coord){
-        if (highestHeight < coord[2]){
-          highestHeight = coord[2]
-        }
-      });
-      extrudedHeight += highestHeight;
+    const extrudedHeightTerrainCorrection  = feature.get("extrudedHeightTerrainCorrection");
+    if(extrudedHeightTerrainCorrection){
+      extrudedHeight += extrudedHeightTerrainCorrection;
     }
     fillGeometry = new Cesium.PolygonGeometry({
       // always update Cesium externs before adding a property
