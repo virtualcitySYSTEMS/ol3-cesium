@@ -102,7 +102,7 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
   goog.asserts.assertInstanceof(olLayer, ol.layer.Layer);
 
   let source = olLayer.getSource();
-  if (source instanceof ol.source.ImageVector) {
+  if (source instanceof ol.source.ImageVector || source instanceof ol.source.Cluster) {
     source = source.getSource();
   }
 
