@@ -98,7 +98,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
       const center = geom.getCoordinates();
 
       // google closure compiler warning fix
-      const heightAboveGround = feature.get("heightAboveGround");
+      const heightAboveGround = feature.get("heightAboveGround") || layer.get('heightAboveGround');
       if (typeof heightAboveGround == 'number') {
         /** number */
         center[2] = heightAboveGround;
@@ -197,6 +197,29 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.label.entities = entities;
   cluster.billboard.id = cluster.label.id;
   cluster.billboard.entities = entities;
+  const height = layer.get('heightAboveGround');
+  if (height != null) {
+    cluster.billboard.position.z = cluster.billboard.position.z + height;
+    cluster.label.position.z = cluster.label.position.z + height;
+  }
+
+  let zCoordinateEyeOffset = layer.get('zCoordinateEyeOffset');
+  if (typeof zCoordinateEyeOffset != 'number') {
+    /** number */
+    zCoordinateEyeOffset = 0;
+  }
+  cluster.billboard.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
+  cluster.label.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
+
+  const altitudeMode = layer.get('altidudeMode');
+  let heightReference = Cesium.HeightReference.NONE;
+  if (altitudeMode === 'clampToGround') {
+    heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
+  } else if (altitudeMode === 'relativeToGround') {
+    heightReference = Cesium.HeightReference.RELATIVE_TO_GROUND;
+  }
+  cluster.billboard.heightReference = heightReference;
+  cluster.label.heightReference = heightReference;
   let features = entities;
   if (entities.length === 1) {
     features = [layer.getSource().getSource().getFeatureById(entities[0].id)];
@@ -236,6 +259,7 @@ olcs.ClusterConverter.prototype._getClusterImageStyle = function(style, clusterB
     if (opacity !== undefined) {
       color = new Cesium.Color(1.0, 1.0, 1.0, opacity);
     }
+
     Object.assign(clusterBillboard, {
       image,
       color,
