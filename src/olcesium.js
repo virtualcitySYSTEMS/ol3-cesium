@@ -2,6 +2,7 @@ goog.provide('olcs.OLCesium');
 
 goog.require('goog.asserts');
 goog.require('ol.proj');
+goog.require('ol.events');
 
 goog.require('olcs.util');
 goog.require('olcs.core');
@@ -81,6 +82,8 @@ olcs.OLCesium = function(options) {
   containerAttribute.value = `${fillArea}visibility:hidden;`;
   this.container_.setAttributeNode(containerAttribute);
 
+
+
   let targetElement = options.target || null;
   if (targetElement) {
     if (typeof targetElement === 'string') {
@@ -100,6 +103,25 @@ olcs.OLCesium = function(options) {
    * @private
    */
   this.isOverMap_ = !targetElement;
+
+
+  if(this.isOverMap_) {
+      var overlayEvents = [
+          ol.events.EventType.CLICK,
+          ol.events.EventType.DBLCLICK,
+          ol.events.EventType.MOUSEDOWN,
+          ol.events.EventType.TOUCHSTART,
+          ol.events.EventType.MSPOINTERDOWN,
+          ol.MapBrowserEventType.POINTERDOWN,
+          ol.events.EventType.MOUSEWHEEL,
+          ol.events.EventType.WHEEL
+      ];
+      for (var i = 0, ii = overlayEvents.length; i < ii; ++i) {
+          ol.events.listen(this.container_, overlayEvents[i],
+              ol.events.Event.stopPropagation);
+      }
+  }
+
 
   /**
    * @type {!HTMLCanvasElement}
@@ -508,7 +530,15 @@ olcs.OLCesium.prototype.getDataSourceDisplay = function() {
  * @api
  */
 olcs.OLCesium.prototype.getEnabled = function() {
-  return this.enabled_;
+    return this.enabled_;
+};
+/**
+ * @return {Element}
+ * @api
+ */
+olcs.OLCesium.prototype.getCanvas = function() {
+    var viewport = this.map_.getViewport();
+    return viewport.firstElementChild;
 };
 
 
@@ -543,6 +573,10 @@ olcs.OLCesium.prototype.setEnabled = function(enable) {
         this.hiddenRootGroup_.setVisible(false);
       }
     }
+
+
+      this.map_.getOverlayContainer().classList.add('olcs-hideoverlay');
+      this.map_.getOverlayContainerStopEvent().classList.add('olcs-hideoverlay');
     this.camera_.readFromView();
     this.render_();
   } else {
@@ -552,7 +586,8 @@ olcs.OLCesium.prototype.setEnabled = function(enable) {
         interactions.push(interaction);
       });
       this.pausedInteractions_.length = 0;
-
+      this.map_.getOverlayContainer().classList.remove('olcs-hideoverlay');
+      this.map_.getOverlayContainerStopEvent().classList.remove('olcs-hideoverlay')
       if (this.hiddenRootGroup_) {
         this.hiddenRootGroup_.setVisible(true);
         this.hiddenRootGroup_ = null;
