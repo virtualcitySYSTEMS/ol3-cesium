@@ -1,7 +1,9 @@
 goog.provide('olcs.ClusterConverter');
-goog.require('olcs.FeatureConverter');
 
+goog.require('goog.asserts');
+goog.require('olcs.FeatureConverter');
 goog.require('olcs.core.ClusterLayerCounterpart');
+
 /**
  * @constructor
  * @extends olcs.FeatureConverter
@@ -9,6 +11,17 @@ goog.require('olcs.core.ClusterLayerCounterpart');
 olcs.ClusterConverter = function(scene) {
   goog.base(this, scene);
 
+  /** 
+   * style functions for each cluster layer, where the key is the layer id.
+   * @type {Object<string,Function>}
+   * @private
+   */
+  this.layerStyleMap_ = {};
+
+  /**
+   * @type {Cesium.DataSourceCollection}
+   * @private
+   */
   this.dataSources_ = new Cesium.DataSourceCollection();
 };
 goog.inherits(olcs.ClusterConverter, olcs.FeatureConverter);
@@ -192,6 +205,33 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
   }
 };
 
+/**
+ * Sets a layers style function. To unset a previously set style function, pass null as the second argument
+ * @param {ol.layer.Layer} layer
+ * @param {Function|null} styleFunction
+ * @param {string=} opt_prop and optional property by which to identify the layer
+ * @todo how to handle layer identification
+ */
+olcs.ClusterConverter.prototype.setLayerStyle = function(layer, styleFunction, opt_prop) {
+  const id = layer.get('name');
+  goog.asserts.assertString(id);
+  if (styleFunction !== null) {
+    goog.asserts.assertFunction(styleFunction);
+  }
+
+  this.layerStyleMap_[id] = styleFunction;
+};
+
+/**
+ * Specifies the style function to use for a cluster and its entities
+ * @param {ol.layer.Layer} layer
+ * @param {Array<Cesium.Entity>} entities
+ * @param {Cesium.EntityCluster} cluster
+ */
+olcs.ClusterConverter.prototype.clusterStyle = function (layer, entities, cluster) {
+
+};
+
 olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster) {
   cluster.label.show = false;
   cluster.label.entities = entities;
@@ -220,16 +260,22 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   }
   cluster.billboard.heightReference = heightReference;
   cluster.label.heightReference = heightReference;
-  let features = entities;
-  if (entities.length === 1) {
-    features = [layer.getSource().getSource().getFeatureById(entities[0].id)];
-  }
-  const style = layer.getStyleFunction()(new ol.Feature({ features }));
-  if (style.getImage()) {
-    this._getClusterImageStyle(style.getImage(), cluster.billboard);
-  }
-  if (style.getText()) {
-    Object.assign(cluster.label, this._getClusterTextStyle(style.getText()));
+
+  const specificClusterStyle = this.layerStyleMap_[layer.get('name')];
+  if (specificClusterStyle && typeof specificClusterStyle === 'function') {
+    specificClusterStyle(entities, cluster);
+  } else {
+    let features = entities;
+    if (entities.length === 1) {
+      features = [layer.getSource().getSource().getFeatureById(entities[0].id)];
+    }
+    const style = layer.getStyleFunction()(new ol.Feature({ features }));
+    if (style.getImage()) {
+      this._getClusterImageStyle(style.getImage(), cluster.billboard);
+    }
+    if (style.getText()) {
+      Object.assign(cluster.label, this._getClusterTextStyle(style.getText()));
+    }
   }
 };
 
