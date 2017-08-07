@@ -2630,6 +2630,10 @@ Cesium.JulianDate.now = function() {};
  */
 Cesium.DataSource = function() {};
 
+/** 
+ * @type {Cesium.EntityCluster}
+ */
+Cesium.DataSource.prototype.clustering;
 
 /**
  * @constructor
@@ -2746,6 +2750,7 @@ Cesium.DataSourceDisplay.prototype.getBoundingSphere = function(entity, allowPar
 
 /**
  * @param {string} name
+ * @extends Cesium.DataSource
  * @constructor
  */
 Cesium.CustomDataSource = function(name) {};
@@ -3381,8 +3386,49 @@ Cesium.BoundingSphereState = {
  * @param {Object} options
  * @constructor
  */
+Cesium.EntityCluster = function(options) {};
+
+/** @type {boolean} */
+Cesium.EntityCluster.prototype.enabled;
+
+/** @type {number} */
+Cesium.EntityCluster.prototype.pixelRange;
+
+/** @type {number} */
+Cesium.EntityCluster.prototype.minimumClusterSize;
+
+/** @type {Cesium.Event} */
+Cesium.EntityCluster.prototype.clusterEvent;
+
+/**
+ * @typedef{{
+ *  id: (string|number|undefined),
+ *  position: (Cesium.Cartesian3|undefined),
+ *  billboard: (Cesium.optionsBillboardCollectionAdd|undefined),
+ *  label: (Cesium.optionsLabelCollection|undefined)
+ * }}
+ */
+Cesium.optionsEntity;
+
+/**
+ * @param {Cesium.optionsEntity} options
+ * @constructor
+ */
 Cesium.Entity = function(options) {};
 
+/**
+ * Custom property for storing the associated Ol3 feature.
+ * http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Picking.html&label=Showcases
+ * @type {ol.Feature}
+ */
+Cesium.Entity.prototype.olFeature;
+
+/**
+ * Custom property for storing the associated Ol3 layer.
+ * http://cesiumjs.org/Cesium/Apps/Sandcastle/index.html?src=Picking.html&label=Showcases
+ * @type {ol.layer.Layer}
+ */
+Cesium.Entity.prototype.olLayer;
 
 /**
  * @param {Cesium.Entity} entity

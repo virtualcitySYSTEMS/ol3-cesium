@@ -1,17 +1,25 @@
 goog.provide('olcs.ClusterConverter');
 
 goog.require('goog.asserts');
+
+goog.require('ol');
+goog.require('ol.Feature');
+goog.require('ol.events');
+
+goog.require('olcs.core');
+goog.require('olcs.util');
 goog.require('olcs.FeatureConverter');
 goog.require('olcs.core.ClusterLayerCounterpart');
 
 /**
  * @constructor
  * @extends olcs.FeatureConverter
+ * @api
  */
 olcs.ClusterConverter = function(scene) {
-  goog.base(this, scene);
+  olcs.FeatureConverter.call(this, scene);
 
-  /** 
+  /**
    * style functions for each cluster layer, where the key is the layer id.
    * @type {Object<string,Function>}
    * @private
@@ -26,6 +34,13 @@ olcs.ClusterConverter = function(scene) {
 };
 goog.inherits(olcs.ClusterConverter, olcs.FeatureConverter);
 
+/**
+ * @override
+ * @param {!(ol.layer.Vector|ol.layer.Image)} olLayer
+ * @param {!ol.View} olView
+ * @param {!Object.<number, (!Cesium.Primitive|!Cesium.Entity)>} featureEntityMap
+ * @return {!olcs.core.ClusterLayerCounterpart}
+ */
 olcs.ClusterConverter.prototype.olVectorLayerToCesium = function(olLayer, olView, featureEntityMap) {
   const proj = olView.getProjection();
   const resolution = olView.getResolution();
@@ -71,10 +86,12 @@ olcs.ClusterConverter.prototype.olVectorLayerToCesium = function(olLayer, olView
   return counterpart;
 };
 
-/** @retun{Cesium.Entity} */
+/**
+ * @override
+ * @return {Cesium.Entity}
+ */
 olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, style, context, opt_geom) {
   let geom = opt_geom || feature.getGeometry();
-  const proj = context.projection;
   if (!geom || !(geom.getType() == 'Point')) {
     // OpenLayers features may not have a geometry
     // See http://geojson.org/geojson-spec.html#feature-objects
@@ -82,10 +99,29 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
   }
 
   geom = olcs.core.olGeometryCloneTo4326(geom, context.projection);
+  geom = /** @type{!ol.geom.Geometry} */ (geom);
+  const pointGeom = /** @type {!ol.geom.Point} */ (geom);
+
+  const entityOptions = /** @type{Cesium.optionsEntity} */ ({});
+  const center = pointGeom.getCoordinates();
+  // google closure compiler warning fix
+  const heightAboveGround = feature.get('heightAboveGround') || layer.get('heightAboveGround');
+  if (typeof heightAboveGround == 'number') {
+    /** number */
+    center[2] = heightAboveGround;
+  }
+
+  const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
+  entityOptions.position = position;
+  entityOptions.id = feature.getId();
+
+
+  if (style.getText()) {
+    const text = /** @type {!ol.style.Text} */ (style.getText());
+    entityOptions.label = this.olGeometry4326TextOptionsPartToCesium(layer, feature, geom, text);
+  }
 
   const imageStyle = style.getImage();
-  let entityOptions = {};
-
   if (imageStyle) {
     if (imageStyle instanceof ol.style.Icon) {
       // make sure the image is scheduled for load
@@ -108,65 +144,50 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
         image instanceof HTMLImageElement)) {
         return;
       }
-      const center = geom.getCoordinates();
 
-      // google closure compiler warning fix
-      const heightAboveGround = feature.get("heightAboveGround") || layer.get('heightAboveGround');
-      if (typeof heightAboveGround == 'number') {
-        /** number */
-        center[2] = heightAboveGround;
-      }
-
-      const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
       let color;
       const opacity = imageStyle.getOpacity();
       if (opacity !== undefined) {
         color = new Cesium.Color(1.0, 1.0, 1.0, opacity);
       }
 
-      let zCoordinateEyeOffset = feature.get("zCoordinateEyeOffset");
+      let zCoordinateEyeOffset = feature.get('zCoordinateEyeOffset');
 
       if (typeof zCoordinateEyeOffset != 'number') {
         /** number */
         zCoordinateEyeOffset = 0;
       }
-
+      geom = /** @type {!ol.geom.Geometry} */ (geom);
       const heightReference = this.getHeightReference(layer, feature, geom);
 
-      entityOptions = {
-        position,
-        id : feature.getId(),
-        billboard: {
-          // always update Cesium externs before adding a property
-          image,
-          color,
-          scale: imageStyle.getScale(),
-          heightReference,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
-        }
-      };
+      entityOptions.billboard = /** @type{!Cesium.optionsBillboardCollectionAdd} */ ({
+        image,
+        color,
+        scale: imageStyle.getScale(),
+        heightReference,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
+      });
 
-      if (feature.get("scaleByDistance") && Array.isArray(feature.get("scaleByDistance") && feature.get("scaleByDistance").length === 4 )) {
-        const array = feature.get("scaleByDistance");
+      if (feature.get('scaleByDistance') && Array.isArray(feature.get('scaleByDistance') && feature.get('scaleByDistance').length === 4)) {
+        const array = feature.get('scaleByDistance');
         entityOptions.billboard.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
       }
       const entity = new Cesium.Entity(entityOptions);
-      this.setReferenceForPicking(layer, feature, entity);
+      this.setEntityRefForPicking(layer, feature, entity);
       return entity;
     }).bind(this);
 
     if (image instanceof Image && !isImageLoaded(image)) {
-      // Cesium requires the image to be loaded
       let cancelled = false;
-      let source = layer.getSource();
+      let source = /** @type {ol.source.Cluster} */ (layer.getSource());
       source = source.getSource();
 
       const canceller = function() {
         cancelled = true;
       };
-      source.on(['removefeature', 'clear'],
-        this.boundOnRemoveOrClearFeatureListener_);
+      // source.on(['removefeature', 'clear'],
+      //   this.boundOnRemoveOrClearFeatureListener_);
       let cancellers = olcs.util.obj(source)['olcs_cancellers'];
       if (!cancellers) {
         cancellers = olcs.util.obj(source)['olcs_cancellers'] = {};
@@ -187,22 +208,110 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
           context.featureEntityMap[ol.getUid(feature)] = entity;
         }
       };
-      console.log('unhandeld billboard with image?');
       ol.events.listenOnce(image, 'load', listener);
     } else {
       return reallyCreateBillboard();
     }
   }
+  const entity = new Cesium.Entity(entityOptions);
+  this.setEntityRefForPicking(layer, feature, entity);
+  return entity;
+};
 
-  if (style.getText()) {
-    const labels = this.olGeometry4326TextPartToCesium(layer, feature, geom, style.getText());
-    const textPosition = olcs.core.ol4326CoordinateToCesiumCartesian(geom.getCoordinates());
-    const textEntity = new Cesium.Entity({ position: textPosition, label: labels });
-    this.setReferenceForPicking(layer, feature, textEntity);
-    return textEntity;
-  } else {
-    return null;
+/**
+ * @param {ol.layer.Vector|ol.layer.Image} layer
+ * @param {!ol.Feature} feature OpenLayers feature.
+ * @param {!Cesium.Entity} entity
+ */
+olcs.ClusterConverter.prototype.setEntityRefForPicking = function(layer, feature, entity) {
+  entity.olLayer = layer;
+  entity.olFeature = feature;
+};
+
+/**
+ * Convert an OpenLayers text style to Cesium.
+ * @param {ol.layer.Vector|ol.layer.Image} layer
+ * @param {!ol.Feature} feature OpenLayers feature..
+ * @param {!ol.geom.Geometry} geometry
+ * @param {!ol.style.Text} style
+ * @return {Cesium.optionsLabelCollection} Cesium label options
+ */
+olcs.ClusterConverter.prototype.olGeometry4326TextOptionsPartToCesium = function(layer, feature, geometry, style) {
+  const text = style.getText();
+  goog.asserts.assert(text !== undefined);
+
+  const options = /** @type {Cesium.optionsLabelCollection} */ ({});
+
+  options.text = text;
+
+  options.heightReference = this.getHeightReference(layer, feature, geometry);
+
+  const offsetX = style.getOffsetX();
+  const offsetY = style.getOffsetY();
+  if (offsetX != 0 && offsetY != 0) {
+    const offset = new Cesium.Cartesian2(offsetX, offsetY);
+    options.pixelOffset = offset;
   }
+
+  const font = style.getFont();
+  if (font !== undefined) {
+    options.font = font;
+  }
+
+  let labelStyle = undefined;
+  if (style.getFill()) {
+    options.fillColor = this.extractColorFromOlStyle(style, false);
+    labelStyle = Cesium.LabelStyle.FILL;
+  }
+  if (style.getStroke()) {
+    options.outlineWidth = this.extractLineWidthFromOlStyle(style);
+    options.outlineColor = this.extractColorFromOlStyle(style, true);
+    labelStyle = Cesium.LabelStyle.OUTLINE;
+  }
+  if (style.getFill() && style.getStroke()) {
+    labelStyle = Cesium.LabelStyle.FILL_AND_OUTLINE;
+  }
+  options.style = labelStyle;
+
+  let horizontalOrigin;
+  switch (style.getTextAlign()) {
+    case 'left':
+      horizontalOrigin = Cesium.HorizontalOrigin.LEFT;
+      break;
+    case 'right':
+      horizontalOrigin = Cesium.HorizontalOrigin.RIGHT;
+      break;
+    case 'center':
+    default:
+      horizontalOrigin = Cesium.HorizontalOrigin.CENTER;
+  }
+  options.horizontalOrigin = horizontalOrigin;
+
+  if (style.getTextBaseline()) {
+    let verticalOrigin;
+    switch (style.getTextBaseline()) {
+      case 'top':
+        verticalOrigin = Cesium.VerticalOrigin.TOP;
+        break;
+      case 'middle':
+        verticalOrigin = Cesium.VerticalOrigin.CENTER;
+        break;
+      case 'bottom':
+        verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+        break;
+      case 'alphabetic':
+        verticalOrigin = Cesium.VerticalOrigin.TOP;
+        break;
+      case 'hanging':
+        verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+        break;
+      default:
+        goog.asserts.fail(`unhandled baseline ${style.getTextBaseline()}`);
+    }
+    options.verticalOrigin = verticalOrigin;
+  }
+
+  return options;
 };
 
 /**
@@ -211,6 +320,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
  * @param {Function|null} styleFunction
  * @param {string=} opt_prop and optional property by which to identify the layer
  * @todo how to handle layer identification
+ * @api
  */
 olcs.ClusterConverter.prototype.setLayerStyle = function(layer, styleFunction, opt_prop) {
   const id = layer.get('name');
@@ -224,14 +334,10 @@ olcs.ClusterConverter.prototype.setLayerStyle = function(layer, styleFunction, o
 
 /**
  * Specifies the style function to use for a cluster and its entities
- * @param {ol.layer.Layer} layer
+ * @param {ol.layer.Vector|ol.layer.Image} layer
  * @param {Array<Cesium.Entity>} entities
- * @param {Cesium.EntityCluster} cluster
+ * @param {Object} cluster
  */
-olcs.ClusterConverter.prototype.clusterStyle = function (layer, entities, cluster) {
-
-};
-
 olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster) {
   cluster.label.show = false;
   cluster.label.entities = entities;
@@ -261,15 +367,20 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.billboard.heightReference = heightReference;
   cluster.label.heightReference = heightReference;
 
-  const specificClusterStyle = this.layerStyleMap_[layer.get('name')];
+  const id = layer.get('name');
+  let specificClusterStyle = false;
+  if (id && typeof id === 'string') {
+    specificClusterStyle = this.layerStyleMap_[id];
+  }
   if (specificClusterStyle && typeof specificClusterStyle === 'function') {
     specificClusterStyle(entities, cluster);
   } else {
     let features = entities;
     if (entities.length === 1) {
-      features = [layer.getSource().getSource().getFeatureById(entities[0].id)];
+      const source = /** @type {!ol.source.Cluster} */ (layer.getSource());
+      features = [source.getSource().getFeatureById(entities[0].id)];
     }
-    const style = layer.getStyleFunction()(new ol.Feature({ features }));
+    const style = layer.getStyleFunction()(new ol.Feature({ features }), 1);
     if (style.getImage()) {
       this._getClusterImageStyle(style.getImage(), cluster.billboard);
     }
@@ -316,12 +427,11 @@ olcs.ClusterConverter.prototype._getClusterImageStyle = function(style, clusterB
 
   if (image instanceof Image && !isImageLoaded(image)) {
     const listener = function() {
-      setBillboard(clusterBillboard);
+      setBillboard();
     };
-    console.log('unhandeld billboard with image?');
     ol.events.listenOnce(image, 'load', listener);
   } else {
-    setBillboard(clusterBillboard);
+    setBillboard();
   }
 };
 

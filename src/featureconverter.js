@@ -922,7 +922,7 @@ olcs.FeatureConverter.prototype.computePlainStyle = function(layer, feature, fal
  * @param {!ol.style.Style} style
  * @param {!olcsx.core.OlFeatureToCesiumContext} context
  * @param {!ol.geom.Geometry=} opt_geom Geometry to be converted.
- * @return {Cesium.Primitive} primitives
+ * @return {Cesium.Primitive|Cesium.Entity} primitives
  * @api
  */
 olcs.FeatureConverter.prototype.olFeatureToCesium = function(layer, feature, style, context, opt_geom) {
@@ -948,7 +948,7 @@ olcs.FeatureConverter.prototype.olFeatureToCesium = function(layer, feature, sty
           const prims = this.olFeatureToCesium(layer, feature, style, context,
               geom);
           if (prims) {
-            primitives.add(prims);
+            primitives.add(/** @type {!Cesium.Primitive} */ (prims));
           }
         }
       });
@@ -1002,7 +1002,7 @@ olcs.FeatureConverter.prototype.olFeatureToCesium = function(layer, feature, sty
  * @param {!(ol.layer.Vector|ol.layer.Image)} olLayer
  * @param {!ol.View} olView
  * @param {!Object.<number, !Cesium.Primitive>} featurePrimitiveMap
- * @return {!olcs.core.VectorLayerCounterpart}
+ * @return {!olcs.core.VectorLayerCounterpart|!olcs.core.ClusterLayerCounterpart}
  * @api
  */
 olcs.FeatureConverter.prototype.olVectorLayerToCesium = function(olLayer, olView, featurePrimitiveMap) {
@@ -1056,7 +1056,7 @@ olcs.FeatureConverter.prototype.olVectorLayerToCesium = function(olLayer, olView
     if (!primitives) {
       continue;
     }
-    featurePrimitiveMap[ol.getUid(feature)] = primitives;
+    featurePrimitiveMap[ol.getUid(feature)] = /** @type {!Cesium.Primitive} */ (primitives);
     counterpart.getRootPrimitive().add(primitives);
   }
 
@@ -1070,7 +1070,7 @@ olcs.FeatureConverter.prototype.olVectorLayerToCesium = function(olLayer, olView
  * @param {!ol.View} view
  * @param {!ol.Feature} feature
  * @param {!olcsx.core.OlFeatureToCesiumContext} context
- * @return {Cesium.Primitive}
+ * @return {Cesium.Primitive|Cesium.Entity}
  * @api
  */
 olcs.FeatureConverter.prototype.convert = function(layer, view, feature, context) {
