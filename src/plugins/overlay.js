@@ -1,12 +1,9 @@
 goog.provide('olcs.Overlay');
 
 goog.require('ol');
-goog.require('ol.Object');
-goog.require('ol.OverlayPositioning');
-goog.require('ol.css');
 goog.require('ol.dom');
-goog.require('ol.events');
-
+goog.require('ol.Overlay');
+goog.require('ol.Observable');
 
 /**
  * @classdesc
@@ -25,26 +22,32 @@ goog.require('ol.events');
  *     map.addOverlay(popup);
  *
  * @constructor
- * @extends {ol.Object}
+ * @extends {ol.Overlay}
  * @param {olx.OverlayOptions} options Overlay options.
  * @api
  */
 olcs.Overlay = function(options) {
-
-  ol.Object.call(this);
-
+  ol.Overlay.call(this, options);
   /**
    * @private
-   * @type {number|string|undefined}
+   * @type {?Function}
    */
-  this.id_ = options.id;
+  this.scenePostRenderListenerRemover_ = null;
+
+  /**
+   * @type {Cesium.Scene}
+   */
+  this.scene = options.scene;
+
+  /** @type {olcs.OverlaySynchronizer}*/
+  this.synchronizer = options.synchronizer;
 
   /**
    * @private
    * @type {boolean}
    */
   this.insertFirst_ = options.insertFirst !== undefined ?
-      options.insertFirst : true;
+    options.insertFirst : true;
 
   /**
    * @private
@@ -53,197 +56,82 @@ olcs.Overlay = function(options) {
   this.stopEvent_ = options.stopEvent !== undefined ? options.stopEvent : true;
 
   /**
+   * @type {MutationObserver|null}
+   * @private
+   */
+  this.observer_ = null;
+
+  /**
    * @private
    * @type {Element}
+   * TODO I'm unsure if this works with the inherited functions
    */
   this.element_ = document.createElement('DIV');
-  this.element_.className = 'ol-overlay-container ' + ol.css.CLASS_SELECTABLE;
+  this.element_.className = `ol-overlay-container ${ol.css.CLASS_SELECTABLE}`;
   this.element_.style.position = 'absolute';
 
-  /**
-   * @protected
-   * @type {boolean}
-   */
-  this.autoPan = options.autoPan !== undefined ? options.autoPan : false;
+  this.autoPanMargin_ = options['autoPanMargin_'];
 
   /**
    * @private
-   * @type {olx.OverlayPanOptions}
+   * @type {ol.Overlay}
    */
-  this.autoPanAnimation_ = options.autoPanAnimation ||
-      /** @type {olx.OverlayPanOptions} */ ({});
-
-  /**
-   * @private
-   * @type {number}
-   */
-  this.autoPanMargin_ = options.autoPanMargin !== undefined ?
-      options.autoPanMargin : 20;
-
-  /**
-   * @private
-   * @type {{bottom_: string,
-   *         left_: string,
-   *         right_: string,
-   *         top_: string,
-   *         visible: boolean}}
-   */
-  this.rendered_ = {
-    bottom_: '',
-    left_: '',
-    right_: '',
-    top_: '',
-    visible: true
-  };
-
-  /**
-   * @private
-   * @type {?Function}
-   */
-  this.scenePostRenderListenerRemover_ = null;
-
-  ol.events.listen(
-      this, ol.Object.getChangeEventType(olcs.Overlay.Property_.ELEMENT),
-      this.handleElementChanged, this);
-
-  ol.events.listen(
-      this, ol.Object.getChangeEventType(olcs.Overlay.Property_.MAP),
-      this.handleMapChanged, this);
-
-  ol.events.listen(
-      this, ol.Object.getChangeEventType(olcs.Overlay.Property_.OFFSET),
-      this.handleOffsetChanged, this);
-
-  ol.events.listen(
-      this, ol.Object.getChangeEventType(olcs.Overlay.Property_.POSITION),
-      this.handlePositionChanged, this);
-
-  ol.events.listen(
-      this, ol.Object.getChangeEventType(olcs.Overlay.Property_.POSITIONING),
-      this.handlePositioningChanged, this);
-
-  if (options.element !== undefined) {
-    this.setElement(options.element);
+  this.parent_ = options['parent'];
+  /** @type {Array<number>} */
+  this.listenerKeys_ = [];
+  if (this.parent_) {
+    const target = this.parent_.getElement().parentNode;
+    this.observer_ = new MutationObserver(this.changeElement_.bind(this));
+    this.observer_.observe(target, {
+      attributes: false,
+      childList: true,
+      characterData: false,
+      subtree: true
+    });
+    this.listenerKeys_.push(this.parent_.on('change:position', this.changePosition_.bind(this)));
+    this.listenerKeys_.push(this.parent_.on('change:element', this.changeElement_.bind(this)));
   }
-
-  this.setOffset(options.offset !== undefined ? options.offset : [0, 0]);
-
-  this.setPositioning(options.positioning !== undefined ?
-      /** @type {ol.OverlayPositioning} */ (options.positioning) :
-      ol.OverlayPositioning.TOP_LEFT);
-
-  if (options.position !== undefined) {
-    this.setPosition(options.position);
-  }
-
-    /**
-     * @type {Cesium.Scene}
-     */
-  this.scene = options.scene;
-
-  /** @type {olcs.OverlaySynchronizer}*/
-  this.synchronizer = options.synchronizer;
 };
-ol.inherits(olcs.Overlay, ol.Object);
-
+ol.inherits(olcs.Overlay, ol.Overlay);
 
 /**
- * Get the DOM element of this overlay.
- * @return {Element|undefined} The Element containing the overlay.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.getElement = function() {
-  return /** @type {Element|undefined} */ (
-      this.get(olcs.Overlay.Property_.ELEMENT));
-};
-
-
-/**
- * Get the overlay identifier which is set on constructor.
- * @return {number|string|undefined} Id.
- * @api
- */
-olcs.Overlay.prototype.getId = function() {
-  return this.id_;
-};
-
-
-/**
- * Get the map associated with this overlay.
+ * Get the scene associated with this overlay.
+ * @see ol.Overlay.prototype.getMap
  * @return {Cesium.Scene|undefined} The map that the overlay is part of.
  * @observable
  * @api
  */
 olcs.Overlay.prototype.getScene = function() {
-    return this.scene;
+  return this.scene;
 };
 
-
-/**
- * Get the offset of this overlay.
- * @return {Array.<number>} The offset.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.getOffset = function() {
-  return /** @type {Array.<number>} */ (
-      this.get(olcs.Overlay.Property_.OFFSET));
-};
-
-
-/**
- * Get the current position of this overlay.
- * @return {ol.Coordinate|undefined} The spatial point that the overlay is
- *     anchored at.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.getPosition = function() {
-  return /** @type {ol.Coordinate|undefined} */ (
-      this.get(olcs.Overlay.Property_.POSITION));
-};
-
-
-/**
- * Get the current positioning of this overlay.
- * @return {ol.OverlayPositioning} How the overlay is positioned
- *     relative to its point on the map.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.getPositioning = function() {
-  return /** @type {ol.OverlayPositioning} */ (
-      this.get(olcs.Overlay.Property_.POSITIONING));
-};
-
-
-/**
- * @protected
- */
-olcs.Overlay.prototype.handleElementChanged = function() {
-  ol.dom.removeChildren(this.element_);
-  var element = this.getElement();
-  if (element) {
-    this.element_.appendChild(element);
-  }
-};
+// /**
+//  * @protected
+//  */
+// olcs.Overlay.prototype.handleElementChanged = function() { // NOTE this is setElement in overlaysynchronizer
+//   ol.dom.removeChildren(this.element_);
+//   var element = this.getElement();
+//   if (element) {
+//     this.element_.appendChild(element);
+//   }
+// };
 
 
 /**
  * @api
  */
 olcs.Overlay.prototype.handleMapChanged = function() {
-    if(this.scenePostRenderListenerRemover_) {
-        this.scenePostRenderListenerRemover_();
-    }
-    this.scenePostRenderListenerRemover_ = null;
-  var scene = this.getScene();
+  if (this.scenePostRenderListenerRemover_) {
+    this.scenePostRenderListenerRemover_();
+  }
+  this.scenePostRenderListenerRemover_ = null;
+
+  const scene = this.getScene();
   if (scene) {
     this.scenePostRenderListenerRemover_ = scene.postRender.addEventListener(this.render.bind(this));
     this.updatePixelPosition();
-    var container = this.stopEvent_ ?
-        this.synchronizer.getOverlayContainerStopEvent() : this.synchronizer.getOverlayContainer();
+    const container = this.stopEvent_ ?
+      this.synchronizer.getOverlayContainerStopEvent() : this.synchronizer.getOverlayContainer(); // TODO respect stop-event flag in synchronizer
     if (this.insertFirst_) {
       container.insertBefore(this.element_, container.childNodes[0] || null);
     } else {
@@ -252,91 +140,39 @@ olcs.Overlay.prototype.handleMapChanged = function() {
   }
 };
 
-
 /**
  * @protected
- */
-olcs.Overlay.prototype.render = function() {
-  this.updatePixelPosition();
-};
-
-
-/**
- * @protected
- */
-olcs.Overlay.prototype.handleOffsetChanged = function() {
-  this.updatePixelPosition();
-};
-
-
-/**
- * @protected
+ * @todo potentially we don't need this at all
  */
 olcs.Overlay.prototype.handlePositionChanged = function() {
   this.updatePixelPosition();
-  if (this.get(olcs.Overlay.Property_.POSITION) && this.autoPan) {
-    //this.panIntoView_();
+  // if (this.getPosition() && this.autoPan) {
+  //   this.panIntoView_();
+  // }
+};
+
+olcs.Overlay.prototype.panIntoView_ = function() {
+  const position = this.getPosition();
+  let cartesian;
+  if (position.length === 2) {
+    cartesian = Cesium.Cartesian3.fromDegreesArray(position)[0];
+  } else {
+    cartesian = Cesium.Cartesian3.fromDegreesArrayHeights(position)[0];
   }
+
+  const pixelCartesian = this.scene.cartesianToCanvasCoordinates(cartesian);
+  const element = this.element_;
+  const overlayRect = this.getRect_(element,
+    [ol.dom.outerWidth(element), ol.dom.outerHeight(element)]);
+
+
+  console.log(pixelCartesian, overlayRect);
 };
 
-
-/**
- * @protected
- */
-olcs.Overlay.prototype.handlePositioningChanged = function() {
-  this.updatePixelPosition();
-};
-
-
-/**
- * Set the DOM element to be associated with this overlay.
- * @param {Element|undefined} element The Element containing the overlay.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.setElement = function(element) {
-  this.set(olcs.Overlay.Property_.ELEMENT, element);
-};
-
-
-
-
-/**
- * Set the offset for this overlay.
- * @param {Array.<number>} offset Offset.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.setOffset = function(offset) {
-  this.set(olcs.Overlay.Property_.OFFSET, offset);
-};
-
-
-/**
- * Set the position for this overlay. If the position is `undefined` the
- * overlay is hidden.
- * @param {ol.Coordinate|undefined} position The spatial point that the overlay
- *     is anchored at.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.setPosition = function(position) {
-  this.set(olcs.Overlay.Property_.POSITION, position);
-};
-
-
-
-/**
- * Get the extent of an element relative to the document
- * @param {Element|undefined} element The element.
- * @param {ol.Size|undefined} size The size of the element.
- * @return {ol.Extent} The extent.
- * @private
- */
 olcs.Overlay.prototype.getRect_ = function(element, size) {
-  var box = element.getBoundingClientRect();
-  var offsetX = box.left + window.pageXOffset;
-  var offsetY = box.top + window.pageYOffset;
+  const box = element.getBoundingClientRect();
+  const offsetX = box.left + window.pageXOffset;
+  const offsetY = box.top + window.pageYOffset;
   return [
     offsetX,
     offsetY,
@@ -345,131 +181,101 @@ olcs.Overlay.prototype.getRect_ = function(element, size) {
   ];
 };
 
-
-/**
- * Set the positioning for this overlay.
- * @param {ol.OverlayPositioning} positioning how the overlay is
- *     positioned relative to its point on the map.
- * @observable
- * @api
- */
-olcs.Overlay.prototype.setPositioning = function(positioning) {
-  this.set(olcs.Overlay.Property_.POSITIONING, positioning);
+olcs.Overlay.prototype.init = function() {
+  this.changePosition_();
+  this.changeElement_();
 };
-
-
 /**
- * Modify the visibility of the element.
- * @param {boolean} visible Element visibility.
- * @protected
+ * @private
  */
-olcs.Overlay.prototype.setVisible = function(visible) {
-  if (this.rendered_.visible !== visible) {
-    this.element_.style.display = visible ? '' : 'none';
-    this.rendered_.visible = visible;
+olcs.Overlay.prototype.changePosition_ = function() {
+  const position = this.parent_.getPosition();
+
+  if (position) {
+    this.element_.style.display = '';
+    const sourceProjection = this.parent_.getMap().getView().getProjection();
+    const coords = ol.proj.transform(position, sourceProjection, 'EPSG:4326');
+    this.setPosition(coords);
+    this.handleMapChanged();
+  } else {
+    this.element_.style.display = 'none';
   }
 };
 
+/**
+ * @private
+ */
+olcs.Overlay.prototype.changeElement_ = function() {
+  function cloneNode(node, parent) {
+    const clone = node.cloneNode();
+    if (parent) {
+      parent.appendChild(clone);
+    }
+    if (node.nodeType != Node.TEXT_NODE) {
+      clone.addEventListener('click', function(event) {
+        node.dispatchEvent(new MouseEvent('click', event));
+        event.stopPropagation();
+      });
+    }
+    const nodes = node.childNodes;
+    for (let i = 0; i < nodes.length; i++) {
+      if (!nodes[i]) {
+        continue;
+      }
+      cloneNode(nodes[i], clone);
+    }
+    return clone;
+  }
+
+  if (this.parent_.getElement()) {
+    const clonedNode = cloneNode(this.parent_.getElement(), null);
+
+    this.setElement(clonedNode);
+    const parentNode = this.getElement().parentNode;
+    while (parentNode.firstChild) {
+      parentNode.removeChild(parentNode.firstChild);
+    }
+    const childNodes = this.parent_.getElement().parentNode.childNodes;
+    for (let i = 0; i < childNodes.length; i++) {
+      cloneNode(childNodes[i], parentNode);
+    }
+  }
+};
 
 /**
  * Update pixel position.
  * @protected
  */
 olcs.Overlay.prototype.updatePixelPosition = function() {
-  var scene = this.getScene();
-  var position = this.getPosition();
+  const scene = this.getScene();
+  const position = this.getPosition();
   if (!scene || !position) {
     this.setVisible(false);
     return;
   }
-  var cartesian;
-  if(position.length === 2){
-      cartesian = Cesium.Cartesian3.fromDegreesArray(position)[0];
-  }else{
-      cartesian = Cesium.Cartesian3.fromDegreesArrayHeights(position)[0];
+  let cartesian;
+  if (position.length === 2) {
+    cartesian = Cesium.Cartesian3.fromDegreesArray(position)[0];
+  } else {
+    cartesian = Cesium.Cartesian3.fromDegreesArrayHeights(position)[0];
   }
 
-  var pixel = scene.cartesianToCanvasCoordinates(cartesian);
-  pixel = [pixel.x, pixel.y];
-  var mapSize = [scene.canvas.width, scene.canvas.height];
+  const pixelCartesian = scene.cartesianToCanvasCoordinates(cartesian);
+  const pixel = [pixelCartesian.x, pixelCartesian.y];
+  const mapSize = [scene.canvas.width, scene.canvas.height];
   this.updateRenderedPosition(pixel, mapSize);
 };
 
-
-/**
- * @param {ol.Pixel} pixel The pixel location.
- * @param {ol.Size|undefined} mapSize The map size.
- * @protected
- */
-olcs.Overlay.prototype.updateRenderedPosition = function(pixel, mapSize) {
-  var style = this.element_.style;
-  var offset = this.getOffset();
-
-  var positioning = this.getPositioning();
-
-  this.setVisible(true);
-
-  var offsetX = offset[0];
-  var offsetY = offset[1];
-  if (positioning == ol.OverlayPositioning.BOTTOM_RIGHT ||
-      positioning == ol.OverlayPositioning.CENTER_RIGHT ||
-      positioning == ol.OverlayPositioning.TOP_RIGHT) {
-    if (this.rendered_.left_ !== '') {
-      this.rendered_.left_ = style.left = '';
-    }
-    var right = Math.round(mapSize[0] - pixel[0] - offsetX) + 'px';
-    if (this.rendered_.right_ != right) {
-      this.rendered_.right_ = style.right = right;
-    }
-  } else {
-    if (this.rendered_.right_ !== '') {
-      this.rendered_.right_ = style.right = '';
-    }
-    if (positioning == ol.OverlayPositioning.BOTTOM_CENTER ||
-        positioning == ol.OverlayPositioning.CENTER_CENTER ||
-        positioning == ol.OverlayPositioning.TOP_CENTER) {
-      offsetX -= this.element_.offsetWidth / 2;
-    }
-    var left = Math.round(pixel[0] + offsetX) + 'px';
-    if (this.rendered_.left_ != left) {
-      this.rendered_.left_ = style.left = left;
-    }
+olcs.Overlay.prototype.destroy = function() {
+  if (this.observer_) {
+    this.observer_.disconnect();
+    this.observer_ = null;
   }
-  if (positioning == ol.OverlayPositioning.BOTTOM_LEFT ||
-      positioning == ol.OverlayPositioning.BOTTOM_CENTER ||
-      positioning == ol.OverlayPositioning.BOTTOM_RIGHT) {
-    if (this.rendered_.top_ !== '') {
-      this.rendered_.top_ = style.top = '';
-    }
-    var bottom = Math.round(mapSize[1] - pixel[1] - offsetY) + 'px';
-    if (this.rendered_.bottom_ != bottom) {
-      this.rendered_.bottom_ = style.bottom = bottom;
-    }
+  this.listenerKeys_.forEach(ol.Observable.unByKey);
+  this.listenerKeys_.splice(0);
+  if (this.element_.removeNode) {
+    this.element_.removeNode(true);
   } else {
-    if (this.rendered_.bottom_ !== '') {
-      this.rendered_.bottom_ = style.bottom = '';
-    }
-    if (positioning == ol.OverlayPositioning.CENTER_LEFT ||
-        positioning == ol.OverlayPositioning.CENTER_CENTER ||
-        positioning == ol.OverlayPositioning.CENTER_RIGHT) {
-      offsetY -= this.element_.offsetHeight / 2;
-    }
-    var top = Math.round(pixel[1] + offsetY) + 'px';
-    if (this.rendered_.top_ != top) {
-      this.rendered_.top_ = style.top = top;
-    }
+    this.element_.remove();
   }
-};
-
-
-/**
- * @enum {string}
- * @private
- */
-olcs.Overlay.Property_ = {
-  ELEMENT: 'element',
-  MAP: 'map',
-  OFFSET: 'offset',
-  POSITION: 'position',
-  POSITIONING: 'positioning'
 };

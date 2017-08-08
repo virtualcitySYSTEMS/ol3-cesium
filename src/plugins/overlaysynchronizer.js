@@ -6,8 +6,6 @@ goog.require('ol');
 goog.require('ol.events');
 goog.require('ol.proj');
 
-
-
 /**
  * @param {!ol.Map} map
  * @param {!Cesium.Scene} scene
@@ -18,45 +16,50 @@ goog.require('ol.proj');
  * @api
  */
 olcs.OverlaySynchronizer = function(map, scene) {
-    /**
-     * @type {!ol.Map}
-     * @protected
-     */
-    this.map = map;
+  /**
+   * @type {!ol.Map}
+   * @protected
+   */
+  this.map = map;
 
-    /**
-     *
-     * @type {ol.Collection.<ol.Overlay>}
-     */
-    this.overlays = this.map.getOverlays();
+  /**
+   * @type {ol.Collection.<ol.Overlay>}
+   * @private
+   */
+  this.overlays = this.map.getOverlays();
 
+  /**
+   * @type {!Cesium.Scene}
+   * @protected
+   */
+  this.scene = scene;
 
-    /**
-     * @type {!Cesium.Scene}
-     * @protected
-     */
-    this.scene = scene;
+  /**
+   * @private
+   * @type {!Element}
+   */
+  this.overlayContainerStopEvent_ = document.createElement('DIV');
+  this.overlayContainerStopEvent_.className = 'ol-overlaycontainer-stopevent';
+  const overlayEvents = [
+    ol.events.EventType.CLICK,
+    ol.events.EventType.DBLCLICK,
+    ol.events.EventType.MOUSEDOWN,
+    ol.events.EventType.TOUCHSTART,
+    ol.events.EventType.MSPOINTERDOWN,
+    ol.MapBrowserEventType.POINTERDOWN,
+    ol.events.EventType.MOUSEWHEEL,
+    ol.events.EventType.WHEEL
+  ];
+  overlayEvents.forEach((event) => {
+    ol.events.listen(this.overlayContainerStopEvent_, event, ol.events.Event.stopPropagation);
+  });
+  this.scene.canvas.parentElement.appendChild(this.overlayContainerStopEvent_);
 
-    /**
-     * @private
-     * @type {!Element}
-     */
-    this.overlayContainerStopEvent_ = document.createElement('DIV');
-    this.overlayContainerStopEvent_.className = 'ol-overlaycontainer-stopevent';
-    var overlayEvents = [
-        ol.events.EventType.CLICK,
-        ol.events.EventType.DBLCLICK,
-        ol.events.EventType.MOUSEDOWN,
-        ol.events.EventType.TOUCHSTART,
-        ol.events.EventType.MSPOINTERDOWN,
-        ol.MapBrowserEventType.POINTERDOWN,
-        ol.events.EventType.MOUSEWHEEL,
-        ol.events.EventType.WHEEL
-    ];
-    for (var i = 0, ii = overlayEvents.length; i < ii; ++i) {
-        ol.events.listen(this.overlayContainerStopEvent_, overlayEvents[i], ol.events.Event.stopPropagation);
-    }
-    this.scene.canvas.parentElement.appendChild(this.overlayContainerStopEvent_);
+  /**
+   * @type {Object<string,olcs.Overlay>}
+   * @private
+   */
+  this.overlayMap_ = {};
 };
 
 
@@ -69,8 +72,9 @@ olcs.OverlaySynchronizer = function(map, scene) {
  * @return {!Element} The map's overlay container that stops events.
  */
 olcs.OverlaySynchronizer.prototype.getOverlayContainerStopEvent = function() {
-    return this.overlayContainerStopEvent_;
+  return this.overlayContainerStopEvent_;
 };
+
 /**
  * Get the element that serves as a container for overlays that don't allow
  * event propagation. Elements added to this container won't let mousedown and
@@ -79,9 +83,8 @@ olcs.OverlaySynchronizer.prototype.getOverlayContainerStopEvent = function() {
  * @return {!Element} The map's overlay container that stops events.
  */
 olcs.OverlaySynchronizer.prototype.getOverlayContainer = function() {
-    return this.overlayContainerStopEvent_;
+  return this.overlayContainerStopEvent_;
 };
-
 
 /**
  * Destroy all and perform complete synchronization of the layers.
@@ -90,112 +93,54 @@ olcs.OverlaySynchronizer.prototype.getOverlayContainer = function() {
 olcs.OverlaySynchronizer.prototype.synchronize = function() {
   this.destroyAll();
   this.addOverlays();
-  this.overlays.on('add', this.addOverlayFromEvent.bind(this));
-
-
-
+  this.overlays.on('add', this.addOverlayFromEvent_.bind(this));
+  this.overlays.on('remove', this.removeOverlayerEvent_.bind(this));
 };
 
+/**
+ * @param {ol.Collection.Event} event
+ * @private
+ */
+olcs.OverlaySynchronizer.prototype.addOverlayFromEvent_ = function(event) {
+  const overlay = /** @type {ol.Overlay} */ (event.element);
+  this.addOverlay(overlay);
+};
 
+/**
+ * @param {ol.Collection.Event} event
+ * @private
+ */
+olcs.OverlaySynchronizer.prototype.removeOverlayerEvent_ = function(event) {
+  const removedOverlay = /** @type {ol.Overlay} */ (event.element);
+  const overlayId = ol.getUid(removedOverlay).toString();
+  const csOverlay = this.overlayMap_[overlayId];
+  if (csOverlay) {
+    csOverlay.destroy();
+  }
+};
 /**
  * @api
  */
 olcs.OverlaySynchronizer.prototype.addOverlays = function() {
-    this.overlays.forEach(function(overlay) {
-        this.addOverlay(overlay);
-    }.bind(this));
+  this.overlays.forEach(this.addOverlay, this);
 };
 
 /**
- * @api
- */
-olcs.OverlaySynchronizer.prototype.addOverlayFromEvent = function(event) {
-    var overlay = event.element;
-    this.addOverlay(overlay);
-};
-/**
+ * @param {ol.Overlay} overlay
  * @api
  */
 olcs.OverlaySynchronizer.prototype.addOverlay = function(overlay) {
-    var cesiumOverlay = new olcs.Overlay({
-        scene: this.scene,
-        synchronizer: this,
-        element: overlay.element
-    });
-    overlay.on('change:position', this.setPosition.bind(this, cesiumOverlay, overlay));
-    var target = overlay.getElement().parentNode;
-    var observer = new MutationObserver(this.setElement.bind(this, cesiumOverlay, overlay));
-    observer.observe(target, {
-        attributes: false,
-        childList: true,
-        characterData: false,
-        subtree:true
-    });
-    overlay.on('change:element', this.setElement.bind(this, cesiumOverlay, overlay));
+  const cesiumOverlay = new olcs.Overlay({
+    scene: this.scene,
+    synchronizer: this,
+    parent: overlay
+  });
 
-    this.setPosition(cesiumOverlay, overlay);
-    this.setElement(cesiumOverlay, overlay);
-    cesiumOverlay.handleMapChanged();
+  cesiumOverlay.init();
+  cesiumOverlay.handleMapChanged();
+  const overlayId = ol.getUid(overlay).toString();
+  this.overlayMap_[overlayId] = cesiumOverlay;
 };
-
-olcs.OverlaySynchronizer.prototype.setPosition= function(cesiumOverlay,overlay){
-    if(overlay.getPosition()) {
-        var coords = ol.proj.transform(overlay.getPosition(), 'EPSG:25832', 'EPSG:4326');
-        cesiumOverlay.setPosition(coords);
-        cesiumOverlay.handleMapChanged();
-    }
-
-};
-olcs.OverlaySynchronizer.prototype.setElement= function(cesiumOverlay,overlay){
-    if(overlay.getElement()) {
-        function cloneNode(node, parent) {
-            var clone = node.cloneNode();
-            if(parent){
-                parent.appendChild(clone);
-            }
-            if(node.nodeType != Node.TEXT_NODE){
-                clone.addEventListener('click', function(event){
-                   node.dispatchEvent(new MouseEvent('click', event));
-                   event.stopPropagation();
-                });
-            }
-            // do some thing with the node here
-            var nodes = node.childNodes;
-            for (var i = 0; i < nodes.length; i++) {
-                if (!nodes[i]) {
-                    continue;
-                }
-
-                //if (nodes[i].childNodes.length > 0) {
-                    cloneNode(nodes[i], clone);
-                //}
-            }
-            return clone
-        }
-        var clonedNode = cloneNode(overlay.getElement(), null);
-        /*var ni = document.createNodeIterator(overlay.getElement().parentNode, NodeFilter.SHOW_ELEMENT);
-
-
-        while(currentNode = ni.nextNode()) {
-            console.log(currentNode.nodeName);
-        }*/
-        // var test = overlay.getElement().parentNode.cloneNode(true)
-        cesiumOverlay.setElement(clonedNode);
-        var parentNode = cesiumOverlay.getElement().parentNode
-        while (parentNode.firstChild) {
-            parentNode.removeChild(parentNode.firstChild);
-        }
-        var childNodes = overlay.getElement().parentNode.childNodes;
-        for (var i = 0; i < childNodes.length; i++) {
-            cloneNode(childNodes[i], parentNode)
-        }
-    }
-};
-
-
-
-
-
 
 /**
  * Destroys all the created Cesium objects.
