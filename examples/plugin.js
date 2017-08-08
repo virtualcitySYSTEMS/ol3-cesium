@@ -1,4 +1,3 @@
-
 const url = "https://geodienste.hamburg.de/HH_WMS_Geobasisdaten_SW?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=false&t=175&zufall=0.8377870053429077&LAYERS=1%2C5%2C9%2C13&WIDTH=512&HEIGHT=512&CRS=EPSG%3A25832&STYLES=&BBOX=548463.9429414708%2C5939047.929774118%2C556591.9385523532%2C5947175.925385";
 /*new ol.layer.Tile({
     extent: [897225.391044, 6898048.905789, 1350432.848029, 7379696.513570],
@@ -15,6 +14,7 @@ var sourceOptions = {
     url: "http://PC220/geodienstehamburgde/HH_WMS_Geobasisdaten_SW",
     params: params
 };
+
 var source = new ol.source.TileWMS(sourceOptions);
 proj4.defs("EPSG:25832","+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs");
 
@@ -57,35 +57,72 @@ const terrainProvider = new Cesium.CesiumTerrainProvider({
   requestVertexNormals: true
 });
 scene.terrainProvider = terrainProvider;
+var content = document.getElementById('popup-content');
+var closer = document.getElementById('popup-closer');
 
 
 var popup = new ol.Overlay({
-    element: document.getElementById('popup')
+  element: document.getElementById('popup'),
+  autoPan: true,
+  positioning: 'bottom-center'
 });
 ol2d.addOverlay(popup);
 
+closer.onclick = function() {
+  popup.setPosition(undefined);
+  closer.blur();
+  return false;
+};
+var popupActive = false;
+
 var setPopup = function(evt) {
-
-    var div = document.createElement("div");
-
-    var element = popup.getElement();
+    // var div = document.createElement("div");
+    // var element = popup.getElement();
     var coordinate = evt.coordinate;
     var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
         coordinate, 'EPSG:25832', 'EPSG:4326'));
-    div.innerHTML = '<p>The location you clicked was:</p><code>' + hdms + '</code>';
-    $(element).popover('destroy');
+    content.innerHTML = '<p>The location you clicked was:</p><code>' + hdms + '</code>';
+    // $(element).popover('destroy');
+    // if (popupActive) {
+    //   popupActive = false;
+    //   return;
+    // }
+    // $(element).popover({
+    //     'placement': 'top',
+    //     'animation': false,
+    //     'html': true,
+    //     'content': div
+    // });
+    // $(element).popover('show');
     popup.setPosition(coordinate);
-    // the keys are quoted to prevent renaming in ADVANCED mode.
-    $(element).popover({
-        'placement': 'top',
-        'animation': false,
-        'html': true,
-        'content': div
-    });
-    $(element).popover('show');
-    div.addEventListener('click',function(){alert('test')});
+    popupActive = true;
+};
+var addPopup = function(evt) {
+  var innerContainer = document.getElementById('popup').cloneNode(true);
+  innerContainer.id = '';
+  var innerPopup = new ol.Overlay({
+    autoPan: true,
+    positioning: 'bottom-center',
+    element: innerContainer
+  });
+  ol2d.addOverlay(innerPopup);
+
+  var coordinate = evt.coordinate;
+  innerPopup.setPosition(coordinate);
+  var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
+    coordinate, 'EPSG:25832', 'EPSG:4326'));
+  innerContainer.childNodes.forEach(function(child) {
+    if (child.id === 'popup-content') {
+      child.innerHTML = '<p>The location you clicked was:</p><code>' + hdms + '</code>';
+      console.log(child);
+    } else if (child.id === 'popup-closer') {
+      child.onclick = function() {
+        ol2d.removeOverlay(innerPopup);
+      };
+    }
+  });
 }
-ol2d.on('click', setPopup);
+ol2d.on('click', addPopup);
 
 var reactToClickEvent = function(event) {
 
@@ -134,7 +171,7 @@ var reactToClickEvent = function(event) {
     } else {
         var transformedCoords = ol.proj.transform(coords, ol.proj.get("EPSG:4326"), projection);
 
-        setPopup({coordinate: transformedCoords});
+        addPopup({coordinate: transformedCoords});
         //popup.setPosition(transformedCoords);
         //Radio.trigger("Map", "clickedMAP", transformedCoords);
     }
