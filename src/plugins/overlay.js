@@ -240,7 +240,7 @@ olcs.Overlay.prototype.getElement = function() {
 };
 
 /**
- * @param {ol.Coordinate} position
+ * @param {ol.Coordinate|undefined} position
  * @todo what does this do? Shouldn't this trigger something?
  */
 olcs.Overlay.prototype.setPosition = function(position) {
@@ -268,7 +268,7 @@ olcs.Overlay.prototype.changePosition_ = function() {
     this.setPosition(coords);
     this.handleMapChanged();
   } else {
-    this.setPosition(position);
+    this.setPosition(undefined);
     this.setVisible(false);
   }
 };
