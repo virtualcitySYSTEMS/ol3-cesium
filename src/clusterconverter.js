@@ -318,12 +318,10 @@ olcs.ClusterConverter.prototype.olGeometry4326TextOptionsPartToCesium = function
  * Sets a layers style function. To unset a previously set style function, pass null as the second argument
  * @param {ol.layer.Layer} layer
  * @param {Function|null} styleFunction
- * @param {string=} opt_prop and optional property by which to identify the layer
- * @todo how to handle layer identification
  * @api
  */
-olcs.ClusterConverter.prototype.setLayerStyle = function(layer, styleFunction, opt_prop) {
-  const id = layer.get('name');
+olcs.ClusterConverter.prototype.setLayerStyle = function(layer, styleFunction) {
+  const id = ol.getUid(layer).toString();
   goog.asserts.assertString(id);
   if (styleFunction !== null) {
     goog.asserts.assertFunction(styleFunction);
@@ -367,11 +365,8 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.billboard.heightReference = heightReference;
   cluster.label.heightReference = heightReference;
 
-  const id = layer.get('name');
-  let specificClusterStyle = false;
-  if (id && typeof id === 'string') {
-    specificClusterStyle = this.layerStyleMap_[id];
-  }
+  const id = ol.getUid(layer).toString();
+  let specificClusterStyle = this.layerStyleMap_[id];
   if (specificClusterStyle && typeof specificClusterStyle === 'function') {
     specificClusterStyle(entities, cluster);
   } else {
