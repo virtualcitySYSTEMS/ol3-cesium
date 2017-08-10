@@ -83,6 +83,7 @@ olcs.ClusterConverter.prototype.olVectorLayerToCesium = function(olLayer, olView
 
   const dataSource = counterpart.getDataSource();
   dataSource.clustering.clusterEvent.addEventListener(this.clusterStyle.bind(this, olLayer));
+  dataSource.clustering.enabled = true;
   return counterpart;
 };
 

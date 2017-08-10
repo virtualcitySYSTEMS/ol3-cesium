@@ -20,7 +20,7 @@ olcs.core.ClusterLayerCounterpart = function (layerProjection, scene, olLayer) {
    * @private
    */
   this.dataSource_ = new Cesium.CustomDataSource(ol.getUid({}).ol_uid);
-  this.dataSource_.clustering.enabled = true;
+  this.dataSource_.clustering.enabled = false;
   this.dataSource_.clustering.minimumClusterSize = 2;
 
   const source = /** @type {!ol.source.Cluster} */ (olLayer.getSource());
@@ -40,4 +40,12 @@ goog.inherits(olcs.core.ClusterLayerCounterpart, olcs.core.VectorLayerCounterpar
  */
 olcs.core.ClusterLayerCounterpart.prototype.getDataSource = function() {
   return this.dataSource_;
+};
+
+/**
+ * @api
+ * @param {boolean} activate
+ */
+olcs.core.ClusterLayerCounterpart.prototype.setClustering = function(activate) {
+  this.dataSource_.clustering.enabled = activate;
 };
