@@ -365,6 +365,7 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   }
   cluster.billboard.heightReference = heightReference;
   cluster.label.heightReference = heightReference;
+  cluster.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
 
   const id = ol.getUid(layer).toString();
   let specificClusterStyle = this.layerStyleMap_[id];
