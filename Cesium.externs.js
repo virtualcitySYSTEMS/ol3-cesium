@@ -3400,6 +3400,15 @@ Cesium.EntityCluster.prototype.minimumClusterSize;
 /** @type {Cesium.Event} */
 Cesium.EntityCluster.prototype.clusterEvent;
 
+/** @type {boolean} */
+Cesium.EntityCluster.prototype.clusterPoints;
+
+/** @type {boolean} */
+Cesium.EntityCluster.prototype.clusterLabels;
+
+/** @type {boolean} */
+Cesium.EntityCluster.prototype.clusterBillboards;
+
 /**
  * @typedef{{
  *  id: (string|number|undefined),
