@@ -120,21 +120,25 @@ olcs.WMSRasterSynchronizer.prototype.convertLayerToCesiumImageries = function(ol
 /**
  * @inheritDoc
  */
-olcs.WMSRasterSynchronizer.prototype.createSingleLayerCounterparts = function(olLayer) {
+olcs.WMSRasterSynchronizer.prototype.createSingleLayerCounterparts = function(olLayerList) {
+  const olLayer = olLayerList[0];
   const viewProj = this.view.getProjection();
   const cesiumObjects = this.convertLayerToCesiumImageries(olLayer, viewProj);
   if (cesiumObjects) {
-    olLayer.on(['change:opacity', 'change:visible'],
-        (e) => {
-          // the compiler does not seem to be able to infer this
-          goog.asserts.assert(cesiumObjects);
-          for (let i = 0; i < cesiumObjects.length; ++i) {
-            olcs.core.updateCesiumLayerProperties(olLayer, cesiumObjects[i]);
-          }
+    olLayerList.forEach(
+        (olLayerItem) => {
+            olLayerItem.on(['change:opacity', 'change:visible'],
+            (e) => {
+              // the compiler does not seem to be able to infer this
+              goog.asserts.assert(cesiumObjects);
+              for (let i = 0; i < cesiumObjects.length; ++i) {
+                olcs.core.updateCesiumLayerProperties(olLayerList, cesiumObjects[i]);
+              }
+            });
         });
 
     for (let i = 0; i < cesiumObjects.length; ++i) {
-      olcs.core.updateCesiumLayerProperties(olLayer, cesiumObjects[i]);
+      olcs.core.updateCesiumLayerProperties(olLayerList, cesiumObjects[i]);
     }
 
     // there is no way to modify Cesium layer extent,
