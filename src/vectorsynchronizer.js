@@ -87,7 +87,8 @@ olcs.VectorSynchronizer.prototype.removeAllCesiumObjects = function(destroy) {
 /**
  * @inheritDoc
  */
-olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLayer) {
+olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLayerList) {
+  const olLayer = olLayerList[0];
   if (!(olLayer instanceof ol.layer.Vector) &&
       !(olLayer instanceof ol.layer.Image &&
       olLayer.getSource() instanceof ol.source.ImageVector)) {
@@ -110,7 +111,14 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
   const csPrimitives = counterpart.getRootPrimitive();
   const olListenKeys = counterpart.olListenKeys;
 
-  csPrimitives.show = olLayer.getVisible();
+    olLayerList.forEach(
+        (olLayerItem) => {
+            olLayerItem.on('change:visible',
+                (e) => {
+                  olcs.core.updateCesiumLayerProperties(olLayerList, csPrimitives);
+                });
+        });
+  olcs.core.updateCesiumLayerProperties(olLayerList, csPrimitives);
 
   olListenKeys.push(ol.events.listen(olLayer, 'change:visible', (e) => {
     csPrimitives.show = olLayer.getVisible();
