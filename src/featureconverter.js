@@ -149,7 +149,8 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     }
     primitive = new Cesium.GroundPrimitive({
       // always update Cesium externs before adding a property
-      geometryInstances: instances
+      geometryInstances: instances,
+      classificationType : Cesium.ClassificationType.TERRAIN
     });
   } else {
     const appearance = new Cesium.PerInstanceColorAppearance(feature.get("extrudedHeight") ? extrudedOptions : options);
@@ -386,7 +387,8 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
         attributes: {
           color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
         }
-      })
+      }),
+      classificationType : Cesium.ClassificationType.TERRAIN
     });
   } else {
     outlinePrimitive = new Cesium.Primitive({
