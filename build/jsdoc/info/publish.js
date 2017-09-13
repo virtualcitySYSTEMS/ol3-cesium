@@ -70,11 +70,13 @@ exports.publish = function(data, opts) {
         });
       } else {
         var typedef = typedefs[typedefs.length - 1];
-        var type = typedef.types[0];
-        typedef.types[0] = type
+        if (typedef.name === doc.memberof) {
+          var type = typedef.types[0];
+          typedef.types[0] = type
             .replace(/\}$/, ', ' + doc.longname.split('#')[1] +
-                ': (' + getTypes(doc.type.names).join('|') + ')}')
+              ': (' + getTypes(doc.type.names).join('|') + ')}')
             .replace('{, ', '{');
+        }
       }
     } else if (doc.define) {
       defines.push({

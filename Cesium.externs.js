@@ -1113,7 +1113,8 @@ Cesium.Primitive.prototype.olLayer;
 
 /**
  * @typedef {{
- *   geometryInstances: (!Array.<Cesium.GeometryInstance>|Cesium.GeometryInstance)
+ *   geometryInstances: (!Array.<Cesium.GeometryInstance>|Cesium.GeometryInstance),
+ *   classificationType: Cesium.ClassificationType
  * }}
  */
 Cesium.optionsGroundPrimitive;
@@ -3472,3 +3473,14 @@ Cesium.ShadowMode = {
   RECEIVE_ONLY: 3,
   NUMBER_OF_SHADOW_MODES: 4
 };
+
+
+/**
+ * @enum {number}
+ */
+Cesium.ClassificationType = {
+  TERRAIN: 0,
+  CESIUM_3D_TILE: 1,
+  BOTH: 2
+};
+
