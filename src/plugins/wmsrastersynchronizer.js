@@ -98,9 +98,20 @@ olcs.WMSRasterSynchronizer.prototype.convertLayerToCesiumImageries = function(ol
         const options = {
             'url': source.getUrls()[0],
             'parameters': params,
-            'layers': params['LAYERS']
+            'layers': params['LAYERS'],
+            'show' : false
         };
-
+        const tileGrid = source.getTileGrid();
+        if(tileGrid){
+            options['tileWidth'] = tileGrid.getTileSize(0)[0];
+            options['tileHeight'] = tileGrid.getTileSize(0)[1];
+            options['minimumLevel'] = 0;
+            options['maximumLevel'] = tileGrid.getMaxZoom();
+            const ext = olLayer.getExtent();
+            if (ext && viewProj) {
+                options['rectangle'] = olcs.core.extentToRectangle(ext, viewProj);
+            }
+        }
 
         provider = new Cesium.WebMapServiceImageryProvider(options);
     } else {
@@ -110,7 +121,9 @@ olcs.WMSRasterSynchronizer.prototype.convertLayerToCesiumImageries = function(ol
 
     // the provider is always non-null if we got this far
 
-    const layerOptions = {};
+    const layerOptions = {
+        'show' : false
+    };
 
     const cesiumLayer = new Cesium.ImageryLayer(provider, layerOptions);
     return cesiumLayer ? [cesiumLayer] : null;
