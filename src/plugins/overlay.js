@@ -100,7 +100,7 @@ olcs.Overlay.prototype.addMutationObserver_ = function(target) {
   if (this.observer_ === null) {
     this.observer_ = new MutationObserver(this.changeElement_.bind(this));
     this.observer_.observe(target, {
-      attributes: false,
+      attributes: true,
       childList: true,
       characterData: false,
       subtree: true
