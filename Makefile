@@ -92,6 +92,7 @@ cleanall: clean
 	cp -R cesium/Build/CesiumUnminified dist/
 	cp -R examples dist/
 	cp ol/css/ol.css dist/
+	cp css/olcs.css dist/
 	$(SEDI) 'sYDIST = falseYDIST = trueY' dist/examples/inject_ol_cesium.js
 	$(SEDI) 'sY@loaderYolcesium.jsY' dist/examples/inject_ol_cesium.js
 	$(SEDI) 'sY../cesium/Build/Y../Y' dist/examples/inject_ol_cesium.js
