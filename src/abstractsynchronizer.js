@@ -78,7 +78,7 @@ olcs.AbstractSynchronizer = function(map, scene) {
  */
 olcs.AbstractSynchronizer.prototype.synchronize = function() {
   this.destroyAll();
-  this.addLayers_(this.mapLayerGroup);
+  this.addLayers_(this.mapLayerGroup, true);
 };
 
 
@@ -97,16 +97,18 @@ olcs.AbstractSynchronizer.prototype.orderLayers = function() {
  * @param {ol.layer.Base} root
  * @private
  */
-olcs.AbstractSynchronizer.prototype.addLayers_ = function(root) {
+olcs.AbstractSynchronizer.prototype.addLayers_ = function(root, isMapLayerGroup) {
   /** @type {Array.<Array.<!ol.layer.Base>>} */
   const fifo = [];
-  if(root instanceof ol.layer.Group){
+  if(isMapLayerGroup && root instanceof ol.layer.Group){
     this.listenForGroupChanges_(root);
     root.getLayers().forEach((l) => {
       if (l) {
         fifo.push([l]);
       }
     });
+  } else {
+      fifo.push([root]);
   }
 
   while (fifo.length > 0) {
@@ -234,7 +236,7 @@ olcs.AbstractSynchronizer.prototype.listenForGroupChanges_ = function(group) {
     if (collection) {
       contentKeys = [
         collection.on('add', function(event) {
-          this.addLayers_(event.element);
+          this.addLayers_(event.element, false);
         }, this),
         collection.on('remove', function(event) {
           this.removeLayer_(event.element);
