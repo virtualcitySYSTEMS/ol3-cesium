@@ -100,6 +100,9 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
   if (source instanceof ol.source.ImageVector) {
     source = source.getSource();
   }
+  if (source instanceof ol.source.Cluster) {
+    source = source.getSource();
+  }
 
   goog.asserts.assertInstanceof(source, ol.source.Vector);
   goog.asserts.assert(this.view);

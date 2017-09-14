@@ -988,6 +988,9 @@ olcs.FeatureConverter.prototype.olVectorLayerToCesium = function(olLayer, olView
       return new olcs.core.VectorLayerCounterpart(proj, this.scene);
     }
   }
+  if(source instanceof ol.source.Cluster){
+      source = source.getSource();
+  }
 
   goog.asserts.assertInstanceof(source, ol.source.Vector);
   const features = source.getFeatures();
