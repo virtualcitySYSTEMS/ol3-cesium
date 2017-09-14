@@ -415,12 +415,14 @@ olcs.core.updateCesiumLayerProperties = function(olLayerList, csLayer) {
   let visible = true;
   olLayerList.forEach((olLayer) => {
      var layerOpacity = olLayer.getOpacity();
-     if(layerOpacity !== undefined){
+     if(layerOpacity !== undefined && !Number.isNaN(layerOpacity)){
        opacity *= layerOpacity;
      }
      var layerVisible = olLayer.getVisible();
      if(layerVisible !== undefined){
        visible &= layerVisible;
+     }else{
+       visible = false;
      }
   });
   csLayer.alpha = opacity;
