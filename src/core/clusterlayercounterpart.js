@@ -23,7 +23,7 @@ olcs.core.ClusterLayerCounterpart = function (layerProjection, scene, olLayer) {
   this.dataSource_.clustering.enabled = false;
   this.dataSource_.clustering.minimumClusterSize = 2;
 
-  const source = /** @type {!ol.source.Cluster} */ (olLayer.getSource());
+  const source = /** @type {!ol.source.Cluster} */ (olLayer.getSource());
   this.dataSource_.clustering.pixelRange = source.getDistance();
 
   /**

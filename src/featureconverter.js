@@ -950,7 +950,7 @@ olcs.FeatureConverter.prototype.olFeatureToCesium = function(layer, feature, sty
           const prims = this.olFeatureToCesium(layer, feature, style, context,
               geom);
           if (prims) {
-            primitives.add(/** @type {!Cesium.Primitive} */ (prims));
+            primitives.add(/** @type {!Cesium.Primitive} */ (prims));
           }
         }
       });

@@ -2631,7 +2631,7 @@ Cesium.JulianDate.now = function() {};
  */
 Cesium.DataSource = function() {};
 
-/** 
+/**
  * @type {Cesium.EntityCluster}
  */
 Cesium.DataSource.prototype.clustering;

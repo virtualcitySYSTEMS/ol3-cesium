@@ -100,7 +100,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
   }
 
   geom = olcs.core.olGeometryCloneTo4326(geom, context.projection);
-  geom = /** @type{!ol.geom.Geometry} */ (geom);
+  geom = /** @type{!ol.geom.Geometry} */ (geom);
   const pointGeom = /** @type {!ol.geom.Point} */ (geom);
 
   const entityOptions = /** @type{Cesium.optionsEntity} */ ({});
@@ -214,7 +214,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
       return reallyCreateBillboard();
     }
   }
-  const entity = new Cesium.Entity(entityOptions);
+  const entity = new Cesium.Entity(entityOptions);
   this.setEntityRefForPicking(layer, feature, entity);
   return entity;
 };
@@ -378,7 +378,7 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
       features = [source.getSource().getFeatureById(entities[0].id)];
     }
     const style = layer.getStyleFunction()(new ol.Feature({ features }), 1);
-    if (style.getImage()) {
+    if (style.getImage()) {
       this._getClusterImageStyle(style.getImage(), cluster.billboard);
     }
     if (style.getText()) {
