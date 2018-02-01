@@ -115,14 +115,13 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       depthTest: {
         enabled: true
       }
-    }
+    },
+    translucent: color["alpha"] !== 1
   };
 
   const extrudedOptions = color["alpha"] === 1 ? {
-    "translucent" : false,
     closed: true
   } : {
-    "translucent" : true,
     closed : true,
     "faceForward" : true
   };
@@ -153,7 +152,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       classificationType : Cesium.ClassificationType.TERRAIN
     });
   } else {
-    const appearance = new Cesium.PerInstanceColorAppearance(feature.get("extrudedHeight") ? extrudedOptions : options);
+    const appearance = new Cesium.PerInstanceColorAppearance(feature.get("extrudedHeight") ? Object.assign(options, extrudedOptions) : options);
     primitive = new Cesium.Primitive({
       // always update Cesium externs before adding a property
       geometryInstances: instances,
@@ -312,7 +311,8 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
 
   // ol.Coordinate
   let center = olGeometry.getCenter();
-  const height = center.length == 3 ? center[2] : 0.0;
+  const height = center.length === 3 ? center[2] : 0.0;
+  const extrudedHeight = feature.get('extrudedHeight') || height;
   let point = center.slice();
   point[0] += olGeometry.getRadius();
 
@@ -327,6 +327,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     // always update Cesium externs before adding a property
     center,
     radius,
+    extrudedHeight,
     height
   });
 
@@ -334,7 +335,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     // always update Cesium externs before adding a property
     center,
     radius,
-    extrudedHeight: height,
+    extrudedHeight,
     height
   });
 
@@ -462,7 +463,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     for (let i = 0; i < rings.length; ++i) {
       const olPos = rings[i].getCoordinates();
       const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(olPos);
-      goog.asserts.assert(positions && positions.length > 0);
+      goog.asserts.assert(positions);
       if (i == 0) {
         hierarchy.positions = positions;
       } else {
@@ -483,7 +484,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     fillGeometry = new Cesium.PolygonGeometry({
       // always update Cesium externs before adding a property
       polygonHierarchy,
-      perPositionHeight: feature.get("extrudedHeight") ? false : true,
+      perPositionHeight: true,
       vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
       extrudedHeight: extrudedHeight
     });
@@ -491,7 +492,8 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     outlineGeometry = new Cesium.PolygonOutlineGeometry({
       // always update Cesium externs before adding a property
       polygonHierarchy: hierarchy,
-      perPositionHeight: feature.get("extrudedHeight") ? false : true
+      perPositionHeight: true,
+      extrudedHeight: extrudedHeight
     });
   }
 
