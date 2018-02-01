@@ -136,16 +136,15 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
   }).bind(this);
 
   const onRemoveFeature = (function(feature) {
-    const geometry = feature.getGeometry();
     const id = ol.getUid(feature);
-    if (!geometry || geometry.getType() == 'Point') {
-      const context = counterpart.context;
-      const bb = context.featureToCesiumMap[id];
-      delete context.featureToCesiumMap[id];
-      if (bb instanceof Cesium.Billboard) {
-        context.billboards.remove(bb);
-      }
+
+    const context = counterpart.context;
+    const bb = context.featureToCesiumMap[id];
+    delete context.featureToCesiumMap[id];
+    if (bb instanceof Cesium.Billboard) {
+      context.billboards.remove(bb);
     }
+
     const csPrimitive = featurePrimitiveMap[id];
     delete featurePrimitiveMap[id];
     if (csPrimitive) {
