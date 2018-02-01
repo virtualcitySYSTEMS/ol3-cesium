@@ -227,12 +227,14 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
 
   if (olStyle.getStroke()) {
     const width = this.extractLineWidthFromOlStyle(olStyle);
-    const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
+    if (width) {
+      const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
         outlineGeometry, outlineColor, width);
-    if (p2) {
-      // Some outline geometries are not supported by Cesium in clamp to ground
-      // mode. These primitives are skipped.
-      primitives.add(p2);
+      if (p2) {
+        // Some outline geometries are not supported by Cesium in clamp to ground
+        // mode. These primitives are skipped.
+        primitives.add(p2);
+      }
     }
   }
 
@@ -312,7 +314,6 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   // ol.Coordinate
   let center = olGeometry.getCenter();
   const height = center.length === 3 ? center[2] : 0.0;
-  const extrudedHeight = feature.get('extrudedHeight') || height;
   let point = center.slice();
   point[0] += olGeometry.getRadius();
 
@@ -322,7 +323,26 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
 
   // Accurate computation of straight distance
   const radius = Cesium.Cartesian3.distance(center, point);
+  const heightReference = this.getHeightReference(layer, feature, olGeometry);
 
+  if (feature.get('olcs.circle_type') === 'sphere' && heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND) {
+    const fillGeometry = new Cesium.SphereGeometry({
+      radius,
+    });
+
+    const outlineGeometry = new Cesium.SphereOutlineGeometry({
+      radius,
+    });
+    const primitives = this.wrapFillAndOutlineGeometries(
+      layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
+    const transformation = Cesium.Transforms.eastNorthUpToFixedFrame(center);
+    for (var i = 0; i < primitives.length; i++) {
+      primitives.get(i).modelMatrix = transformation;
+    }
+    return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
+  }
+
+  const extrudedHeight = feature.get('extrudedHeight') || height;
   const fillGeometry = new Cesium.CircleGeometry({
     // always update Cesium externs before adding a property
     center,
