@@ -1791,6 +1791,15 @@ Cesium.TilingScheme.prototype.getNumberOfYTilesAtLevel = function(level) {};
 
 
 /**
+ * @param {Cesium.Cartographic} position
+ * @param {number} level
+ * @param {Cesium.Cartesian2=} result
+ * @return {Cesium.Cartesian2}
+ */
+Cesium.TilingScheme.prototype.positionToTileXY = function(position, level, result) {};
+
+
+/**
  * @constructor
  * @param {Cesium.GeographicTilingSchemeOptions=} opt_options
  * @extends {Cesium.TilingScheme}
