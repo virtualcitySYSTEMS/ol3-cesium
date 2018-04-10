@@ -356,7 +356,7 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.billboard.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
   cluster.label.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
 
-  const altitudeMode = layer.get('altidudeMode');
+  const altitudeMode = layer.get('altitudeMode');
   let heightReference = Cesium.HeightReference.NONE;
   if (altitudeMode === 'clampToGround') {
     heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
