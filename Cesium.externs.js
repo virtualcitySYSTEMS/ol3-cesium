@@ -1266,6 +1266,40 @@ Cesium.optionsCircleOutlineGeometry;
 
 /**
  * @constructor
+ * @param {Cesium.optionsSphereGeometry=} opt_opts
+ * @extends {Cesium.Geometry}
+ */
+Cesium.SphereGeometry = function(opt_opts) {};
+
+/**
+ * @typedef {{
+ * radius: (number|undefined),
+ * stackPartitions: (number|undefined),
+ * slicePartitions: (number|undefined),
+ * vertexFormat: (Cesium.VertexFormat|undefined)
+ * }}
+ */
+Cesium.optionsSphereGeometry;
+
+/**
+ * @constructor
+ * @param {Cesium.optionsSphereOutlineGeometry=} opt_opts
+ * @extends {Cesium.Geometry}
+ */
+Cesium.SphereOutlineGeometry = function(opt_opts) {};
+
+/**
+ * @typedef {{
+ * radius: (number|undefined),
+ * stackPartitions: (number|undefined),
+ * slicePartitions: (number|undefined),
+ * subdivisions: (number|undefined)
+ * }}
+ */
+Cesium.optionsSphereOutlineGeometry;
+
+/**
+ * @constructor
  * @param {Cesium.optionsCircleOutlineGeometry=} opt_opts
  * @extends {Cesium.Geometry}
  */

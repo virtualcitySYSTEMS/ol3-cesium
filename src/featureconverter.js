@@ -342,7 +342,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
   }
 
-  const extrudedHeight = feature.get('extrudedHeight') || height;
+  const extrudedHeight = /** @type {number} */ (feature.get('extrudedHeight')) || height;
   const fillGeometry = new Cesium.CircleGeometry({
     // always update Cesium externs before adding a property
     center,
