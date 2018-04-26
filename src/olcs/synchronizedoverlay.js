@@ -216,10 +216,11 @@ olcs.SynchronizedOverlay.prototype.updatePixelPosition = function() {
   }
   let cartesian;
   if (position.length === 2) {
-    cartesian = Cesium.Cartesian3.fromDegreesArray(position)[0];
-  } else {
-    cartesian = Cesium.Cartesian3.fromDegreesArrayHeights(position)[0];
+    const height = this.scene_.globe.getHeight(Cesium.Cartographic.fromDegrees(position[0], position[1]));
+    position[2]  = height;
   }
+  cartesian = Cesium.Cartesian3.fromDegreesArrayHeights(position)[0];
+
   const camera = this.scene_.camera;
   const ellipsoidBoundingSphere = new Cesium.BoundingSphere(new Cesium.Cartesian3(), 6356752);
   const occluder = new Cesium.Occluder(ellipsoidBoundingSphere, camera.position);
