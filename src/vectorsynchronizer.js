@@ -171,3 +171,13 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
 
   return counterpart ? [counterpart] : null;
 };
+
+/**
+ * @param {olcs.core.VectorLayerCounterpart} object
+ * @api
+ */
+olcs.VectorSynchronizer.prototype.destroySingleLayerCounterparts = function(object) {
+  object.destroy();
+  this.destroyCesiumObject(object);
+};
+
