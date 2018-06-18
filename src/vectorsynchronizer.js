@@ -177,7 +177,6 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
  * @api
  */
 olcs.VectorSynchronizer.prototype.destroySingleLayerCounterparts = function(object) {
-  object.destroy();
-  this.destroyCesiumObject(object);
+  this.removeSingleCesiumObject(object, true);
 };
 
