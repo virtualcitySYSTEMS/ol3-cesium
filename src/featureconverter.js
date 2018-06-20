@@ -8,6 +8,7 @@ goog.require('ol.source.Vector');
 goog.require('ol.source.ImageVector');
 
 goog.require('ol.geom.SimpleGeometry');
+goog.require('ol.geom.LineString');
 goog.require('olcs.core');
 goog.require('olcs.core.VectorLayerCounterpart');
 goog.require('olcs.util');
@@ -372,13 +373,12 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
  * @param {ol.layer.Vector|ol.layer.Image} layer
  * @param {!ol.Feature} feature OpenLayers feature..
  * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
- * @param {!ol.ProjectionLike} projection
  * @param {!ol.style.Style} olStyle
  * @param {!number} extrudedHeight
  * @return {!Cesium.PrimitiveCollection} primitives
  * @private
  */
-olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(layer, feature, olGeometry, projection, olStyle, extrudedHeight) {
+olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(layer, feature, olGeometry, olStyle, extrudedHeight) {
   const coords = olGeometry.getCoordinates();
   let minimumHeight = Infinity;
   let i = coords.length;
@@ -416,18 +416,19 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
  * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
  * @param {!ol.ProjectionLike} projection
  * @param {!ol.style.Style} olStyle
+ * @param {boolean=} noExtrusion - XXX fairly hacky, solution could be an internal function
  * @return {!Cesium.PrimitiveCollection} primitives
  * @api
  */
-olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, feature, olGeometry, projection, olStyle) {
+olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, feature, olGeometry, projection, olStyle, noExtrusion) {
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
   goog.asserts.assert(olGeometry.getType() == 'LineString');
 
   const extrudedHeight = /** @type {number} */ (feature.get('extrudedHeight'));
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
 
-  if (extrudedHeight && heightReference === Cesium.HeightReference.NONE) {
-    return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, projection, olStyle, extrudedHeight);
+  if (!noExtrusion && extrudedHeight && heightReference === Cesium.HeightReference.NONE) {
+    return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, olStyle, extrudedHeight);
   }
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(
@@ -617,6 +618,24 @@ olcs.FeatureConverter.prototype.getHeightReference = function(layer, feature, ge
   return heightReference;
 };
 
+/**
+ * @param {ol.layer.Vector|ol.layer.Image} layer
+ * @param {!ol.Feature} feature OpenLayers feature..
+ * @param {!ol.geom.Point} olGeometry OpenLayers point geometry.
+ * @param {!ol.style.Style} style
+ * @param {!number} originalHeight
+ * @return {!Cesium.PrimitiveCollection}
+ * @private
+ */
+olcs.FeatureConverter.prototype.olPointGeometryToCesiumPin_ = function(layer, feature, olGeometry, style, originalHeight) {
+  const top = olGeometry.getCoordinates();
+  const bottom = top.slice();
+  bottom[2] = originalHeight;
+  const line = new ol.geom.LineString([top, bottom]);
+  line.set('altitudeMode', 'absolute');
+
+  return this.olLineStringGeometryToCesium(layer, feature, line, 'EPSG:4326', style, true);
+};
 
 /**
  * Convert a point geometry to a Cesium BillboardCollection.
@@ -635,6 +654,14 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
     opt_newBillboardCallback) {
   goog.asserts.assert(olGeometry.getType() == 'Point');
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
+  const extrudedHeight = Number(feature.get('extrudedHeight'));
+  let originalHeight = null;
+  if (extrudedHeight && Number.isFinite(extrudedHeight)) {
+    const coords = olGeometry.getCoordinates();
+    originalHeight = coords[2] || 0;
+    coords[2] = extrudedHeight;
+    olGeometry.setCoordinates(coords);
+  }
 
   const imageStyle = style.getImage();
   if (imageStyle) {
@@ -746,7 +773,9 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
     }
   }
 
-  if (style.getText()) {
+  if (originalHeight !== null) {
+    return this.olPointGeometryToCesiumPin_(layer, feature, olGeometry, style, originalHeight);
+  } else  if (style.getText()) {
     return this.addTextStyle(layer, feature, olGeometry, style,
         new Cesium.Primitive());
   } else {
