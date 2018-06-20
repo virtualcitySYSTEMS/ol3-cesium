@@ -122,8 +122,8 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
   const extrudedOptions = color["alpha"] === 1 ? {
     closed: true
   } : {
-    closed : true,
-    "faceForward" : true
+    closed: true,
+    faceForward: true
   };
 
   if (opt_lineWidth !== undefined) {
@@ -367,6 +367,47 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
 };
 
+/**
+ * Convert an OpenLayers line string geometry to Cesium.
+ * @param {ol.layer.Vector|ol.layer.Image} layer
+ * @param {!ol.Feature} feature OpenLayers feature..
+ * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
+ * @param {!ol.ProjectionLike} projection
+ * @param {!ol.style.Style} olStyle
+ * @param {!number} extrudedHeight
+ * @return {!Cesium.PrimitiveCollection} primitives
+ * @private
+ */
+olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(layer, feature, olGeometry, projection, olStyle, extrudedHeight) {
+  const coords = olGeometry.getCoordinates();
+  let minimumHeight = Infinity;
+  let i = coords.length;
+  while (i--) {
+    minimumHeight = coords[i][2] && coords[i][2] < minimumHeight ? coords[i][2] : minimumHeight;
+  }
+  minimumHeight = minimumHeight === Infinity ? 0 : minimumHeight;
+
+  const skirt = Number(feature.get('skirt'));
+  if (skirt && Number.isFinite(skirt)) {
+    minimumHeight -= skirt;
+  }
+
+  const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(coords);
+  const fillGeometry = Cesium.WallGeometry.fromConstantHeights({
+    positions,
+    maximumHeight: extrudedHeight,
+    minimumHeight,
+  });
+
+  const outlineGeometry = Cesium.WallOutlineGeometry.fromConstantHeights({
+    positions,
+    maximumHeight: extrudedHeight,
+    minimumHeight,
+  });
+
+  const primitives = this.wrapFillAndOutlineGeometries(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
+  return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
+};
 
 /**
  * Convert an OpenLayers line string geometry to Cesium.
@@ -379,9 +420,15 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
  * @api
  */
 olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, feature, olGeometry, projection, olStyle) {
-
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
   goog.asserts.assert(olGeometry.getType() == 'LineString');
+
+  const extrudedHeight = /** @type {number} */ (feature.get('extrudedHeight'));
+  const heightReference = this.getHeightReference(layer, feature, olGeometry);
+
+  if (extrudedHeight && heightReference === Cesium.HeightReference.NONE) {
+    return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, projection, olStyle, extrudedHeight);
+  }
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(
       olGeometry.getCoordinates());
@@ -399,8 +446,6 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   };
 
   let outlinePrimitive;
-  const heightReference = this.getHeightReference(layer, feature, olGeometry);
-
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
     const color = this.extractColorFromOlStyle(olStyle, true);
     outlinePrimitive = new Cesium.GroundPrimitive({

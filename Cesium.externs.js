@@ -1483,6 +1483,53 @@ Cesium.optionsPolylineGeometry;
  */
 Cesium.PolygonOutlineGeometry = function(object) {};
 
+/**
+ * @typedef {{
+ *  positions: !Array<Cesium.Cartesian3>,
+ *  granularity: (number|undefined),
+ *  maximumHeights: (Array<number>|undefined),
+ *  minimumHeights: (Array<number>|undefined),
+ *  ellipsoid: (Cesium.Ellipsoid|undefined)
+ * }}
+ */
+Cesium.optionsWallGeometry;
+
+/**
+ * @constructor
+ * @param {Cesium.optionsWallGeometry} options
+ * @extends {Cesium.Geometry}
+ */
+Cesium.WallGeometry = function(options) {};
+
+/**
+ * @typedef {{
+ *  positions: !Array<Cesium.Cartesian3>,
+ *  maximumHeight: (number|undefined),
+ *  minimumHeight: (number|undefined),
+ *  ellipsoid: (Cesium.Ellipsoid|undefined)
+ * }}
+ */
+Cesium.WallGeometry.optionsFromConstantHeights;
+
+/**
+ * @param {Cesium.WallGeometry.optionsFromConstantHeights} options
+ * @return {!Cesium.WallGeometry}
+ */
+Cesium.WallGeometry.fromConstantHeights = function(options) {};
+
+
+/**
+ * @constructor
+ * @param {Cesium.optionsWallGeometry} options
+ * @extends {Cesium.Geometry}
+ */
+Cesium.WallOutlineGeometry = function(options) {};
+
+/**
+ * @param {Cesium.WallGeometry.optionsFromConstantHeights} options
+ * @return {!Cesium.WallGeometry}
+ */
+Cesium.WallOutlineGeometry.fromConstantHeights = function(options) {};
 
 /**
  * @typedef {{
