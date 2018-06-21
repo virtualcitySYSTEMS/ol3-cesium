@@ -1503,8 +1503,6 @@ Cesium.PolygonGeometry = function(object) {};
  */
 Cesium.optionsPolylineGeometry;
 
-
-
 /**
  * @constructor
  * @param {Object=} object
@@ -1559,6 +1557,29 @@ Cesium.WallOutlineGeometry = function(options) {};
  * @return {!Cesium.WallGeometry}
  */
 Cesium.WallOutlineGeometry.fromConstantHeights = function(options) {};
+
+
+/**
+ * @typedef {{
+ * polylinePositions: !Array.<Cesium.Cartesian3>,
+ * shapePositions: !Array<Cesium.Cartesian2>,
+ * }}
+ */
+Cesium.optionsPolylineVolumeGeometry;
+
+/**
+ * @constructor
+ * @param {Cesium.optionsPolylineVolumeGeometry} options
+ * @extends {Cesium.Geometry}
+ */
+Cesium.PolylineVolumeGeometry = function(options) {};
+
+/**
+ * @constructor
+ * @param {Cesium.optionsPolylineVolumeGeometry} options
+ * @extends {Cesium.Geometry}
+ */
+Cesium.PolylineVolumeOutlineGeometry = function(options) {};
 
 /**
  * @typedef {{
