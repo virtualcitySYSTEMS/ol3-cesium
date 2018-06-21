@@ -137,6 +137,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
   const instances = createInstance(geometry, color);
 
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
+  const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
 
   let primitive;
 
@@ -148,7 +149,8 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     primitive = new Cesium.GroundPrimitive({
       // always update Cesium externs before adding a property
       geometryInstances: instances,
-      classificationType : Cesium.ClassificationType.TERRAIN
+      classificationType : Cesium.ClassificationType.TERRAIN,
+      allowPicking,
     });
   } else {
     const appearance = new Cesium.PerInstanceColorAppearance(feature.get("extrudedHeight") ? Object.assign(options, extrudedOptions) : options);
@@ -156,7 +158,8 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       // always update Cesium externs before adding a property
       geometryInstances: instances,
       appearance: appearance,
-      shadows : Cesium.ShadowMode.ENABLED
+      shadows : Cesium.ShadowMode.ENABLED,
+      allowPicking
     });
   }
 
@@ -425,6 +428,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   goog.asserts.assert(olGeometry.getType() == 'LineString');
 
   const extrudedHeight = /** @type {number} */ (feature.get('extrudedHeight'));
+  const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
 
   if (!noExtrusion && extrudedHeight && heightReference === Cesium.HeightReference.NONE) {
@@ -457,7 +461,8 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
           color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
         }
       }),
-      classificationType : Cesium.ClassificationType.TERRAIN
+      classificationType : Cesium.ClassificationType.TERRAIN,
+      allowPicking,
     });
   } else {
     outlinePrimitive = new Cesium.Primitive({
@@ -465,7 +470,8 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
       geometryInstances: new Cesium.GeometryInstance({
         geometry: new Cesium.PolylineGeometry(geometryOptions)
       }),
-      appearance
+      appearance,
+      allowPicking,
     });
   }
 
@@ -583,6 +589,28 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
       layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
 
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
+};
+
+/**
+ * @param {ol.layer.Vector|ol.layer.Image} layer
+ * @param {ol.Feature} feature OpenLayers feature..
+ * @param {!ol.geom.Geometry} geometry
+ * @return {!boolean}
+ * @api
+ */
+olcs.FeatureConverter.prototype.getAllowPicking = function(layer, feature, geometry) {
+
+  let allowPicking = geometry.get('allowPicking');
+
+  if (allowPicking === undefined) {
+    allowPicking = feature.get('allowPicking');
+  }
+
+  if (allowPicking === undefined) {
+    allowPicking = layer.get('allowPicking');
+  }
+
+  return allowPicking != null ? !!allowPicking : true;
 };
 
 
