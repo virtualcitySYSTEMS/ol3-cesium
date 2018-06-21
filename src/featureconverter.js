@@ -452,17 +452,17 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
 
   let outlinePrimitive;
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
-    const color = this.extractColorFromOlStyle(olStyle, true);
-    outlinePrimitive = new Cesium.GroundPrimitive({
+    outlinePrimitive = new Cesium.GroundPolylinePrimitive({
       // always update Cesium externs before adding a property
       geometryInstances: new Cesium.GeometryInstance({
-        geometry: new Cesium.CorridorGeometry(geometryOptions),
-        attributes: {
-          color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
-        }
+        geometry: new Cesium.GroundPolylineGeometry(geometryOptions),
       }),
       classificationType : Cesium.ClassificationType.TERRAIN,
+      appearance,
       allowPicking,
+    });
+    outlinePrimitive.readyPromise.then(() => {
+      this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
     });
   } else {
     outlinePrimitive = new Cesium.Primitive({

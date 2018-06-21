@@ -1112,9 +1112,16 @@ Cesium.Primitive.prototype.olLayer;
 
 
 /**
+ * @type {Promise}
+ */
+Cesium.Primitive.prototype.readyPromise;
+
+
+/**
  * @typedef {{
  *   geometryInstances: (!Array.<Cesium.GeometryInstance>|Cesium.GeometryInstance),
- *   classificationType: Cesium.ClassificationType
+ *   classificationType: Cesium.ClassificationType,
+ *   allowPicking: (boolean|undefined)
  * }}
  */
 Cesium.optionsGroundPrimitive;
@@ -1125,6 +1132,28 @@ Cesium.optionsGroundPrimitive;
  * @extends {Cesium.Primitive}
  */
 Cesium.GroundPrimitive = function(opt_opts) {};
+
+/**
+ * @typedef {{
+ *   geometryInstances: (!Array.<Cesium.GeometryInstance>|Cesium.GeometryInstance),
+ *   classificationType: Cesium.ClassificationType,
+ *   appearance: (Cesium.Appearance|undefined),
+ *   allowPicking: (boolean|undefined)
+ * }}
+ */
+Cesium.optionsGroundPolylinePrimitive;
+
+/**
+ * @constructor
+ * @param {Cesium.optionsGroundPolylinePrimitive} options
+ * @extends {Cesium.Primitive}
+ */
+Cesium.GroundPolylinePrimitive = function(options) {};
+
+/**
+ * @type {Cesium.Primitive}
+ */
+Cesium.GroundPolylinePrimitive.prototype._primitive;
 
 /**
  * @constructor
@@ -1554,8 +1583,9 @@ Cesium.RectangleOutlineGeometry = function(opt_opts) {};
 
 /**
  * @typedef {{
- * positions: !Array.<Cesium.Cartesian3>,
- * vertexFormat: number
+ *  positions: !Array.<Cesium.Cartesian3>,
+ *  vertexFormat: (number|undefined),
+ *  width: (number|undefined)
  * }}
  */
 Cesium.optionsPolylineGeometry;
@@ -1563,10 +1593,18 @@ Cesium.optionsPolylineGeometry;
 
 /**
  * @constructor
- * @param {Object=} object
+ * @param {Cesium.optionsPolylineGeometry} object
  * @extends {Cesium.Geometry}
  */
 Cesium.PolylineGeometry = function(object) {};
+
+
+/**
+ * @constructor
+ * @param {Cesium.optionsPolylineGeometry} object
+ * @extends {Cesium.Geometry}
+ */
+Cesium.GroundPolylineGeometry= function(object) {};
 
 
 /**
