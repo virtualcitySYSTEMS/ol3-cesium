@@ -1151,6 +1151,12 @@ Cesium.optionsGroundPolylinePrimitive;
 Cesium.GroundPolylinePrimitive = function(options) {};
 
 /**
+ * @param {Cesium.Scene} scene
+ * @return {boolean}
+ */
+Cesium.GroundPolylinePrimitive.isSupported = function(scene) {};
+
+/**
  * @type {Cesium.Primitive}
  */
 Cesium.GroundPolylinePrimitive.prototype._primitive;
@@ -1667,7 +1673,7 @@ Cesium.CorridorGeometry = function(opt_opts) {};
  * granularity: (number|undefined),
  * height: (number|undefined),
  * extrudedHeight: (number|undefined),
- * vertexFormat: number,
+ * vertexFormat: (number|undefined),
  * cornerType: (number|undefined),
  * }}
  */
