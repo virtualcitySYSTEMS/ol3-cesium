@@ -93,20 +93,25 @@ olcs.FeatureConverter.prototype.setReferenceForPicking = function(layer, feature
  * @param {!ol.Feature} feature OpenLayers feature.
  * @param {!ol.geom.Geometry} olGeometry OpenLayers geometry.
  * @param {!Cesium.Geometry} geometry
- * @param {!Cesium.Color} color
+ * @param {Cesium.Color|HTMLCanvasElement} color
  * @param {number=} opt_lineWidth
  * @return {Cesium.Primitive}
  * @protected
  */
 olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, opt_lineWidth) {
   const createInstance = function(geometry, color) {
-    return new Cesium.GeometryInstance({
-      // always update Cesium externs before adding a property
-      geometry,
-      attributes: {
-        color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
-      }
-    });
+    let options;
+    if (color instanceof HTMLCanvasElement) {
+      options = { geometry };
+    } else {
+      options = {
+        geometry,
+        attributes: {
+          color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
+        }
+      };
+    }
+    return new Cesium.GeometryInstance(options);
   };
 
   const options = {
@@ -140,24 +145,45 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
   const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
 
   let primitive;
+  let appearance;
+  if (color instanceof HTMLCanvasElement) {
+    options.material = Cesium.Material.fromType('Wallpaper', {
+      image: color,
+      anchor: Cesium.SceneTransforms.wgs84ToDrawingBufferCoordinates(
+        this.scene,
+        Cesium.Cartesian3.fromDegreesArray(ol.extent.getBottomLeft(olGeometry.getExtent()))[0]
+      ),
+    });
+    appearance = new Cesium.MaterialAppearance(options);
+  } else {
+    appearance = new Cesium.PerInstanceColorAppearance(
+      feature.get("extrudedHeight") ? Object.assign(options, extrudedOptions) : options
+    );
+  }
 
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
     const ctor = instances.geometry.constructor;
     if (ctor && !ctor['createShadowVolume']) {
       return null;
     }
-    primitive = new Cesium.GroundPrimitive({
+
+    const primitiveOptions = {
       // always update Cesium externs before adding a property
       geometryInstances: instances,
       classificationType : Cesium.ClassificationType.TERRAIN,
       allowPicking,
-    });
+    };
+
+    if (color instanceof HTMLCanvasElement) {
+      primitiveOptions.appearance = appearance;
+    }
+
+    primitive = new Cesium.GroundPrimitive(primitiveOptions);
   } else {
-    const appearance = new Cesium.PerInstanceColorAppearance(feature.get("extrudedHeight") ? Object.assign(options, extrudedOptions) : options);
     primitive = new Cesium.Primitive({
       // always update Cesium externs before adding a property
       geometryInstances: instances,
-      appearance: appearance,
+      appearance,
       shadows : Cesium.ShadowMode.ENABLED,
       allowPicking
     });
@@ -189,6 +215,29 @@ olcs.FeatureConverter.prototype.extractColorFromOlStyle = function(style, outlin
   return olcs.core.convertColorToCesium(olColor);
 };
 
+/**
+ * @param {!ol.style.Style} style
+ * @return {Cesium.Color|HTMLCanvasElement}
+ */
+olcs.FeatureConverter.prototype.extractFillColorFromStyle = function(style) {
+  const fill = style.getFill();
+  let olColor = 'black';
+  if (fill) {
+    olColor = fill.getColor();
+    if (olColor instanceof CanvasPattern) {
+      if (!Cesium.GroundPrimitive.supportsMaterials(this.scene)) {
+        olColor = fill['fallBackColor'] || olColor;
+      } else {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = olColor;
+        ctx.fillRect(0, 0, 300, 300);
+        return /** @type {HTMLCanvasElement} */ (canvas);
+      }
+    }
+  }
+  return olcs.core.convertColorToCesium(olColor);
+};
 
 /**
  * Return the width of stroke from a plain ol style.
@@ -216,7 +265,7 @@ olcs.FeatureConverter.prototype.extractLineWidthFromOlStyle = function(style) {
  * @protected
  */
 olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle) {
-  const fillColor = this.extractColorFromOlStyle(olStyle, false);
+  const fillColor = this.extractFillColorFromStyle(olStyle);
   const outlineColor = this.extractColorFromOlStyle(olStyle, true);
 
   const primitives = new Cesium.PrimitiveCollection();

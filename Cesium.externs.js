@@ -785,6 +785,14 @@ Cesium.Cartesian3.prototype.z;
 Cesium.Cartesian3.lerp = function(start, end, t, result) {};
 
 /**
+ * @param {Array<number>} array
+ * @param {?Cesium.Ellipsoid=} ellipsoid
+ * @param {Array<Cesium.Cartesian3>=} result
+ * @return {Array<Cesium.Cartesian3>}
+ */
+Cesium.Cartesian3.fromDegreesArray = function(array, ellipsoid, result) {};
+
+/**
  * @param {Cesium.Cartesian3} left
  * @return {number}
  */
@@ -1010,7 +1018,9 @@ Cesium.Globe.prototype.pick = function(ray, scene, opt_result) {};
  *   horizontal: (boolean | undefined),
  *   repeat: (number | undefined),
  *   evenColor: (Cesium.Color | undefined),
- *   oddColor: (Cesium.Color | undefined)
+ *   oddColor: (Cesium.Color | undefined),
+ *   image: (Cesium.Color|HTMLCanvasElement|undefined),
+ *   anchor: (Cesium.Cartesian2|undefined)
  * }}
  */
 Cesium.optionsMaterialFromTypeAny;
@@ -1132,6 +1142,12 @@ Cesium.optionsGroundPrimitive;
  * @extends {Cesium.Primitive}
  */
 Cesium.GroundPrimitive = function(opt_opts) {};
+
+/**
+ * @param {!Cesium.Scene} scene
+ * @return {boolean}
+ */
+Cesium.GroundPrimitive.supportsMaterials = function(scene) {};
 
 /**
  * @typedef {{
@@ -1443,6 +1459,24 @@ Cesium.optionsPerInstanceColorAppearance;
  * @extends {Cesium.Appearance}
  */
 Cesium.PerInstanceColorAppearance = function(object) {};
+
+/**
+ * @typedef {{
+ * flat: (boolean| undefined),
+ * close: (boolean| undefined),
+ * translucent: (boolean| undefined),
+ * renderState: (Cesium.optionsRenderState | undefined),
+ * material: !Cesium.Material
+ * }}
+ */
+Cesium.optionsMaterialAppearance;
+
+/**
+ * @constructor
+ * @param {Object} options
+ * @extends {Cesium.Appearance}
+ */
+Cesium.MaterialAppearance = function(options) {};
 
 
 /**
@@ -3010,6 +3044,13 @@ Cesium.SceneTransforms = function() {};
  */
 Cesium.SceneTransforms.wgs84ToWindowCoordinates = function(scene, position, opt_result) {};
 
+/**
+ * @param {Cesium.Scene} scene
+ * @param {Cesium.Cartesian3} position
+ * @param {Cesium.Cartesian2=} opt_result
+ * @return {Cesium.Cartesian2}
+ */
+Cesium.SceneTransforms.wgs84ToDrawingBufferCoordinates = function(scene, position, opt_result) {};
 
 /**
  * @constructor
