@@ -1011,12 +1011,9 @@ olcs.FeatureConverter.prototype.olGeometry4326TextPartToCesium = function(layer,
 
   options.heightReference = this.getHeightReference(layer, feature, geometry);
 
-  const offsetX = style.getOffsetX();
-  const offsetY = style.getOffsetY();
-  if (offsetX != 0 && offsetY != 0) {
-    const offset = new Cesium.Cartesian2(offsetX, offsetY);
-    options.pixelOffset = offset;
-  }
+  const offsetX = style.getOffsetX() || 0;
+  const offsetY = style.getOffsetY() || 0;
+  options.pixelOffset = new Cesium.Cartesian2(offsetX, offsetY);
 
   const font = style.getFont();
   if (font !== undefined) {
