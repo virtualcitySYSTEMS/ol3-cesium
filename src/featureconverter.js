@@ -125,13 +125,6 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     translucent: color["alpha"] !== 1
   };
 
-  const extrudedOptions = color["alpha"] === 1 ? {
-    closed: true
-  } : {
-    closed: true,
-    faceForward: true
-  };
-
   if (opt_lineWidth !== undefined) {
     if (!options.renderState) {
       options.renderState = {};
@@ -156,9 +149,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     });
     appearance = new Cesium.MaterialAppearance(options);
   } else {
-    appearance = new Cesium.PerInstanceColorAppearance(
-      feature.get("extrudedHeight") ? Object.assign(options, extrudedOptions) : options
-    );
+    appearance = new Cesium.PerInstanceColorAppearance(options);
   }
 
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
