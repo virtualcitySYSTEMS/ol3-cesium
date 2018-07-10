@@ -1204,10 +1204,16 @@ olcs.FeatureConverter.prototype.olFeatureToCesium = function(layer, feature, sty
           style);
     case 'LineString':
       geom = /** @type {!ol.geom.LineString} */ (geom);
+      if (geom.getCoordinates().length < 2) {
+        return null;
+      }
       return this.olLineStringGeometryToCesium(layer, feature, geom, proj,
           style);
     case 'Polygon':
       geom = /** @type {!ol.geom.Polygon} */ (geom);
+      if (geom.getCoordinates().some(c => c.length < 2)) {
+        return null;
+      }
       return this.olPolygonGeometryToCesium(layer, feature, geom, proj,
           style);
     case 'MultiPoint':
