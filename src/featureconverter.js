@@ -250,7 +250,7 @@ olcs.FeatureConverter.prototype.extractLineWidthFromOlStyle = function(style) {
  * @param {!ol.Feature} feature OpenLayers feature.
  * @param {!ol.geom.Geometry} olGeometry OpenLayers geometry.
  * @param {!Cesium.Geometry} fillGeometry
- * @param {!Cesium.Geometry} outlineGeometry
+ * @param {Cesium.Geometry|undefined} outlineGeometry
  * @param {!ol.style.Style} olStyle
  * @return {!Cesium.PrimitiveCollection}
  * @protected
@@ -267,7 +267,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
     primitives.add(p1);
   }
 
-  if (olStyle.getStroke()) {
+  if (olStyle.getStroke() && outlineGeometry) {
     const width = this.extractLineWidthFromOlStyle(olStyle);
     if (width) {
       const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
@@ -592,7 +592,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
   goog.asserts.assert(olGeometry.getType() == 'Polygon');
 
-  let fillGeometry, outlineGeometry;
+  let fillGeometry, outlineGeometry, outlinePrimitive;
   if ((olGeometry.getCoordinates()[0].length == 5) &&
       (feature.getGeometry().get('olcs.polygon_kind') === 'rectangle')) {
     // Create a rectangle according to the longitude and latitude curves
@@ -642,6 +642,13 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
           minHeight = height && height < minHeight ? height : minHeight;
         }
       }
+      const lastVertex = olPos[olPos.length - 1];
+      if (!(
+        olPos[0][0] === lastVertex[0] &&
+        olPos[0][1] === lastVertex[1]
+      )) {
+        olPos.push(olPos[0]);
+      }
       const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(olPos);
       goog.asserts.assert(positions);
       if (i == 0) {
@@ -670,19 +677,50 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
       vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
       extrudedHeight: extrudedHeight
     });
+    if (
+      this.getHeightReference(layer, feature, olGeometry) === Cesium.HeightReference.CLAMP_TO_GROUND &&
+      Cesium.GroundPolylinePrimitive.isSupported(this.scene)
+    ) {
+      const width = this.extractLineWidthFromOlStyle(olStyle);
+      if (width > 0) {
+        const holesLength = hierarchy.holes ? hierarchy.holes.length : 0;
+        const geometryInstances = new Array(holesLength + 1);
+        geometryInstances[0] = new Cesium.GeometryInstance({
+          geometry: new Cesium.GroundPolylineGeometry({ positions: hierarchy.positions, width }),
+        });
 
-    outlineGeometry = new Cesium.PolygonOutlineGeometry({
-      // always update Cesium externs before adding a property
-      polygonHierarchy: hierarchy,
-      height,
-      perPositionHeight,
-      extrudedHeight: extrudedHeight
-    });
+        for (let i = 0; i < holesLength; i++) {
+          geometryInstances[i + 1] = new Cesium.GeometryInstance({
+            geometry: new Cesium.GroundPolylineGeometry({ positions: hierarchy.holes[i].positions, width }),
+          });
+        }
+
+        outlinePrimitive = new Cesium.GroundPolylinePrimitive({
+          geometryInstances,
+          appearance: new Cesium.PolylineMaterialAppearance({
+            material: this.olStyleToCesium(feature, olStyle, true)
+          }),
+          allowPicking: this.getAllowPicking(layer, feature, olGeometry),
+          classificationType: Cesium.ClassificationType.TERRAIN,
+        });
+      }
+    } else {
+      outlineGeometry = new Cesium.PolygonOutlineGeometry({
+        // always update Cesium externs before adding a property
+        polygonHierarchy: hierarchy,
+        height,
+        perPositionHeight,
+        extrudedHeight: extrudedHeight
+      });
+    }
   }
 
   const primitives = this.wrapFillAndOutlineGeometries(
       layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
 
+  if (outlinePrimitive) {
+    primitives.add(outlinePrimitive);
+  }
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
 };
 
