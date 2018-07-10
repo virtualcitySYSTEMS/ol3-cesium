@@ -305,7 +305,7 @@ olcs.FeatureConverter.prototype.addTextStyle = function(layer, feature, geometry
     primitives = primitive;
   }
 
-  if (!style.getText()) {
+  if (!style.getText() || !style.getText().getText()) {
     return primitives;
   }
 
@@ -898,7 +898,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
 
   if (originalHeight !== null) {
     return this.olPointGeometryToCesiumPin_(layer, feature, olGeometry, style, originalHeight);
-  } else  if (style.getText()) {
+  } else  if (style.getText() && style.getText().getText()) {
     return this.addTextStyle(layer, feature, olGeometry, style,
         new Cesium.Primitive());
   } else {
