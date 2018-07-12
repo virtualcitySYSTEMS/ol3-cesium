@@ -9,6 +9,7 @@ goog.require('ol.source.ImageVector');
 
 goog.require('ol.geom.SimpleGeometry');
 goog.require('ol.geom.LineString');
+goog.require('ol.geom.Polygon');
 goog.require('olcs.core');
 goog.require('olcs.core.VectorLayerCounterpart');
 goog.require('olcs.util');
@@ -397,17 +398,50 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     height
   });
 
-  const outlineGeometry = new Cesium.CircleOutlineGeometry({
-    // always update Cesium externs before adding a property
-    center,
-    radius,
-    extrudedHeight,
-    height
-  });
+  let outlinePrimitive, outlineGeometry;
+  if (
+    heightReference === Cesium.HeightReference.CLAMP_TO_GROUND &&
+    Cesium.GroundPolylinePrimitive.isSupported(this.scene)
+  ) {
+    const width = this.extractLineWidthFromOlStyle(olStyle);
+    if (width) {
+      const circlePolygon = ol.geom.Polygon.circular(
+        new ol.Sphere(6378137),
+        olGeometry.getCenter(),
+        radius
+      );
+      const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(circlePolygon.getLinearRing(0).getCoordinates());
+      outlinePrimitive = new Cesium.GroundPolylinePrimitive({
+        geometryInstances: new Cesium.GeometryInstance({
+          geometry: new Cesium.GroundPolylineGeometry({ positions, width }),
+        }),
+        appearance: new Cesium.PolylineMaterialAppearance({
+          material: this.olStyleToCesium(feature, olStyle, true),
+        }),
+        allowPicking: this.getAllowPicking(layer, feature, olGeometry),
+        classificationType: Cesium.ClassificationType.TERRAIN,
+      });
+      outlinePrimitive.readyPromise.then(() => {
+        this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
+      });
+    }
+  } else {
+    outlineGeometry = new Cesium.CircleOutlineGeometry({
+      // always update Cesium externs before adding a property
+      center,
+      radius,
+      extrudedHeight,
+      height
+    });
+  }
+
 
   const primitives = this.wrapFillAndOutlineGeometries(
       layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
 
+  if (outlinePrimitive) {
+    primitives.add(outlinePrimitive);
+  }
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
 };
 
@@ -702,6 +736,9 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
           }),
           allowPicking: this.getAllowPicking(layer, feature, olGeometry),
           classificationType: Cesium.ClassificationType.TERRAIN,
+        });
+        outlinePrimitive.readyPromise.then(() => {
+          this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
         });
       }
     } else {
