@@ -1250,6 +1250,10 @@ Cesium.optionsLabelCollection.prototype.verticalOrigin;
  */
 Cesium.optionsLabelCollection.prototype.heightReference;
 
+/**
+ * @type {Cesium.Cartesian3 | undefined}
+ */
+Cesium.optionsLabelCollection.prototype.eyeOffset;
 
 /**
  * @param {Cesium.optionsLabelCollection} opt

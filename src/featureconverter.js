@@ -1137,6 +1137,11 @@ olcs.FeatureConverter.prototype.olGeometry4326TextPartToCesium = function(layer,
         goog.asserts.fail(`unhandled baseline ${style.getTextBaseline()}`);
     }
     options.verticalOrigin = verticalOrigin;
+
+    const zCoordinateEyeOffset = feature.get("zCoordinateEyeOffset");
+    if (typeof zCoordinateEyeOffset === 'number') {
+      options.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
+    }
   }
 
 
