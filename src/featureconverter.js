@@ -117,7 +117,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
 
   const options = {
     // always update Cesium externs before adding a property
-    flat: true, // work with all geometries
+    flat: false,
     renderState: {
       depthTest: {
         enabled: true
@@ -371,6 +371,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   if (feature.get('olcs.circle_type') === 'sphere' && heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND) {
     const fillGeometry = new Cesium.SphereGeometry({
       radius,
+      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
     });
 
     const outlineGeometry = new Cesium.SphereOutlineGeometry({
@@ -395,7 +396,8 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     center,
     radius,
     extrudedHeight,
-    height
+    height,
+    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
   });
 
   let outlinePrimitive, outlineGeometry;
@@ -474,6 +476,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
     positions,
     maximumHeight: extrudedHeight,
     minimumHeight,
+    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
   });
 
   const outlineGeometry = Cesium.WallOutlineGeometry.fromConstantHeights({
@@ -511,6 +514,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumPolylineVolume_ = fu
   const fillGeometry = new Cesium.PolylineVolumeGeometry({
     polylinePositions: positions,
     shapePositions,
+    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
   });
 
   const outlineGeometry = new Cesium.PolylineVolumeOutlineGeometry({
@@ -648,7 +652,8 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     fillGeometry = new Cesium.RectangleGeometry({
       ellipsoid: Cesium.Ellipsoid.WGS84,
       rectangle,
-      height: maxHeight
+      height: maxHeight,
+      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
     });
 
     outlineGeometry = new Cesium.RectangleOutlineGeometry({
