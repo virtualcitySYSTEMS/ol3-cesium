@@ -483,18 +483,19 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
   if (skirt && Number.isFinite(skirt)) {
     minimumHeight -= skirt;
   }
+  const maximumHeight = minimumHeight + extrudedHeight;
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(coords);
   const fillGeometry = Cesium.WallGeometry.fromConstantHeights({
     positions,
-    maximumHeight: extrudedHeight,
+    maximumHeight,
     minimumHeight,
     vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
   });
 
   const outlineGeometry = Cesium.WallOutlineGeometry.fromConstantHeights({
     positions,
-    maximumHeight: extrudedHeight,
+    maximumHeight,
     minimumHeight,
   });
 
@@ -960,7 +961,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
   if (extrudedHeight && Number.isFinite(extrudedHeight)) {
     const coords = olGeometry.getCoordinates();
     originalHeight = coords[2] || 0;
-    coords[2] = extrudedHeight;
+    coords[2] = originalHeight + extrudedHeight;
     olGeometry.setCoordinates(coords);
   }
 
