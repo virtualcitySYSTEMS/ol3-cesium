@@ -163,7 +163,10 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     appearance = new Cesium.PerInstanceColorAppearance(options);
   }
 
-  if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
+  if (
+    heightReference == Cesium.HeightReference.CLAMP_TO_GROUND &&
+    !this.getPolygonHeightInfo_(layer, feature)
+  ) {
     const ctor = instances.geometry.constructor;
     if (ctor && !ctor['createShadowVolume']) {
       return null;
@@ -396,8 +399,8 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
   }
 
-  const extrudedHeight = /** @type {number} */ (feature.get('extrudedHeight')) || height;
-  const skirt = feature.get('skirt');
+  const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight')) || height;
+  const skirt = feature.get('olcs_skirt');
   if (skirt != null) {
     height -= /** @type {number} */ (skirt);
   }
@@ -476,7 +479,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
   }
   minimumHeight = minimumHeight === Infinity ? 0 : minimumHeight;
 
-  const skirt = Number(feature.get('skirt'));
+  const skirt = Number(feature.get('olcs_skirt'));
   if (skirt && Number.isFinite(skirt)) {
     minimumHeight -= skirt;
   }
@@ -551,7 +554,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
   goog.asserts.assert(olGeometry.getType() == 'LineString');
 
-  const extrudedHeight = /** @type {number} */ (feature.get('extrudedHeight'));
+  const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
   const shapePositions = /** @type {Array<Cesium.Cartesian2>} */ (feature.get('polylineVolumeShape'));
 
   const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
@@ -693,6 +696,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
         } else {
           minHeight = heightInfo.groundLevel;
         }
+        minHeight = minHeight === Infinity ? 0 : minHeight;
       }
       const lastVertex = olPos[olPos.length - 1];
       if (!(
@@ -714,7 +718,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
         });
       }
     }
-    let height = minHeight === Infinity ? 0 : minHeight;
+    let height;
     let perPositionHeight = true;
     if (heightInfo) {
       if (heightInfo.skirt) {
@@ -727,14 +731,13 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     }
 
     if (heightInfo && heightInfo.storeyNumber) {
+      height = height || minHeight;
       fillGeometry = new Array(heightInfo.storeyNumber);
       outlineGeometry = new Array(heightInfo.storeyNumber);
       perPositionHeight = false;
 
-      const maxExtrudedHeight = height + heightInfo.extrudedHeight;
-      let extrudedHeight = heightInfo.skirt ?
-        height + heightInfo.skirt + heightInfo.storeyHeight :
-        height + heightInfo.storeyHeight;
+      const maxExtrudedHeight = minHeight + heightInfo.extrudedHeight;
+      let extrudedHeight = minHeight + heightInfo.storeyHeight;
 
       for (let i = 0; i < heightInfo.storeyNumber; i++) {
         fillGeometry[i] = new Cesium.PolygonGeometry({
@@ -762,10 +765,11 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
         perPositionHeight,
         height,
         vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-        extrudedHeight: heightInfo ? height + heightInfo.extrudedHeight : undefined,
+        extrudedHeight: heightInfo ? minHeight + heightInfo.extrudedHeight : undefined,
       });
     }
     if (
+      !heightInfo &&
       this.getHeightReference(layer, feature, olGeometry) === Cesium.HeightReference.CLAMP_TO_GROUND &&
       Cesium.GroundPolylinePrimitive.isSupported(this.scene)
     ) {
@@ -801,7 +805,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
         polygonHierarchy: hierarchy,
         height,
         perPositionHeight,
-        extrudedHeight: heightInfo.extrudedHeight ? height + heightInfo.extrudedHeight : undefined,
+        extrudedHeight: heightInfo ? minHeight + heightInfo.extrudedHeight : undefined,
       });
     }
   }
@@ -869,14 +873,14 @@ olcs.FeatureConverter.prototype.getDefaultFromLayer_ = function(propertyName, la
  */
 olcs.FeatureConverter.prototype.getAllowPicking = function(layer, feature, geometry) {
 
-  let allowPicking = geometry.get('allowPicking');
+  let allowPicking = geometry.get('olcs_allowPicking');
 
   if (allowPicking === undefined) {
-    allowPicking = feature.get('allowPicking');
+    allowPicking = feature.get('olcs_allowPicking');
   }
 
   if (allowPicking === undefined) {
-    allowPicking = layer.get('allowPicking');
+    allowPicking = layer.get('olcs_allowPicking');
   }
 
   return allowPicking != null ? !!allowPicking : true;
@@ -893,16 +897,16 @@ olcs.FeatureConverter.prototype.getAllowPicking = function(layer, feature, geome
 olcs.FeatureConverter.prototype.getHeightReference = function(layer, feature, geometry) {
 
   // Read from the geometry
-  let altitudeMode = geometry.get('altitudeMode');
+  let altitudeMode = geometry.get('olcs_altitudeMode');
 
   // Or from the feature
   if (altitudeMode === undefined) {
-    altitudeMode = feature.get('altitudeMode');
+    altitudeMode = feature.get('olcs_altitudeMode');
   }
 
   // Or from the layer
   if (altitudeMode === undefined) {
-    altitudeMode = layer.get('altitudeMode');
+    altitudeMode = layer.get('olcs_altitudeMode');
   }
 
   let heightReference = Cesium.HeightReference.NONE;
@@ -929,7 +933,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesiumPin_ = function(layer, fe
   const bottom = top.slice();
   bottom[2] = originalHeight;
   const line = new ol.geom.LineString([top, bottom]);
-  line.set('altitudeMode', 'absolute');
+  line.set('olcs_altitudeMode', 'absolute');
 
   return this.olLineStringGeometryToCesium(layer, feature, line, 'EPSG:4326', style, true);
 };
@@ -951,7 +955,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
     opt_newBillboardCallback) {
   goog.asserts.assert(olGeometry.getType() == 'Point');
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
-  const extrudedHeight = Number(feature.get('extrudedHeight'));
+  const extrudedHeight = Number(feature.get('olcs_extrudedHeight'));
   let originalHeight = null;
   if (extrudedHeight && Number.isFinite(extrudedHeight)) {
     const coords = olGeometry.getCoordinates();
