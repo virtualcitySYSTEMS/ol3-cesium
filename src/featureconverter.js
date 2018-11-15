@@ -399,17 +399,18 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
     return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
   }
 
-  const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight')) || height;
+  const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight')) || 0;
+  let minHeight = height;
   const skirt = feature.get('olcs_skirt');
-  if (skirt != null) {
-    height -= /** @type {number} */ (skirt);
+  if (extrudedHeight && skirt != null) {
+    minHeight -= /** @type {number} */ (skirt);
   }
   const fillGeometry = new Cesium.CircleGeometry({
     // always update Cesium externs before adding a property
     center,
     radius,
-    extrudedHeight,
-    height,
+    extrudedHeight: extrudedHeight + height,
+    height: minHeight,
     vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
   });
 
@@ -445,8 +446,8 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
       // always update Cesium externs before adding a property
       center,
       radius,
-      extrudedHeight,
-      height
+      extrudedHeight: extrudedHeight + height,
+      height: minHeight
     });
   }
 
@@ -479,11 +480,12 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
   }
   minimumHeight = minimumHeight === Infinity ? 0 : minimumHeight;
 
+  const maximumHeight = minimumHeight + extrudedHeight;// maximumHeight has to be calculated before skirt correction is applied
   const skirt = Number(feature.get('olcs_skirt'));
   if (skirt && Number.isFinite(skirt)) {
     minimumHeight -= skirt;
   }
-  const maximumHeight = minimumHeight + extrudedHeight;
+
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(coords);
   const fillGeometry = Cesium.WallGeometry.fromConstantHeights({
@@ -840,10 +842,6 @@ olcs.FeatureConverter.prototype.getPolygonHeightInfo_ = function(layer, feature)
 
   if (extrudedHeight) {
     const skirt =/** @type {number} */ (this.getDefaultFromLayer_('olcs_skirt', layer, feature));
-    if (skirt) {
-      extrudedHeight += skirt;
-    }
-
     return {
       extrudedHeight,
       storeyNumber,
@@ -933,6 +931,10 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesiumPin_ = function(layer, fe
   const top = olGeometry.getCoordinates();
   const bottom = top.slice();
   bottom[2] = originalHeight;
+  const skirt = Number(feature.get('olcs_skirt'));
+  if (skirt && Number.isFinite(skirt)) {
+    bottom[2] -= skirt;
+  }
   const line = new ol.geom.LineString([top, bottom]);
   line.set('olcs_altitudeMode', 'absolute');
 
