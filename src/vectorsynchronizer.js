@@ -122,6 +122,31 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
     csPrimitives.show = olLayer.getVisible();
   }));
 
+  const onPropertyChange = function(key) {
+    if (key === 'olcs_altitudeMode' || key === 'olcs_allowPicking') {
+      const features = source.getFeatures();
+      const featuresLength = features.length;
+      for (let i = 0; i < featuresLength; i++) {
+        const feature = features[i];
+        if (feature.get(key) == null) {
+          feature.changed();
+        }
+      }
+    } else if (key === 'olcs_storeyHeight' || key === 'olcs_skirt') {
+      const features = source.getFeatures();
+      const featuresLength = features.length;
+      for (let i = 0; i < featuresLength; i++) {
+        const feature = features[i];
+        if (
+          feature.get(key) == null &&
+          (feature.get('olcs_extrudedHeight') || feature.get('olcs_storeyNumber'))
+        ) {
+          feature.changed();
+        }
+      }
+    }
+  };
+
   const onAddFeature = (function(feature) {
     goog.asserts.assert(
         (olLayer instanceof ol.layer.Vector) ||
@@ -167,6 +192,10 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
     goog.asserts.assert(feature);
     onRemoveFeature(feature);
     onAddFeature(feature);
+  }, this));
+
+  olListenKeys.push(ol.events.listen(olLayer, 'propertychange', (e) => {
+    onPropertyChange(e.key);
   }, this));
 
   return counterpart ? [counterpart] : null;
