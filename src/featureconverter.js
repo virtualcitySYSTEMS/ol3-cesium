@@ -735,8 +735,8 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
 
     if (heightInfo && heightInfo.storeyNumber) {
       height = height || minHeight;
-      fillGeometry = new Array(heightInfo.storeyNumber);
-      outlineGeometry = new Array(heightInfo.storeyNumber);
+      fillGeometry = [];
+      outlineGeometry = [];
       perPositionHeight = false;
 
       const maxExtrudedHeight = minHeight + heightInfo.extrudedHeight;
@@ -832,12 +832,21 @@ olcs.FeatureConverter.prototype.getPolygonHeightInfo_ = function(layer, feature)
   let extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
   let storeyNumber = /** @type {number} */ (feature.get('olcs_storeyNumber'));
   let storeyHeight = /** @type {number} */ (this.getDefaultFromLayer_('olcs_storeyHeight', layer, feature));
-  if (extrudedHeight && storeyHeight) {
-    storeyNumber = Math.floor(extrudedHeight / storeyHeight);
+
+  if (extrudedHeight < 0) {
+    storeyNumber = undefined;
+    storeyHeight = undefined;
+  } else if (extrudedHeight && storeyHeight) {
+    storeyNumber = Math.ceil(extrudedHeight / storeyHeight);
   } else if (extrudedHeight && storeyNumber) {
     storeyHeight = extrudedHeight / storeyNumber;
   } else if (storeyHeight && storeyNumber) {
     extrudedHeight = storeyNumber * storeyHeight;
+  }
+
+  if (storeyNumber > 200) {
+    storeyHeight = undefined;
+    storeyNumber = undefined;
   }
 
   if (extrudedHeight) {
