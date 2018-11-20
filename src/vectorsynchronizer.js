@@ -166,8 +166,11 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
     const context = counterpart.context;
     const bb = context.featureToCesiumMap[id];
     delete context.featureToCesiumMap[id];
-    if (bb instanceof Cesium.Billboard) {
-      context.billboards.remove(bb);
+    if (Array.isArray(bb)) {
+      const bbLength = bb.length;
+      for (let i = 0; i < bbLength; i++) {
+        context.billboards.remove(/** @type {Cesium.Billboard} */ (bb[i]));
+      }
     }
 
     const csPrimitive = featurePrimitiveMap[id];

@@ -1376,7 +1376,12 @@ olcs.FeatureConverter.prototype.olFeatureToCesium = function(layer, feature, sty
   }
 
   const newBillboardAddedCallback = function(bb) {
-    context.featureToCesiumMap[ol.getUid(feature)] = bb;
+    const mapped = /** @type {Array<Cesium.Billboard>} */ (context.featureToCesiumMap[ol.getUid(feature)]);
+    if (mapped) {
+      mapped.push(bb);
+    } else {
+      context.featureToCesiumMap[ol.getUid(feature)] = [bb];
+    }
   };
 
   switch (geom.getType()) {
