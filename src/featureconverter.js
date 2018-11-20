@@ -452,21 +452,16 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
  * @param {!ol.Feature} feature OpenLayers feature..
  * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
  * @param {!ol.style.Style} olStyle
- * @param {!number} extrudedHeight
+ * @param {olcs.HeightInfo} heightInfo
  * @return {!Cesium.PrimitiveCollection} primitives
  * @private
  */
-olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(layer, feature, olGeometry, olStyle, extrudedHeight) {
+olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(layer, feature, olGeometry, olStyle, heightInfo) {
   const coords = olGeometry.getCoordinates();
-  const groundLevel = /** @type {number} */ (feature.get('olcs_groundLevel'));
-  let minimumHeight = this.getMinHeightOrGroundlevel(coords, groundLevel);
+  let minimumHeight = this.getMinHeightOrGroundlevel(coords, heightInfo.groundLevel);
 
-  const maximumHeight = minimumHeight + extrudedHeight;// maximumHeight has to be calculated before skirt correction is applied
-  const skirt = Number(feature.get('olcs_skirt'));
-  if (skirt && Number.isFinite(skirt)) {
-    minimumHeight -= skirt;
-  }
-
+  const maximumHeight = minimumHeight + heightInfo.extrudedHeight;// maximumHeight has to be calculated before skirt correction is applied
+  minimumHeight -= heightInfo.skirt;
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(coords);
   const fillGeometry = Cesium.WallGeometry.fromConstantHeights({
@@ -501,17 +496,15 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
   goog.asserts.assert(olGeometry.getType() == 'LineString');
 
-  const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
-
   const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
+  const heightInfo = this.getPolygonHeightInfo_(layer, feature);
 
   if (
     !noExtrusion &&
-    extrudedHeight &&
-    (heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND || feature.get('olcs_groundLevel'))
+    heightInfo
   ) {
-    return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, olStyle, extrudedHeight);
+    return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, olStyle, heightInfo);
   }
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(
@@ -754,7 +747,8 @@ olcs.FeatureConverter.prototype.getPolygonHeightInfo_ = function(layer, feature)
   }
 
   if (extrudedHeight) {
-    const skirt =/** @type {number} */ (this.getDefaultFromLayer_('olcs_skirt', layer, feature));
+    const skirtProperty = this.getDefaultFromLayer_('olcs_skirt', layer, feature);
+    const skirt = Number.isFinite(skirtProperty) ? skirtProperty : 0;
     return {
       extrudedHeight,
       storeyNumber,
