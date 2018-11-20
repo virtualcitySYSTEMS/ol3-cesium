@@ -380,24 +380,6 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   const radius = Cesium.Cartesian3.distance(center, point);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
 
-  if (feature.get('olcs.circle_type') === 'sphere' && heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND) {
-    const fillGeometry = new Cesium.SphereGeometry({
-      radius,
-      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-    });
-
-    const outlineGeometry = new Cesium.SphereOutlineGeometry({
-      radius,
-    });
-    const primitives = this.wrapFillAndOutlineGeometries(
-      layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
-    const transformation = Cesium.Transforms.eastNorthUpToFixedFrame(center);
-    for (var i = 0; i < primitives.length; i++) {
-      primitives.get(i).modelMatrix = transformation;
-    }
-    return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
-  }
-
   const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight')) || 0;
   const groundLevel = /** @type {number} */ (feature.get('olcs_groundLevel'));
   let minHeight = this.getMinHeightOrGroundlevel([olCenter], groundLevel);
@@ -509,43 +491,6 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
  * @param {ol.layer.Vector|ol.layer.Image} layer
  * @param {!ol.Feature} feature OpenLayers feature..
  * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
- * @param {!ol.style.Style} olStyle
- * @param {!Array<Cesium.Cartesian2>} shapePositions
- * @return {!Cesium.PrimitiveCollection} primitives
- * @private
- */
-olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumPolylineVolume_ = function(layer, feature, olGeometry, olStyle, shapePositions) {
-  const coords = olGeometry.getCoordinates();
-
-  const offset = /** @type {number} */ (feature.get('polylineVolumeOffset'));
-  if (offset) {
-    let i = coords.length;
-    while(i--) {
-      coords[i][2] -= offset;
-    }
-  }
-  const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(coords);
-
-  const fillGeometry = new Cesium.PolylineVolumeGeometry({
-    polylinePositions: positions,
-    shapePositions,
-    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-  });
-
-  const outlineGeometry = new Cesium.PolylineVolumeOutlineGeometry({
-    polylinePositions: positions,
-    shapePositions,
-  });
-
-  const primitives = this.wrapFillAndOutlineGeometries(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
-  return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
-};
-
-/**
- * Convert an OpenLayers line string geometry to Cesium.
- * @param {ol.layer.Vector|ol.layer.Image} layer
- * @param {!ol.Feature} feature OpenLayers feature..
- * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
  * @param {!ol.ProjectionLike} projection
  * @param {!ol.style.Style} olStyle
  * @param {boolean=} noExtrusion - XXX fairly hacky, solution could be an internal function
@@ -557,7 +502,6 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   goog.asserts.assert(olGeometry.getType() == 'LineString');
 
   const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
-  const shapePositions = /** @type {Array<Cesium.Cartesian2>} */ (feature.get('polylineVolumeShape'));
 
   const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
@@ -568,8 +512,6 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
     (heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND || feature.get('olcs_groundLevel'))
   ) {
     return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, olStyle, extrudedHeight);
-  } else if (shapePositions && heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND) {
-    return this.olLineStringGeometryToCesiumPolylineVolume_(layer, feature, olGeometry, olStyle, shapePositions);
   }
 
   const positions = olcs.core.ol4326CoordinateArrayToCsCartesians(
