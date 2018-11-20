@@ -103,12 +103,12 @@ olcs.FeatureConverter.prototype.setReferenceForPicking = function(layer, feature
  * @param {!ol.geom.Geometry} olGeometry OpenLayers geometry.
  * @param {!(Cesium.Geometry|Array<Cesium.Geometry>)} geometry
  * @param {Cesium.Color|HTMLCanvasElement} color
- * @param {number=} opt_lineWidth
  * @param {olcs.HeightInfo|null} heightInfo
+ * @param {number=} opt_lineWidth
  * @return {Cesium.Primitive}
  * @protected
  */
-olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, opt_lineWidth, heightInfo) {
+olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, heightInfo, opt_lineWidth) {
   const createInstance = function(geometry, color) {
     let options;
     if (color instanceof HTMLCanvasElement) {
@@ -278,7 +278,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
   if (olStyle.getFill()) {
     const fillColor = this.extractFillColorFromStyle(olStyle);
     const p1 = this.createColoredPrimitive(layer, feature, olGeometry,
-        fillGeometry, fillColor, undefined, heightInfo);
+        fillGeometry, fillColor, heightInfo);
     goog.asserts.assert(!!p1);
     primitives.add(p1);
   }
@@ -288,7 +288,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
     if (width) {
       const outlineColor = this.extractColorFromOlStyle(olStyle, true);
       const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
-        outlineGeometry, outlineColor, width, heightInfo);
+        outlineGeometry, outlineColor, heightInfo, width);
       if (p2) {
         // Some outline geometries are not supported by Cesium in clamp to ground
         // mode. These primitives are skipped.
@@ -763,7 +763,7 @@ olcs.FeatureConverter.prototype.getHeightInfo_ = function(layer, feature) {
   }
 
   if (extrudedHeight) {
-    const skirtProperty = this.getDefaultFromLayer_('olcs_skirt', layer, feature);
+    const skirtProperty = Number(this.getDefaultFromLayer_('olcs_skirt', layer, feature));
     const skirt = Number.isFinite(skirtProperty) ? skirtProperty : 0;
     return {
       extrudedHeight,
@@ -785,7 +785,7 @@ olcs.FeatureConverter.prototype.getHeightInfo_ = function(layer, feature) {
  * @private
  */
 olcs.FeatureConverter.prototype.getMinHeightOrGroundlevel = function(coordinates, groundLevel, minHeightInitial) {
-  if (groundLevel != null && Number.isFinite(groundLevel)) {
+  if (groundLevel != null && Number.isFinite(Number(groundLevel))) {
     return groundLevel;
   }
   let i = coordinates.length;
@@ -1036,7 +1036,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
   }
 
   if (heightInfo) {
-    minHeight -= heightInfo.skirt;
+    minHeight = /** @type {number} */(minHeight - heightInfo.skirt);
     return this.olPointGeometryToCesiumPin_(layer, feature, usedGeometry, style, minHeight);
   } else  if (style.getText() && style.getText().getText()) {
     return this.addTextStyle(layer, feature, usedGeometry, style, new Cesium.Primitive());
