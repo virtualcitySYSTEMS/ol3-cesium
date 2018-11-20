@@ -266,15 +266,14 @@ olcs.FeatureConverter.prototype.extractLineWidthFromOlStyle = function(style) {
  * @param {!(Cesium.Geometry|Array<Cesium.Geometry>)} fillGeometry
  * @param {Cesium.Geometry|Array<Cesium.Geometry>|undefined} outlineGeometry
  * @param {!ol.style.Style} olStyle
+ * @param {olcs.HeightInfo} heightInfo
  * @return {!Cesium.PrimitiveCollection}
  * @protected
  */
-olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle) {
-  const fillColor = this.extractFillColorFromStyle(olStyle);
-  const outlineColor = this.extractColorFromOlStyle(olStyle, true);
-
+olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo) {
   const primitives = new Cesium.PrimitiveCollection();
   if (olStyle.getFill()) {
+    const fillColor = this.extractFillColorFromStyle(olStyle);
     const p1 = this.createColoredPrimitive(layer, feature, olGeometry,
         fillGeometry, fillColor);
     goog.asserts.assert(!!p1);
@@ -284,6 +283,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
   if (olStyle.getStroke() && outlineGeometry) {
     const width = this.extractLineWidthFromOlStyle(olStyle);
     if (width) {
+      const outlineColor = this.extractColorFromOlStyle(olStyle, true);
       const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
         outlineGeometry, outlineColor, width);
       if (p2) {
@@ -449,7 +449,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
 
 
   const primitives = this.wrapFillAndOutlineGeometries(
-      layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
+      layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo);
 
   if (outlinePrimitive) {
     primitives.add(outlinePrimitive);
@@ -490,7 +490,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(lay
     minimumHeight,
   });
 
-  const primitives = this.wrapFillAndOutlineGeometries(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
+  const primitives = this.wrapFillAndOutlineGeometries(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo);
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
 };
 
@@ -724,7 +724,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     }
 
   const primitives = this.wrapFillAndOutlineGeometries(
-      layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
+      layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo);
 
   if (outlinePrimitive) {
     primitives.add(outlinePrimitive);
