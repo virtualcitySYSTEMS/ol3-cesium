@@ -849,7 +849,12 @@ olcs.FeatureConverter.prototype.getHeightReference = function(layer, feature, ge
   if (altitudeMode === 'clampToGround') {
     heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
   } else if (altitudeMode === 'relativeToGround') {
-    heightReference = Cesium.HeightReference.RELATIVE_TO_GROUND;
+    // we only support RELATIVE_TO_GROUND for Point Geometries
+    if (geometry.getType() === 'Point') {
+      heightReference = Cesium.HeightReference.RELATIVE_TO_GROUND;
+    } else {
+      heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
+    }
   }
 
   return heightReference;
