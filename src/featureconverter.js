@@ -278,7 +278,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
   if (olStyle.getFill()) {
     const fillColor = this.extractFillColorFromStyle(olStyle);
     const p1 = this.createColoredPrimitive(layer, feature, olGeometry,
-        fillGeometry, fillColor, heightInfo);
+        fillGeometry, fillColor, undefined, heightInfo);
     goog.asserts.assert(!!p1);
     primitives.add(p1);
   }
@@ -875,20 +875,16 @@ olcs.FeatureConverter.prototype.getHeightReference = function(layer, feature, ge
  * @param {!ol.Feature} feature OpenLayers feature..
  * @param {!ol.geom.Point} olGeometry OpenLayers point geometry.
  * @param {!ol.style.Style} style
- * @param {!number} originalHeight
+ * @param {!number} minHeight
  * @return {!Cesium.PrimitiveCollection}
  * @private
  */
-olcs.FeatureConverter.prototype.olPointGeometryToCesiumPin_ = function(layer, feature, olGeometry, style, originalHeight) {
+olcs.FeatureConverter.prototype.olPointGeometryToCesiumPin_ = function(layer, feature, olGeometry, style, minHeight) {
   const top = olGeometry.getCoordinates();
   const bottom = top.slice();
-  bottom[2] = originalHeight;
-  const skirt = Number(feature.get('olcs_skirt'));
-  if (skirt && Number.isFinite(skirt)) {
-    bottom[2] -= skirt;
-  }
+  bottom[2] = minHeight;
   const line = new ol.geom.LineString([top, bottom]);
-  line.set('olcs_altitudeMode', 'absolute');
+  line.set('olcs_altitudeMode', 'absolute', false);
 
   return this.olLineStringGeometryToCesium(layer, feature, line, 'EPSG:4326', style, true);
 };
@@ -910,12 +906,12 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
     opt_newBillboardCallback) {
   goog.asserts.assert(olGeometry.getType() == 'Point');
   const usedGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
-  const extrudedHeight = Number(feature.get('olcs_extrudedHeight'));
-  const groundLevel = Number(feature.get('olcs_groundLevel'));
-  let minHeight = this.getMinHeightOrGroundlevel([olGeometry.getCoordinates()], groundLevel);
-  if (Number.isFinite(extrudedHeight)) {
+  const heightInfo = this.getPolygonHeightInfo_(layer, feature);
+  let minHeight;
+  if (heightInfo) {
+    minHeight = this.getMinHeightOrGroundlevel([olGeometry.getCoordinates()], heightInfo.groundLevel);
     const coords = usedGeometry.getCoordinates();
-    coords[2] = minHeight + extrudedHeight;
+    coords[2] = minHeight + heightInfo.extrudedHeight;
     usedGeometry.setCoordinates(coords);
   }
 
@@ -960,20 +956,20 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
 
       const altitudeMode = this.getHeightReference(layer, feature, olGeometry);
       let heightReference = altitudeMode;
-      if (altitudeMode !== Cesium.HeightReference.NONE) {
-        if (!Number.isNaN(extrudedHeight) && !Number.isNaN(groundLevel)) {
-          heightReference = Cesium.HeightReference.NONE;
-        }
+      // if we have heightInfo, we always use absolute
+      if (altitudeMode !== Cesium.HeightReference.NONE && heightInfo) {
+        heightReference = Cesium.HeightReference.NONE;
       }
 
       // If heightAboveGround is set and heightreference is RelativeToGround, we use the given heightAboveground
-      // as the Z Value, cesium will then
-      const heightAboveGround = feature.get("olcs_heightAboveGround");
-      if (heightReference === Cesium.HeightReference.RELATIVE_TO_GROUND &&
-        typeof heightAboveGround == 'number') {
-        /** number */
-        center[2] = heightAboveGround;
+      // as the Z Value, cesium will then update the height depending on the terrain
+      if (heightReference === Cesium.HeightReference.RELATIVE_TO_GROUND) {
+        const heightAboveGround = feature.get("olcs_heightAboveGround");
+        if (typeof heightAboveGround == 'number') {
+          center[2] = heightAboveGround;
+        }
       }
+
 
       const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
 
@@ -1039,11 +1035,11 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
     }
   }
 
-  if (extrudedHeight && Number.isFinite(extrudedHeight)) {
-    return this.olPointGeometryToCesiumPin_(layer, feature, usedGeometry, style, minHeight );
+  if (heightInfo) {
+    minHeight -= heightInfo.skirt;
+    return this.olPointGeometryToCesiumPin_(layer, feature, usedGeometry, style, minHeight);
   } else  if (style.getText() && style.getText().getText()) {
-    return this.addTextStyle(layer, feature, usedGeometry, style,
-        new Cesium.Primitive());
+    return this.addTextStyle(layer, feature, usedGeometry, style, new Cesium.Primitive());
   } else {
     return null;
   }
