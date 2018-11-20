@@ -903,7 +903,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
   const extrudedHeight = Number(feature.get('olcs_extrudedHeight'));
   const groundLevel = Number(feature.get('olcs_groundLevel'));
   let minHeight = this.getMinHeightOrGroundlevel([olGeometry.getCoordinates()], groundLevel);
-  if (extrudedHeight && Number.isFinite(extrudedHeight)) {
+  if (Number.isFinite(extrudedHeight)) {
     const coords = usedGeometry.getCoordinates();
     coords[2] = minHeight + extrudedHeight;
     usedGeometry.setCoordinates(coords);
@@ -934,14 +934,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
       }
       const center = usedGeometry.getCoordinates();
 
-      // google closure compiler warning fix
-      const heightAboveGround = feature.get("heightAboveGround");
-      if (typeof heightAboveGround == 'number') {
-        /** number */
-        center[2] = heightAboveGround;
-      }
 
-      const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
       let color;
       const opacity = imageStyle.getOpacity();
       if (opacity !== undefined) {
@@ -958,10 +951,21 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
       const altitudeMode = this.getHeightReference(layer, feature, olGeometry);
       let heightReference = altitudeMode;
       if (altitudeMode !== Cesium.HeightReference.NONE) {
-        if(extrudedHeight != null && groundLevel != null) {
+        if (!Number.isNaN(extrudedHeight) && !Number.isNaN(groundLevel)) {
           heightReference = Cesium.HeightReference.NONE;
         }
       }
+
+      // If heightAboveGround is set and heightreference is RelativeToGround, we use the given heightAboveground
+      // as the Z Value, cesium will then
+      const heightAboveGround = feature.get("olcs_heightAboveGround");
+      if (heightReference === Cesium.HeightReference.RELATIVE_TO_GROUND &&
+        typeof heightAboveGround == 'number') {
+        /** number */
+        center[2] = heightAboveGround;
+      }
+
+      const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
 
       const bbOptions = /** @type {Cesium.optionsBillboardCollectionAdd} */ ({
         // always update Cesium externs before adding a property
