@@ -367,6 +367,8 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   olGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
   goog.asserts.assert(olGeometry.getType() == 'Circle');
 
+  let outlinePrimitive, outlineGeometry, fillGeometry;
+
   // ol.Coordinate
   const olCenter = olGeometry.getCenter();
   let point = olCenter.slice();
@@ -379,26 +381,31 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   // Accurate computation of straight distance
   const radius = Cesium.Cartesian3.distance(center, point);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
+  const heightInfo = this.getPolygonHeightInfo_(layer, feature);
+  let minHeight;
 
-  const extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight')) || 0;
-  const groundLevel = /** @type {number} */ (feature.get('olcs_groundLevel'));
-  let minHeight = this.getMinHeightOrGroundlevel([olCenter], groundLevel);
-  const skirt = feature.get('olcs_skirt');
-  if (extrudedHeight && skirt != null) {
-    minHeight -= /** @type {number} */ (skirt);
+  if (heightInfo) {
+    minHeight = this.getMinHeightOrGroundlevel([olCenter], heightInfo.groundLevel);
+    minHeight -= heightInfo.skirt;
+    fillGeometry = new Cesium.CircleGeometry({
+      // always update Cesium externs before adding a property
+      center,
+      radius,
+      extrudedHeight: minHeight + heightInfo.extrudedHeight,
+      height: minHeight,
+      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+    });
+  } else {
+    fillGeometry = new Cesium.CircleGeometry({
+      // always update Cesium externs before adding a property
+      center,
+      radius,
+      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
+    });
   }
-  const fillGeometry = new Cesium.CircleGeometry({
-    // always update Cesium externs before adding a property
-    center,
-    radius,
-    extrudedHeight: minHeight + extrudedHeight,
-    height: minHeight,
-    vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-  });
 
-  let outlinePrimitive, outlineGeometry;
   if (
-    (!groundLevel && !extrudedHeight) &&
+    !heightInfo &&
     heightReference === Cesium.HeightReference.CLAMP_TO_GROUND &&
     Cesium.GroundPolylinePrimitive.isSupported(this.scene)
   ) {
@@ -424,13 +431,19 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
         this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
       });
     }
+  } else if (heightInfo) {
+    outlineGeometry = new Cesium.CircleOutlineGeometry({
+      // always update Cesium externs before adding a property
+      center,
+      radius,
+      extrudedHeight: minHeight + heightInfo.extrudedHeight,
+      height: minHeight
+    });
   } else {
     outlineGeometry = new Cesium.CircleOutlineGeometry({
       // always update Cesium externs before adding a property
       center,
       radius,
-      extrudedHeight: minHeight + extrudedHeight,
-      height: minHeight
     });
   }
 
