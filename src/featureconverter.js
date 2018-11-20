@@ -947,7 +947,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
         color = new Cesium.Color(1.0, 1.0, 1.0, opacity);
       }
 
-      let zCoordinateEyeOffset = feature.get("zCoordinateEyeOffset");
+      let zCoordinateEyeOffset = feature.get("olcs_zCoordinateEyeOffset");
 
       if (typeof zCoordinateEyeOffset != 'number') {
         /** number */
@@ -985,8 +985,8 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
         eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
       });
 
-      if (feature.get("scaleByDistance") && Array.isArray(feature.get("scaleByDistance") && feature.get("scaleByDistance").length === 4 )) {
-        const array = feature.get("scaleByDistance");
+      if (feature.get("olcs_scaleByDistance") && Array.isArray(feature.get("olcs_scaleByDistance") && feature.get("olcs_scaleByDistance").length === 4 )) {
+        const array = feature.get("olcs_scaleByDistance");
         bbOptions.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
       }
 
@@ -1202,7 +1202,7 @@ olcs.FeatureConverter.prototype.olGeometry4326TextPartToCesium = function(layer,
     }
     options.verticalOrigin = verticalOrigin;
 
-    const zCoordinateEyeOffset = feature.get("zCoordinateEyeOffset");
+    const zCoordinateEyeOffset = feature.get("olcs_zCoordinateEyeOffset");
     if (typeof zCoordinateEyeOffset === 'number') {
       options.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
     }
