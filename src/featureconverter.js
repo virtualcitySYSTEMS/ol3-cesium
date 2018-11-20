@@ -104,10 +104,11 @@ olcs.FeatureConverter.prototype.setReferenceForPicking = function(layer, feature
  * @param {!(Cesium.Geometry|Array<Cesium.Geometry>)} geometry
  * @param {Cesium.Color|HTMLCanvasElement} color
  * @param {number=} opt_lineWidth
+ * @param {olcs.HeightInfo|null} heightInfo
  * @return {Cesium.Primitive}
  * @protected
  */
-olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, opt_lineWidth) {
+olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, opt_lineWidth, heightInfo) {
   const createInstance = function(geometry, color) {
     let options;
     if (color instanceof HTMLCanvasElement) {
@@ -165,7 +166,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
 
   if (
     heightReference == Cesium.HeightReference.CLAMP_TO_GROUND &&
-    !this.getPolygonHeightInfo_(layer, feature)
+    !heightInfo
   ) {
     const ctor = instances.geometry.constructor;
     if (ctor && !ctor['createShadowVolume']) {
@@ -194,7 +195,9 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     });
   }
 
-  this.setReferenceForPicking(layer, feature, primitive);
+  if (allowPicking) {
+    this.setReferenceForPicking(layer, feature, primitive);
+  }
   return primitive;
 };
 
@@ -266,7 +269,7 @@ olcs.FeatureConverter.prototype.extractLineWidthFromOlStyle = function(style) {
  * @param {!(Cesium.Geometry|Array<Cesium.Geometry>)} fillGeometry
  * @param {Cesium.Geometry|Array<Cesium.Geometry>|undefined} outlineGeometry
  * @param {!ol.style.Style} olStyle
- * @param {olcs.HeightInfo} heightInfo
+ * @param {olcs.HeightInfo|null} heightInfo
  * @return {!Cesium.PrimitiveCollection}
  * @protected
  */
@@ -275,7 +278,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
   if (olStyle.getFill()) {
     const fillColor = this.extractFillColorFromStyle(olStyle);
     const p1 = this.createColoredPrimitive(layer, feature, olGeometry,
-        fillGeometry, fillColor);
+        fillGeometry, fillColor, heightInfo);
     goog.asserts.assert(!!p1);
     primitives.add(p1);
   }
@@ -285,7 +288,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
     if (width) {
       const outlineColor = this.extractColorFromOlStyle(olStyle, true);
       const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
-        outlineGeometry, outlineColor, width);
+        outlineGeometry, outlineColor, width, heightInfo);
       if (p2) {
         // Some outline geometries are not supported by Cesium in clamp to ground
         // mode. These primitives are skipped.
@@ -465,7 +468,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
  * @param {!ol.Feature} feature OpenLayers feature..
  * @param {!ol.geom.LineString} olGeometry OpenLayers line string geometry.
  * @param {!ol.style.Style} olStyle
- * @param {olcs.HeightInfo} heightInfo
+ * @param {olcs.HeightInfo|null} heightInfo
  * @return {!Cesium.PrimitiveCollection} primitives
  * @private
  */
