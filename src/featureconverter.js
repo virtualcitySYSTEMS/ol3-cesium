@@ -370,6 +370,8 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   // ol.Coordinate
   let center = olGeometry.getCenter();
   let height = center.length === 3 ? center[2] : 0.0;
+  const groundLevel = /** @type {number} */ (feature.get('olcs_groundLevel'));
+  height = height || groundLevel || 0;
   let point = center.slice();
   point[0] += olGeometry.getRadius();
 
@@ -474,11 +476,17 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
 olcs.FeatureConverter.prototype.olLineStringGeometryToCesiumWall_ = function(layer, feature, olGeometry, olStyle, extrudedHeight) {
   const coords = olGeometry.getCoordinates();
   let minimumHeight = Infinity;
-  let i = coords.length;
-  while (i--) {
-    minimumHeight = coords[i][2] && coords[i][2] < minimumHeight ? coords[i][2] : minimumHeight;
+  const groundLevel = /** @type {number} */ (feature.get('olcs_groundLevel'));
+
+  if (!groundLevel) {
+    let i = coords.length;
+    while (i--) {
+      minimumHeight = coords[i][2] && coords[i][2] < minimumHeight ? coords[i][2] : minimumHeight;
+    }
+    minimumHeight = minimumHeight === Infinity ? 0 : minimumHeight;
+  } else {
+    minimumHeight = groundLevel;
   }
-  minimumHeight = minimumHeight === Infinity ? 0 : minimumHeight;
 
   const maximumHeight = minimumHeight + extrudedHeight;// maximumHeight has to be calculated before skirt correction is applied
   const skirt = Number(feature.get('olcs_skirt'));
@@ -563,9 +571,13 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
 
-  if (!noExtrusion && extrudedHeight && heightReference === Cesium.HeightReference.NONE) {
+  if (
+    !noExtrusion &&
+    extrudedHeight &&
+    (heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND || feature.get('olcs_groundLevel'))
+  ) {
     return this.olLineStringGeometryToCesiumWall_(layer, feature, olGeometry, olStyle, extrudedHeight);
-  } else if (shapePositions && heightReference === Cesium.HeightReference.NONE) {
+  } else if (shapePositions && heightReference !== Cesium.HeightReference.CLAMP_TO_GROUND) {
     return this.olLineStringGeometryToCesiumPolylineVolume_(layer, feature, olGeometry, olStyle, shapePositions);
   }
 
