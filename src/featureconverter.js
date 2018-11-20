@@ -592,37 +592,6 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
   goog.asserts.assert(olGeometry.getType() == 'Polygon');
 
   let fillGeometry, outlineGeometry, outlinePrimitive;
-  if ((olGeometry.getCoordinates()[0].length == 5) &&
-      (feature.getGeometry().get('olcs.polygon_kind') === 'rectangle')) {
-    // Create a rectangle according to the longitude and latitude curves
-    const coordinates = olGeometry.getCoordinates()[0];
-    // Extract the West, South, East, North coordinates
-    const extent = ol.extent.boundingExtent(coordinates);
-    const rectangle = Cesium.Rectangle.fromDegrees(extent[0], extent[1],
-        extent[2], extent[3]);
-
-    // Extract the average height of the vertices
-    let maxHeight = 0.0;
-    if (coordinates[0].length == 3) {
-      for (let c = 0; c < coordinates.length; c++) {
-        maxHeight = Math.max(maxHeight, coordinates[c][2]);
-      }
-    }
-
-    // Render the cartographic rectangle
-    fillGeometry = new Cesium.RectangleGeometry({
-      ellipsoid: Cesium.Ellipsoid.WGS84,
-      rectangle,
-      height: maxHeight,
-      vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
-    });
-
-    outlineGeometry = new Cesium.RectangleOutlineGeometry({
-      ellipsoid: Cesium.Ellipsoid.WGS84,
-      rectangle,
-      height: maxHeight
-    });
-  } else {
     const rings = olGeometry.getLinearRings();
     // always update Cesium externs before adding a property
     const hierarchy = {};
@@ -747,7 +716,6 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
         extrudedHeight: heightInfo ? minHeight + heightInfo.extrudedHeight : undefined,
       });
     }
-  }
 
   const primitives = this.wrapFillAndOutlineGeometries(
       layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle);
