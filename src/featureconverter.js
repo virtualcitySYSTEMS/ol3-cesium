@@ -384,7 +384,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   // Accurate computation of straight distance
   const radius = Cesium.Cartesian3.distance(center, point);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
-  const heightInfo = this.getPolygonHeightInfo_(layer, feature);
+  const heightInfo = this.getHeightInfo_(layer, feature);
   let minHeight;
 
   if (heightInfo) {
@@ -514,7 +514,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
 
   const allowPicking = this.getAllowPicking(layer, feature, olGeometry);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
-  const heightInfo = this.getPolygonHeightInfo_(layer, feature);
+  const heightInfo = this.getHeightInfo_(layer, feature);
 
   if (
     !noExtrusion &&
@@ -607,7 +607,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
     const polygonHierarchy = hierarchy;
     goog.asserts.assert(rings.length > 0);
 
-    const heightInfo = this.getPolygonHeightInfo_(layer, feature);
+    const heightInfo = this.getHeightInfo_(layer, feature);
     let minHeight = Infinity;
 
     for (let i = 0; i < rings.length; ++i) {
@@ -741,7 +741,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
  * @return {olcs.HeightInfo|null}
  * @private
  */
-olcs.FeatureConverter.prototype.getPolygonHeightInfo_ = function(layer, feature) {
+olcs.FeatureConverter.prototype.getHeightInfo_ = function(layer, feature) {
   let extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
   let storeyNumber = /** @type {number} */ (feature.get('olcs_storeyNumber'));
   let storeyHeight = /** @type {number} */ (this.getDefaultFromLayer_('olcs_storeyHeight', layer, feature));
@@ -906,7 +906,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
     opt_newBillboardCallback) {
   goog.asserts.assert(olGeometry.getType() == 'Point');
   const usedGeometry = olcs.core.olGeometryCloneTo4326(olGeometry, projection);
-  const heightInfo = this.getPolygonHeightInfo_(layer, feature);
+  const heightInfo = this.getHeightInfo_(layer, feature);
   let minHeight;
   if (heightInfo) {
     minHeight = this.getMinHeightOrGroundlevel([olGeometry.getCoordinates()], heightInfo.groundLevel);
