@@ -106,7 +106,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
   const entityOptions = /** @type{Cesium.optionsEntity} */ ({});
   const center = pointGeom.getCoordinates();
   // google closure compiler warning fix
-  const heightAboveGround = feature.get('heightAboveGround') || layer.get('heightAboveGround');
+  const heightAboveGround = feature.get('olcs_heightAboveGround') || layer.get('olcs_heightAboveGround');
   if (typeof heightAboveGround == 'number') {
     /** number */
     center[2] = heightAboveGround;
@@ -152,7 +152,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
         color = new Cesium.Color(1.0, 1.0, 1.0, opacity);
       }
 
-      let zCoordinateEyeOffset = feature.get('zCoordinateEyeOffset');
+      let zCoordinateEyeOffset = feature.get('olcs_zCoordinateEyeOffset');
 
       if (typeof zCoordinateEyeOffset != 'number') {
         /** number */
@@ -170,8 +170,8 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
         eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
       });
 
-      if (feature.get('scaleByDistance') && Array.isArray(feature.get('scaleByDistance') && feature.get('scaleByDistance').length === 4)) {
-        const array = feature.get('scaleByDistance');
+      if (feature.get('olcs_scaleByDistance') && Array.isArray(feature.get('olcs_scaleByDistance') && feature.get('olcs_scaleByDistance').length === 4)) {
+        const array = feature.get('olcs_scaleByDistance');
         entityOptions.billboard.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
       }
       const entity = new Cesium.Entity(entityOptions);
@@ -342,13 +342,13 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.label.entities = entities;
   cluster.billboard.id = cluster.label.id;
   cluster.billboard.entities = entities;
-  const height = layer.get('heightAboveGround');
+  const height = layer.get('olcs_heightAboveGround');
   if (height != null) {
     cluster.billboard.position.z = cluster.billboard.position.z + height;
     cluster.label.position.z = cluster.label.position.z + height;
   }
 
-  let zCoordinateEyeOffset = layer.get('zCoordinateEyeOffset');
+  let zCoordinateEyeOffset = layer.get('olcs_zCoordinateEyeOffset');
   if (typeof zCoordinateEyeOffset != 'number') {
     /** number */
     zCoordinateEyeOffset = 0;
@@ -356,7 +356,7 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.billboard.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
   cluster.label.eyeOffset = new Cesium.Cartesian3(0,0, zCoordinateEyeOffset);
 
-  const altitudeMode = layer.get('altitudeMode');
+  const altitudeMode = layer.get('olcs_altitudeMode');
   let heightReference = Cesium.HeightReference.NONE;
   if (altitudeMode === 'clampToGround') {
     heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
