@@ -1493,7 +1493,10 @@ Cesium.VertexFormat = function(options) {};
  * @type {Cesium.VertexFormat}
  */
 Cesium.PerInstanceColorAppearance.VERTEX_FORMAT;
-
+/**
+ * @type {Cesium.VertexFormat}
+ */
+Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT ;
 
 /**
  * @typedef {{

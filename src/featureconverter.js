@@ -386,10 +386,9 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
   const radius = Cesium.Cartesian3.distance(center, point);
   const heightReference = this.getHeightReference(layer, feature, olGeometry);
   const heightInfo = this.getHeightInfo_(layer, feature);
-  let minHeight;
+  let minHeight = this.getMinHeightOrGroundlevel([olCenter], /** @type {number|undefined} */ (feature.get('olcs_groundLevel')));
 
   if (heightInfo) {
-    minHeight = this.getMinHeightOrGroundlevel([olCenter], heightInfo.groundLevel);
     minHeight -= heightInfo.skirt;
     fillGeometry = new Cesium.CircleGeometry({
       // always update Cesium externs before adding a property
@@ -404,6 +403,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
       // always update Cesium externs before adding a property
       center,
       radius,
+      height: minHeight,
       vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT,
     });
   }
@@ -441,13 +441,16 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
       center,
       radius,
       extrudedHeight: minHeight + heightInfo.extrudedHeight,
-      height: minHeight
+      height: minHeight,
+      vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
     });
   } else {
     outlineGeometry = new Cesium.CircleOutlineGeometry({
       // always update Cesium externs before adding a property
       center,
       radius,
+      height: minHeight,
+      vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
     });
   }
 
@@ -672,6 +675,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
           height,
           perPositionHeight,
           extrudedHeight,
+          vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
         });
         extrudedHeight += heightInfo.storeyHeight;
         extrudedHeight = extrudedHeight > maxExtrudedHeight ? maxExtrudedHeight : extrudedHeight;
@@ -724,6 +728,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
         height,
         perPositionHeight,
         extrudedHeight: heightInfo ? minHeight + heightInfo.extrudedHeight : undefined,
+        vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
       });
     }
 
