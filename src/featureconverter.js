@@ -105,10 +105,11 @@ olcs.FeatureConverter.prototype.setReferenceForPicking = function(layer, feature
  * @param {Cesium.Color|HTMLCanvasElement} color
  * @param {olcs.HeightInfo|null} heightInfo
  * @param {number=} opt_lineWidth
+ * @param {boolean=} flat
  * @return {Cesium.Primitive}
  * @protected
  */
-olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, heightInfo, opt_lineWidth) {
+olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature, olGeometry, geometry, color, heightInfo, opt_lineWidth, flat) {
   const createInstance = function(geometry, color) {
     let options;
     if (color instanceof HTMLCanvasElement) {
@@ -126,7 +127,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
 
   const options = {
     // always update Cesium externs before adding a property
-    flat: false,
+    flat: !!flat,
     renderState: {
       depthTest: {
         enabled: true
@@ -288,7 +289,7 @@ olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, f
     if (width) {
       const outlineColor = this.extractColorFromOlStyle(olStyle, true);
       const p2 = this.createColoredPrimitive(layer, feature, olGeometry,
-        outlineGeometry, outlineColor, heightInfo, width);
+        outlineGeometry, outlineColor, heightInfo, width, true);
       if (p2) {
         // Some outline geometries are not supported by Cesium in clamp to ground
         // mode. These primitives are skipped.
