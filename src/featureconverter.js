@@ -431,9 +431,6 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
         allowPicking: this.getAllowPicking(layer, feature, olGeometry),
         classificationType: Cesium.ClassificationType.TERRAIN,
       });
-      outlinePrimitive.readyPromise.then(() => {
-        this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
-      });
     }
   } else if (heightInfo) {
     outlineGeometry = new Cesium.CircleOutlineGeometry({
@@ -459,6 +456,7 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
       layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo);
 
   if (outlinePrimitive) {
+    this.setReferenceForPicking(layer, feature, outlinePrimitive);
     primitives.add(outlinePrimitive);
   }
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
@@ -553,9 +551,6 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
         classificationType : Cesium.ClassificationType.TERRAIN,
         appearance,
         allowPicking,
-      });
-      outlinePrimitive.readyPromise.then(() => {
-        this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
       });
     } else {
       const color = this.extractColorFromOlStyle(olStyle, true);
@@ -717,9 +712,6 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
           allowPicking: this.getAllowPicking(layer, feature, olGeometry),
           classificationType: Cesium.ClassificationType.TERRAIN,
         });
-        outlinePrimitive.readyPromise.then(() => {
-          this.setReferenceForPicking(layer, feature, outlinePrimitive._primitive);
-        });
       }
     } else if (!outlineGeometry) {
       outlineGeometry = new Cesium.PolygonOutlineGeometry({
@@ -736,6 +728,7 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
       layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo);
 
   if (outlinePrimitive) {
+    this.setReferenceForPicking(layer, feature, outlinePrimitive);
     primitives.add(outlinePrimitive);
   }
   return this.addTextStyle(layer, feature, olGeometry, olStyle, primitives);
