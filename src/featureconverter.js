@@ -971,11 +971,15 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
 
 
       const position = olcs.core.ol4326CoordinateToCesiumCartesian(center);
+      const anchor = imageStyle.getAnchor();
+      const size = imageStyle.getSize();
+      const pixelOffset = new Cesium.Cartesian2((size[0] / 2) - anchor[0], (size[1] / 2) - anchor[1]);
 
       const bbOptions = /** @type {Cesium.optionsBillboardCollectionAdd} */ ({
         // always update Cesium externs before adding a property
         image,
         color,
+        pixelOffset,
         scale: imageStyle.getScale(),
         heightReference,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,

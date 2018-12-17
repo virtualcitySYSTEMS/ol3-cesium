@@ -149,6 +149,7 @@ Cesium.BillboardCollection = function(opt_options) {};
  *   heightReference: (Cesium.HeightReference|undefined),
  *   verticalOrigin: (Cesium.VerticalOrigin|undefined),
  *   horizontalOrigin: (Cesium.HorizontalOrigin|undefined),
+ *   pixelOffset: (Cesium.Cartesian2|undefined),
  *   pixelOffsetScaleByDistance : (Cesium.NearFarScalar|undefined),
  *   scale: (number|undefined),
  *   scaleByDistance: (Cesium.NearFarScalar|undefined),
