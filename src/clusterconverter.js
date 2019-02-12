@@ -342,11 +342,6 @@ olcs.ClusterConverter.prototype.clusterStyle = function(layer, entities, cluster
   cluster.label.entities = entities;
   cluster.billboard.id = cluster.label.id;
   cluster.billboard.entities = entities;
-  const height = layer.get('olcs_heightAboveGround');
-  if (height != null) {
-    cluster.billboard.position.z = cluster.billboard.position.z + height;
-    cluster.label.position.z = cluster.label.position.z + height;
-  }
 
   let zCoordinateEyeOffset = layer.get('olcs_zCoordinateEyeOffset');
   if (typeof zCoordinateEyeOffset != 'number') {
