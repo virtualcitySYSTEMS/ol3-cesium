@@ -123,7 +123,7 @@ olcs.VectorSynchronizer.prototype.createSingleLayerCounterparts = function(olLay
   }));
 
   const onPropertyChange = function(key) {
-    if (key === 'olcs_altitudeMode' || key === 'olcs_allowPicking') {
+    if (key === 'olcs_altitudeMode' || key === 'olcs_allowPicking' || key === 'olcs_classificationType') {
       const features = source.getFeatures();
       const featuresLength = features.length;
       for (let i = 0; i < featuresLength; i++) {
