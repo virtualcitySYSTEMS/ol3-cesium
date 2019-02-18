@@ -48,6 +48,16 @@ olcs.FeatureConverter = function(scene) {
    */
   this.boundOnRemoveOrClearFeatureListener_ =
       this.onRemoveOrClearFeature_.bind(this);
+
+  /**
+   * @type {Object<string, Cesium.ClassificationType>}
+   * @private
+   */
+  this.classificationTypes_ = {
+    'both': Cesium.ClassificationType.BOTH,
+    'cesium3DTile': Cesium.ClassificationType.CESIUM_3D_TILE,
+    'terrain': Cesium.ClassificationType.TERRAIN,
+  };
 };
 
 
@@ -174,10 +184,11 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       return null;
     }
 
+    const classificationType = this.getClassificationType(layer, feature);
     const primitiveOptions = {
       // always update Cesium externs before adding a property
       geometryInstances: instances,
-      classificationType : Cesium.ClassificationType.TERRAIN,
+      classificationType,
       allowPicking,
     };
 
@@ -867,6 +878,23 @@ olcs.FeatureConverter.prototype.getHeightReference = function(layer, feature, ge
   }
 
   return heightReference;
+};
+
+/**
+ * @param {ol.layer.Vector|ol.layer.Image} layer
+ * @param {ol.Feature} feature OpenLayers feature..
+ * @return {!Cesium.ClassificationType}
+ * @api
+ */
+olcs.FeatureConverter.prototype.getClassificationType = function(layer, feature) {
+  let classificationType = feature.get('olcs_classificationType');
+  if (!classificationType) {
+    classificationType = layer.get('olcs_classificationType');
+  }
+
+  return typeof classificationType === 'string' ?
+    this.classificationTypes_[classificationType] :
+    this.classificationTypes_['terrain'];
 };
 
 /**
