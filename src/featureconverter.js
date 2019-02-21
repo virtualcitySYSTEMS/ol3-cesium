@@ -553,13 +553,14 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
 
   let outlinePrimitive;
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
+    const classificationType = this.getClassificationType(layer, feature);
     if (Cesium.GroundPolylinePrimitive.isSupported(this.scene)) {
       outlinePrimitive = new Cesium.GroundPolylinePrimitive({
         // always update Cesium externs before adding a property
         geometryInstances: new Cesium.GeometryInstance({
           geometry: new Cesium.GroundPolylineGeometry(geometryOptions),
         }),
-        classificationType : Cesium.ClassificationType.TERRAIN,
+        classificationType,
         appearance,
         allowPicking,
       });
@@ -573,7 +574,7 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
             color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
           }
         }),
-        classificationType : Cesium.ClassificationType.TERRAIN,
+        classificationType,
         allowPicking,
       });
     }
