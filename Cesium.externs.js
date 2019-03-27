@@ -1151,6 +1151,13 @@ Cesium.GroundPrimitive = function(opt_opts) {};
 Cesium.GroundPrimitive.supportsMaterials = function(scene) {};
 
 /**
+ * @constructor
+ * @param {Cesium.optionsGroundPrimitive=} opt_opts
+ * @extends {Cesium.Primitive}
+ */
+Cesium.ClassificationPrimitive = function(opt_opts) {};
+
+/**
  * @typedef {{
  *   geometryInstances: (!Array.<Cesium.GeometryInstance>|Cesium.GeometryInstance),
  *   classificationType: Cesium.ClassificationType,

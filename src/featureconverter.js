@@ -175,6 +175,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     appearance = new Cesium.PerInstanceColorAppearance(options);
   }
 
+  const classificationType = this.getClassificationType(layer, feature);
   if (
     heightReference == Cesium.HeightReference.CLAMP_TO_GROUND &&
     !heightInfo
@@ -184,11 +185,10 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       return null;
     }
 
-    const classificationType = this.getClassificationType(layer, feature);
     const primitiveOptions = {
       // always update Cesium externs before adding a property
       geometryInstances: instances,
-      classificationType,
+      classificationType: classificationType != null ? classificationType : this.classificationTypes_['terrain'],
       allowPicking,
     };
 
@@ -197,6 +197,15 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     }
 
     primitive = new Cesium.GroundPrimitive(primitiveOptions);
+  } else if (classificationType != null) {
+    primitive = new Cesium.ClassificationPrimitive({
+      // always update Cesium externs before adding a property
+      geometryInstances: instances,
+      appearance,
+      shadows : Cesium.ShadowMode.ENABLED,
+      allowPicking,
+      classificationType,
+    });
   } else {
     primitive = new Cesium.Primitive({
       // always update Cesium externs before adding a property
@@ -206,6 +215,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
       allowPicking
     });
   }
+
 
   if (allowPicking) {
     this.setReferenceForPicking(layer, feature, primitive);
@@ -552,15 +562,16 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
   };
 
   let outlinePrimitive;
+  const classificationType = this.getClassificationType(layer, feature);
+
   if (heightReference == Cesium.HeightReference.CLAMP_TO_GROUND) {
-    const classificationType = this.getClassificationType(layer, feature);
     if (Cesium.GroundPolylinePrimitive.isSupported(this.scene)) {
       outlinePrimitive = new Cesium.GroundPolylinePrimitive({
         // always update Cesium externs before adding a property
         geometryInstances: new Cesium.GeometryInstance({
           geometry: new Cesium.GroundPolylineGeometry(geometryOptions),
         }),
-        classificationType,
+        classificationType: classificationType != null ? classificationType : this.classificationTypes_['terrain'],
         appearance,
         allowPicking,
       });
@@ -574,10 +585,20 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
             color: Cesium.ColorGeometryInstanceAttribute.fromColor(color)
           }
         }),
-        classificationType,
+        classificationType: classificationType != null ? classificationType : this.classificationTypes_['terrain'],
         allowPicking,
       });
     }
+  } else if (classificationType != null) {
+    outlinePrimitive = new Cesium.ClassificationPrimitive({
+      // always update Cesium externs before adding a property
+      geometryInstances: new Cesium.GeometryInstance({
+        geometry: new Cesium.PolylineGeometry(geometryOptions)
+      }),
+      appearance,
+      allowPicking,
+      classificationType,
+    });
   } else {
     outlinePrimitive = new Cesium.Primitive({
       // always update Cesium externs before adding a property
@@ -884,7 +905,7 @@ olcs.FeatureConverter.prototype.getHeightReference = function(layer, feature, ge
 /**
  * @param {ol.layer.Vector|ol.layer.Image} layer
  * @param {ol.Feature} feature OpenLayers feature..
- * @return {!Cesium.ClassificationType}
+ * @return {Cesium.ClassificationType|undefined}
  * @api
  */
 olcs.FeatureConverter.prototype.getClassificationType = function(layer, feature) {
@@ -895,7 +916,7 @@ olcs.FeatureConverter.prototype.getClassificationType = function(layer, feature)
 
   return typeof classificationType === 'string' ?
     this.classificationTypes_[classificationType] :
-    this.classificationTypes_['terrain'];
+    undefined;
 };
 
 /**
