@@ -197,7 +197,12 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     }
 
     primitive = new Cesium.GroundPrimitive(primitiveOptions);
-  } else if (Cesium.ClassificationPrimitive.isSupported(this.scene) && classificationType != null) {
+  } else if (
+    classificationType != null &&
+    heightInfo &&
+    (olGeometry.getType() === 'Polygon' || olGeometry.getType() === 'MultiPolygon' || olGeometry.getType() === 'Cirlce') &&
+     Cesium.ClassificationPrimitive.isSupported(this.scene)
+  ) {
     primitive = new Cesium.ClassificationPrimitive({
       // always update Cesium externs before adding a property
       geometryInstances: instances,
@@ -589,16 +594,6 @@ olcs.FeatureConverter.prototype.olLineStringGeometryToCesium = function(layer, f
         allowPicking,
       });
     }
-  } else if (Cesium.ClassificationPrimitive.isSupported(this.scene) && classificationType != null) {
-    outlinePrimitive = new Cesium.ClassificationPrimitive({
-      // always update Cesium externs before adding a property
-      geometryInstances: new Cesium.GeometryInstance({
-        geometry: new Cesium.PolylineGeometry(geometryOptions)
-      }),
-      appearance,
-      allowPicking,
-      classificationType,
-    });
   } else {
     outlinePrimitive = new Cesium.Primitive({
       // always update Cesium externs before adding a property
