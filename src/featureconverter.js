@@ -200,8 +200,8 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
   } else if (
     classificationType != null &&
     heightInfo &&
-    (olGeometry.getType() === 'Polygon' || olGeometry.getType() === 'MultiPolygon' || olGeometry.getType() === 'Cirlce') &&
-     Cesium.ClassificationPrimitive.isSupported(this.scene)
+    (olGeometry.getType() === 'Polygon' || olGeometry.getType() === 'MultiPolygon' || olGeometry.getType() === 'Circle') &&
+    Cesium.ClassificationPrimitive.isSupported(this.scene)
   ) {
     primitive = new Cesium.ClassificationPrimitive({
       // always update Cesium externs before adding a property
@@ -302,15 +302,16 @@ olcs.FeatureConverter.prototype.extractLineWidthFromOlStyle = function(style) {
  */
 olcs.FeatureConverter.prototype.wrapFillAndOutlineGeometries = function(layer, feature, olGeometry, fillGeometry, outlineGeometry, olStyle, heightInfo) {
   const primitives = new Cesium.PrimitiveCollection();
+  let p1;
   if (olStyle.getFill()) {
     const fillColor = this.extractFillColorFromStyle(olStyle);
-    const p1 = this.createColoredPrimitive(layer, feature, olGeometry,
+    p1 = this.createColoredPrimitive(layer, feature, olGeometry,
         fillGeometry, fillColor, heightInfo);
     goog.asserts.assert(!!p1);
     primitives.add(p1);
   }
 
-  if (olStyle.getStroke() && outlineGeometry) {
+  if (olStyle.getStroke() && outlineGeometry && !(p1 instanceof Cesium.ClassificationPrimitive)) {
     const width = this.extractLineWidthFromOlStyle(olStyle);
     if (width) {
       const outlineColor = this.extractColorFromOlStyle(olStyle, true);
