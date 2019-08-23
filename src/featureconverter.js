@@ -203,7 +203,7 @@ olcs.FeatureConverter.prototype.createColoredPrimitive = function(layer, feature
     (olGeometry.getType() === 'Polygon' || olGeometry.getType() === 'MultiPolygon' || olGeometry.getType() === 'Circle') &&
     Cesium.GroundPolylinePrimitive.isSupported(this.scene)
     // The check is for GroundPolylinePrimitive, because that check returns false for ie11, otherwise the ClassificationPrimitive.isSupported Check returns true for ie11, but ie11 crashes,
-    // TODO research better in cesium to fix this  
+    // TODO research better in cesium to fix this
   ) {
     primitive = new Cesium.ClassificationPrimitive({
       // always update Cesium externs before adding a property
@@ -1037,7 +1037,7 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
         bbOptions.pixelOffset = new Cesium.Cartesian2((size[0] / 2) - anchor[0], (size[1] / 2) - anchor[1]);
       }
 
-      if (feature.get("olcs_scaleByDistance") && Array.isArray(feature.get("olcs_scaleByDistance") && feature.get("olcs_scaleByDistance").length === 4 )) {
+      if (feature.get("olcs_scaleByDistance") && Array.isArray(feature.get("olcs_scaleByDistance")) && feature.get("olcs_scaleByDistance").length === 4) {
         const array = feature.get("olcs_scaleByDistance");
         bbOptions.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
       }
