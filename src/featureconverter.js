@@ -470,6 +470,20 @@ olcs.FeatureConverter.prototype.olCircleGeometryToCesium = function(layer, featu
       height: minHeight,
       vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
     });
+
+    if (heightInfo.storeyNumber > 1) {
+      outlineGeometry = [outlineGeometry];
+      const additionalStoreys = heightInfo.storeyNumber;
+      for (let i = 1; i < additionalStoreys; i++) {
+        outlineGeometry[i] = new Cesium.CircleOutlineGeometry({
+          // always update Cesium externs before adding a property
+          center,
+          radius,
+          height: minHeight + heightInfo.storeyHeight * i,
+          vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
+        });
+      }
+    }
   } else {
     outlineGeometry = new Cesium.CircleOutlineGeometry({
       // always update Cesium externs before adding a property
