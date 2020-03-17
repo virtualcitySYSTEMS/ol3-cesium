@@ -772,14 +772,14 @@ olcs.FeatureConverter.prototype.olPolygonGeometryToCesium = function(layer, feat
  * @private
  */
 olcs.FeatureConverter.prototype.getHeightInfo_ = function(layer, feature) {
-  let extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
+  let extrudedHeight = /** @type {number} */ (feature.get('olcs_extrudedHeight'));
   let storeyNumber = /** @type {number} */ (feature.get('olcs_storeyNumber'));
   let storeyHeight = /** @type {number} */ (this.getDefaultFromLayer_('olcs_storeyHeight', layer, feature));
 
   if (extrudedHeight < 0) {
     storeyNumber = undefined;
     storeyHeight = undefined;
-  } else if (extrudedHeight && storeyHeight) {
+  } else if (extrudedHeight && storeyHeight && extrudedHeight > storeyHeight) {
     storeyNumber = Math.ceil(extrudedHeight / storeyHeight);
   } else if (extrudedHeight && storeyNumber) {
     storeyHeight = extrudedHeight / storeyNumber;
