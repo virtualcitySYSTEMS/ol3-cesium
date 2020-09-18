@@ -203,7 +203,7 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
       cancellers[fuid] = canceller;
 
       const listener = function() {
-        if (!context.entities.isDestroyed() && !cancelled) {
+        if (!cancelled) {
           // Create billboard if the feature is still displayed on the map.
           const entity = reallyCreateBillboard();
           context.featureEntityMap[ol.getUid(feature)] = entity;
