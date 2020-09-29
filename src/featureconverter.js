@@ -1045,12 +1045,6 @@ olcs.FeatureConverter.prototype.olPointGeometryToCesium = function(layer, featur
         eyeOffset : new Cesium.Cartesian3(0,0, zCoordinateEyeOffset)
       });
 
-      const anchor = imageStyle.getAnchor();
-      const size = imageStyle.getSize();
-      if (anchor && size) { // IE11 fix - loaded called before entire src is available
-        bbOptions.pixelOffset = new Cesium.Cartesian2((size[0] / 2) - anchor[0], (size[1] / 2) - anchor[1]);
-      }
-
       if (feature.get("olcs_scaleByDistance") && Array.isArray(feature.get("olcs_scaleByDistance")) && feature.get("olcs_scaleByDistance").length === 4) {
         const array = feature.get("olcs_scaleByDistance");
         bbOptions.scaleByDistance = new Cesium.NearFarScalar(array[0], array[1], array[2], array[3]);
