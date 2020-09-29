@@ -73,12 +73,7 @@ olcs.ClusterConverter.prototype.olVectorLayerToCesium = function(olLayer, olView
       // only 'render' features with a style
       continue;
     }
-    const entity = this.olFeatureToCesium(olLayer, feature, style, context);
-    if (!entity) {
-      continue;
-    }
-    featureEntityMap[ol.getUid(feature)] = entity;
-    counterpart.getRootPrimitive().add(entity);
+    this.olFeatureToCesium(olLayer, feature, style, context);
   }
 
   const dataSource = counterpart.getDataSource();
@@ -176,7 +171,9 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
       }
       const entity = new Cesium.Entity(entityOptions);
       this.setEntityRefForPicking(layer, feature, entity);
-      return entity;
+
+      context.featureEntityMap[ol.getUid(feature)] = entity;
+      context.entities.add(entity);
     }).bind(this);
 
     if (image instanceof Image && !isImageLoaded(image)) {
@@ -205,18 +202,21 @@ olcs.ClusterConverter.prototype.olFeatureToCesium = function(layer, feature, sty
       const listener = function() {
         if (!cancelled) {
           // Create billboard if the feature is still displayed on the map.
-          const entity = reallyCreateBillboard();
-          context.featureEntityMap[ol.getUid(feature)] = entity;
+          reallyCreateBillboard();
         }
       };
       ol.events.listenOnce(image, 'load', listener);
+      return null;
     } else {
-      return reallyCreateBillboard();
+      reallyCreateBillboard();
+      return null;
     }
   }
   const entity = new Cesium.Entity(entityOptions);
   this.setEntityRefForPicking(layer, feature, entity);
-  return entity;
+  context.featureEntityMap[ol.getUid(feature)] = entity;
+  context.entities.add(entity);
+  return null;
 };
 
 /**
